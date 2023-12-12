@@ -1,0 +1,22 @@
+<template>
+    <lightning-tabset variant="scoped">
+        <lightning-tab label={custLabel.tacticomTab}>
+            <c-tab-visits-tacticom received-id = {recordId}> </c-tab-visits-tacticom>
+        </lightning-tab>
+        <lightning-tab label="Camp. & Opp.">
+            <c-tab-visits-camp-opp received-id = {recordId}> </c-tab-visits-camp-opp>
+        </lightning-tab>
+        <lightning-tab label="Reports">
+        <c-tab-visits-reports received-id = {recordId}></c-tab-visits-reports> 
+        </lightning-tab>
+        <lightning-tab label="Trainings">
+         <c-tab-visits-trainings received-id = {recordId}></c-tab-visits-trainings >   
+        </lightning-tab>
+        <!--lightning-tab label="Showpad">
+            Work In Progress !
+        </lightning-tab-->
+        <lightning-tab label="ECP Nearby">
+        <c-tab-visits-ecp-nearby received-id= {recordId}></c-tab-visits-ecp-nearby>
+        </lightning-tab>
+    </lightning-tabset>
+</template>

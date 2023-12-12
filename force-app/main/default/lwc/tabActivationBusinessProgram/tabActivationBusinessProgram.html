@@ -1,0 +1,17 @@
+<template>
+    <!--p> {seikoDataa} </p-->
+    <lightning-tabset variant="scoped">
+        <lightning-tab label="Registration">
+            <c-tab-activation-business-program-registration received-id = {receivedId} seiko-data = {seikoData} acc-brand = {brand} acc-channel = {channel}> </c-tab-activation-business-program-registration>
+        </lightning-tab>
+        <lightning-tab label="Services">
+            <c-tab-activation-business-program-services received-id = {receivedId}> </c-tab-activation-business-program-services>
+        </lightning-tab>
+        <lightning-tab label="Loyalty Points">
+            <c-tab-activation-business-program-loyalty-points received-id = {receivedId} loyalty-points={loyaltyPoints} acc-brand = {brand}> </c-tab-activation-business-program-loyalty-points>
+        </lightning-tab>
+        <lightning-tab label="Store Info">
+            <c-tab-activation-business-program-store-info received-id = {receivedId}> </c-tab-activation-business-program-store-info>
+        </lightning-tab>
+    </lightning-tabset>
+</template>

@@ -1,0 +1,64 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <lightning:conversationToolkitAPI aura:id="conversationKit"/>
+    <lightning:workspaceAPI aura:id="workspace"/>   
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="isModalOpen" type="boolean" default="false"/>
+    <aura:handler event="lightning:conversationChatEnded" action="{!c.onChatEnded}" /> 
+    <aura:html tag="style"> 
+        .slds-modal__container{ 
+        height: 102%;
+        width: 70%;
+        max-width: 377vh !important;
+        max-height: 300vh !important; 
+        } 
+        .modal-body{ 
+        height : 500vh !important; 
+        max-height: 1000vh !important; 
+        } 
+        .slds-modal__footer{ 
+        display: inline !important; 
+        }
+        .toastMessage.forceActionsText{
+        white-space : pre-line !important;
+        }
+    </aura:html>
+    <aura:if isTrue="{!v.isModalOpen}">        
+        <section class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close"
+                                          onclick="{! c.closeModel }"
+                                          alternativeText="close"
+                                          variant="bare-inverse"
+                                          class="slds-modal__close"/>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Please update the subject</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <p>                          
+                        <lightning:recordEditForm 
+                                                  recordId="{!v.recordId}"
+                                                  objectApiName="LiveChatTranscript"
+                                                  aura:id="chatForm"
+                                                  >
+                            <lightning:messages />
+                            <div class="slds-grid">
+                                <div class="slds-col slds-size_1-of-1">
+                                    <lightning:inputField fieldName="Subject__c" required="true"/>
+                                </div>
+                            </div><br/><br/><br/><br/><br/><br/>
+                        </lightning:recordEditForm>
+                    </p>
+                </div> 
+                <footer class="slds-modal__footer"> 
+                    <lightning:button variant="brand" class="slds-m-top_small" type="button" name="Update" label="Update" onclick="{!c.handleChat}" />
+                    <lightning:button variant="neutral"
+                                      label="Cancel"
+                                      title="Cancel"
+                                      onclick="{! c.closeModel }"/>
+                </footer>
+                
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+</aura:component>

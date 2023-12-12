@@ -1,0 +1,6 @@
+<aura:event type="APPLICATION" description="Event template">
+    <aura:attribute name="contactLabel" type="String"/>
+    <aura:attribute name="helpLabel" type="String"/>
+    <aura:attribute name="contactUrl" type="String"/>
+    <aura:attribute name="helpUrl" type="String"/>
+</aura:event>
