@@ -767,6 +767,8 @@ public with sharing class TabStatisticsController {
         return returnsList;
 	}
     public static Map<Integer,Map<String,Integer>> getNonAdaptationMap(Map<Decimal,Sales_Statistics__c> Type0Map,Map<Decimal,Sales_Statistics__c> Type1Map){
+        System.debug(Type0Map);
+        System.debug(Type1Map);
         Map<String,Integer> nonAdaptationMap ;
         Map<Integer,Map<String,Integer>> nonAdaptationMonthlyMap = new Map<Integer,Map<String,Integer>>();
         if(Type0Map.size() > 0 || Type1Map.size() > 0){
@@ -775,33 +777,39 @@ public with sharing class TabStatisticsController {
                   Map<String,Object> MapType0 = new Map<String,Object>();
                   Map<String,Object> MapType1 = new Map<String,Object>();
                   if(Type0Map.size() > 0 && Type0Map.containsKey(i)){
+                      System.debug(Type0Map.get(i).NonAdaptationReturnsJson__c);
                       if(Type0Map.get(i).NonAdaptationReturnsJson__c != null){
                         MapType0  = (Map<String,Object>)JSON.deserializeUntyped(Type0Map.get(i).NonAdaptationReturnsJson__c); 
                       }  
+                      System.debug(MapType0);
                   }
                   if(Type1Map.size() > 0 && Type1Map.containsKey(i)){
+                       System.debug(Type1Map.get(i).NonAdaptationReturnsJson__c);
                       if(Type1Map.get(i).NonAdaptationReturnsJson__c != null){
                         MapType1  = (Map<String,Object>)JSON.deserializeUntyped(Type1Map.get(i).NonAdaptationReturnsJson__c); 
                       }  
+                      System.debug(MapType1);
                   }
                   //Combine both Type0 and Type1 to single Map
                   if(MapType0.size() > 0 || MapType1.size() > 0){
                       for(String lens0Type : MapType0.keySet()){
                           Integer qty = (Integer)MapType0.get(lens0Type);
                           if(MapType1.size() > 0 && MapType1.containsKey(lens0Type)){
-                              qty += (Integer)MapType1.get(lens0Type);
+                              qty += Integer.valueOf(MapType1.get(lens0Type));
                           }
                           nonAdaptationMap.put(lens0Type,qty);
 					  }
                       for(String lens1Type : MapType1.keySet()){
-                          if(nonAdaptationMap.size() > 0 && !nonAdaptationMap.containsKey(lens1Type)){
-                               nonAdaptationMap.put(lens1Type,(Integer)MapType1.get(lens1Type));
+                          if(nonAdaptationMap.size() == 0 || (nonAdaptationMap.size() > 0 && !nonAdaptationMap.containsKey(lens1Type))){
+                               nonAdaptationMap.put(lens1Type,Integer.valueOf(MapType1.get(lens1Type)));
                           }                       
                       }
                   }
-                  nonAdaptationMonthlyMap.put(i,nonAdaptationMap);
+                  System.debug(nonAdaptationMap);
+                  nonAdaptationMonthlyMap.put(i,nonAdaptationMap);                  
               }
         }        
+        System.debug(nonAdaptationMonthlyMap);
         return nonAdaptationMonthlyMap;
     }
     public static List<nonAdaptationWrapper> getNonAdaptationJson(Map<Integer,Map<String,Integer>> CYMap,Map<Integer,Map<String,Integer>> LYMap,List<String> monthNoList){
@@ -873,6 +881,7 @@ public with sharing class TabStatisticsController {
                 }                
             }
         }
+        System.debug(lensQtyMap);
         List<sortNonAdaptationWrapper> sortWrapperList = new List<sortNonAdaptationWrapper>();
         if(lensQtyMap.size() > 0){
             for(string key: lensQtyMap.keyset())

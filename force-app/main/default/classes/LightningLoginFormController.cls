@@ -24,6 +24,8 @@ global class LightningLoginFormController {
     // properties to build urls
     public static String helpURL;
     public static String contactURL;
+    public static String privacyPolicyURL;
+    public static String termsConditionsURL;
     public static String noAccountURL;
     public static String recoveryUrl;
 
@@ -172,7 +174,7 @@ global class LightningLoginFormController {
             urlsAndLabels.noAccountUrl = noAccountURL + language + mapCommunityLabel.get(language).No_Account_URL__c;
             urlsAndLabels.recoveryUrl = recoveryUrl + '?lang=' + language;
                 //BP
-            urlsAndLabels.instanceUrl = mapCommunityLabel.get(language).InstanceUrl__c;
+            //urlsAndLabels.instanceUrl = mapCommunityLabel.get(language).InstanceUrl__c;
             // SEIKO LABELS
             urlsAndLabels.descriptionSeiko = mapCommunityLabel.get(language).Label_Seiko_Login__c;
         }else{
@@ -194,7 +196,7 @@ global class LightningLoginFormController {
             urlsAndLabels.noAccountUrl = noAccountURL + language + mapCommunityLabel.get('en-us').No_Account_URL__c;
             urlsAndLabels.recoveryUrl = recoveryUrl + '?lang=' + language;
                 //BP
-                urlsAndLabels.instanceUrl = mapCommunityLabel.get('en-us').InstanceUrl__c;
+                //urlsAndLabels.instanceUrl = mapCommunityLabel.get('en-us').InstanceUrl__c;
             // SEIKO LABELS
             urlsAndLabels.descriptionSeiko = mapCommunityLabel.get('en-us').Label_Seiko_Login__c;
         }
@@ -203,21 +205,41 @@ global class LightningLoginFormController {
         return urlsJson;
     }
 
+    // Method gets base URL based on current Environment and Brand
     private static void getURL(String environment, String brand){
         System.debug('Inside getURL++'+ environment);
         System.debug('Inside getURL++'+ brand);
         String recoverySeiko = mapCommunitySettings.get('Seiko_My_account').value__c;
         if(environment == 'build'){
-            helpURL = contactUrl = noAccountURL = mapCommunitySettings.get('Portal_BUILD_INTE').value__c;
+            if (brand == 'seiko') {
+                helpURL = contactUrl = noAccountURL = privacyPolicyURL = termsConditionsURL = mapCommunitySettings.get('Portal_PROD_SEIKO').value__c;
+            } else {
+                helpURL = contactUrl = noAccountURL = mapCommunitySettings.get('Portal_BUILD_INTE').value__c;
+            }
             recoveryUrl = brand == 'hoya' ? mapCommunitySettings.get('Account_Recovery_BUILD').value__c : recoverySeiko.replace('{ENV}', environment) + 'accountrecovery';
+
         }else if(environment == 'main'){
-            helpURL = contactUrl = noAccountURL = mapCommunitySettings.get('Portal_BUILD_MAIN').value__c;
+            if (brand == 'seiko') {
+                helpURL = contactUrl = noAccountURL = privacyPolicyURL = termsConditionsURL = mapCommunitySettings.get('Portal_PROD_SEIKO').value__c;
+            } else {
+                helpURL = contactUrl = noAccountURL = mapCommunitySettings.get('Portal_BUILD_MAIN').value__c;
+            }   
             recoveryUrl = brand == 'hoya' ? mapCommunitySettings.get('Account_Recovery_MAIN').value__c : recoverySeiko.replace('{ENV}', environment) + 'accountrecovery';
+
         }else if(environment == 'uat'){
-            helpURL = contactUrl = noAccountURL = mapCommunitySettings.get('Portal_UAT_PREP').value__c;
+            if (brand == 'seiko') {
+                helpURL = contactUrl = noAccountURL = privacyPolicyURL = termsConditionsURL = mapCommunitySettings.get('Portal_PROD_SEIKO').value__c;
+            } else {
+                helpURL = contactUrl = noAccountURL = mapCommunitySettings.get('Portal_UAT_PREP').value__c;
+            }
             recoveryUrl = brand == 'hoya' ? mapCommunitySettings.get('Account_Recovery_UAT').value__c : recoverySeiko.replace('{ENV}', environment) + 'accountrecovery';
+
         }else{
-            helpURL = contactUrl = noAccountURL = mapCommunitySettings.get('Portal_PROD').value__c;
+            if (brand == 'seiko') {
+                helpURL = contactUrl = noAccountURL = privacyPolicyURL = termsConditionsURL = mapCommunitySettings.get('Portal_PROD_SEIKO').value__c;
+            } else {
+                helpURL = contactUrl = noAccountURL = mapCommunitySettings.get('Portal_PROD').value__c;
+            }
             recoveryUrl = brand == 'hoya' ? mapCommunitySettings.get('Account_Recovery_PROD').value__c : recoverySeiko.replace('{ENV}-', '') + 'accountrecovery';       
         }
     }

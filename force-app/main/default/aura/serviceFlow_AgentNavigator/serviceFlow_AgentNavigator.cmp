@@ -139,13 +139,13 @@
                 <br />
                 
                 <lightning:buttonGroup class="slds-align_absolute-center">
-                    <lightning:button label="{!$Label.c.serviceFlow_Case}" onclick="{!c.createCase}" variant="brand"
-                                      />&nbsp; &nbsp;
-                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
                     <lightning:button label="{!$Label.c.serviceFlow_Call}" onclick="{!c.validateCall}" variant="brand"
                                       />&nbsp; &nbsp;
                     &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
                     <lightning:button label="{!$Label.c.serviceFlow_Task}" onclick="{!c.createTask}" variant="brand"
+                                      />&nbsp; &nbsp;
+                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 
+                    <lightning:button label="{!$Label.c.serviceFlow_Case}" onclick="{!c.createCase}" variant="brand"
                                       />
                 </lightning:buttonGroup>
             </lightning:recordEditForm>

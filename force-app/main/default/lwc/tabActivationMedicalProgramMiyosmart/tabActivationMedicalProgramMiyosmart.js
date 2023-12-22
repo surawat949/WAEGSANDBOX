@@ -13,8 +13,11 @@ import Monthly_Children_Patients__c from '@salesforce/schema/Last_Sales_Statisti
 import Monthly_Myopia_Control_Pairs_Sold__c from '@salesforce/schema/Last_Sales_Statistics__c.Monthly_Myopia_Control_Pairs_Sold__c'; 
 import Miyosmart_vs_Myopia_Control__c from '@salesforce/schema/Last_Sales_Statistics__c.Miyosmart_vs_Myopia_Control__c'; 
 import Miyosmart_vs_Children_Patients_L3Mo__c from '@salesforce/schema/Last_Sales_Statistics__c.Miyosmart_vs_Children_Patients_L3Mo__c'; 
+//import label start here
 import IsMiyoSmartTrainingCompleted from '@salesforce/label/c.MiyoSmartTrainingComplete';
 import LastMiyoSmartTrainingDate from '@salesforce/label/c.LastMiyoSmartDate';
+import LabelCancel from '@salesforce/label/c.ButtonCancel';
+import LabelSave from '@salesforce/label/c.Save_Button';
 
 //apex
 import getLastSalesStats from '@salesforce/apex/TabActivationMPMiyosmart.getLastSalesStats';
@@ -51,7 +54,8 @@ export default class TabActivationMedicalProgramMiyosmart extends LightningEleme
 
     label={
             MiyosmartAuthorizedDealers,
-            IsMiyoSmartTrainingCompleted,LastMiyoSmartTrainingDate
+            IsMiyoSmartTrainingCompleted,LastMiyoSmartTrainingDate,
+            LabelCancel, LabelSave
     }
   
     

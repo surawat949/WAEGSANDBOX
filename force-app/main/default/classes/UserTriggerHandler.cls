@@ -49,10 +49,11 @@ public class UserTriggerHandler {
             conIds.add(user.ContactId);
         }
         
-        Map<Id, Contact> conCanadaMap = new Map<Id, Contact>([select Id, Hoya_Account_Id__c from Contact where Id IN :conIds]);
+        Map<Id, Contact> conCanadaMap = new Map<Id, Contact>([select Id, Hoya_Account_Id__c,AccountId from Contact where Id IN :conIds]);
         for (User user : newObjects) {
             if (user.ContactId != null && conCanadaMap.get(user.ContactId) != null) {
                 user.Hoya_Account_ID__c = conCanadaMap.get(user.ContactId).Hoya_Account_Id__c;
+                user.Account_ID__c = conCanadaMap.get(user.ContactId).AccountId;
             }
         }
 

@@ -101,7 +101,7 @@ public with sharing class tabAIIndicatorsController {
                     }
                 }
                 else{
-                    wrapper.satisfactionFlag = 'GREY';
+                    wrapper.satisfactionFlag = 'GREEN';
                     
                     wrapper.satisfactionFlagMeaning = System.Label.get('', 'Satisfaction06', userLanguage); 
                 }
@@ -391,11 +391,11 @@ public with sharing class tabAIIndicatorsController {
                 }
                 else{
                     if(!statsList.isEmpty() && statsList[0].Total_Returns_L12Mo__c > 0){
-                        wrapper.returnsFlag = 'GREYALERT';  
+                        wrapper.returnsFlag = 'GREENALERT';  
                         wrapper.returnsFlagMeaning = System.Label.get('', 'Returns07', userLanguage);
                     }
                     else{
-                        wrapper.returnsFlag = 'GREY'; 
+                        wrapper.returnsFlag = 'GREEN'; 
                         wrapper.returnsFlagMeaning = System.Label.get('', 'Returns08', userLanguage);                      
                     }
                 }
@@ -459,7 +459,7 @@ public with sharing class tabAIIndicatorsController {
                         }
                     }
                     else{
-                        wrapper.deliveriesFlag = 'GREY';
+                        wrapper.deliveriesFlag = 'GREEN';
                         wrapper.deliveriesFlagMeaning= System.Label.get('', 'Deliveries12', userLanguage);
                     }                
                 }

@@ -1,6 +1,9 @@
 import { LightningElement ,api} from 'lwc';
 //Custom Labels
 import system_information from '@salesforce/label/c.tabAccSystemInfo';
+import createdBy from '@salesforce/label/c.Created_By';
+import lastModifiedBy from '@salesforce/label/c.Last_Modified_By';
+import contactOwner from '@salesforce/label/c.Contact_Owner';
 //Object
 import Contact_obj from '@salesforce/schema/Contact';
 //Fields
@@ -18,7 +21,7 @@ export default class TabContactSystem extends LightningElement {
     @api receivedId;
     Contact_Obj=Contact_obj;
     custLabel = {   
-        system_information
+        system_information,createdBy,lastModifiedBy,contactOwner
     }
     //fields = [CreatedBy,CreatedDate,LastModifiedBy,LastModifiedDate,HoyaAccId,Owner,brand,OwnerCompany];
     createdBy = [CreatedBy];

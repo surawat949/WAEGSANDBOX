@@ -182,17 +182,29 @@ public with sharing class tabAccountAddressLWCController {
         }
         return returnList;
     }
-    
-    // Method to fetch lookup default value 
+
     @AuraEnabled(cacheable=true)
-    public static sObject searchDefaultRecord(string recordId , string sObjectApiName) {
-        string sRecId = recordId;    
-        string sQuery = 'Select Id,Name,Hoya_Account_ID__c From ' + sObjectApiName + ' Where Id = : sRecId LIMIT 1';
-        for (sObject obj: database.query(sQuery)) {
+    public static List<sObject> searchLookupAccountData(String searchKey, String sObjectApiName, String recordId){
+        List<sObject> returnList = new List<sObject>();
+        String sWildCardText = '%'+searchKey+'%';
+        String sRecId = recordId;
+        String sQuery = 'SELECT Id, Hoya_Account_ID__c, Name FROM '+sObjectApiName + ' WHERE Name LIKE : sWildCardText AND Id=:recordId ORDER BY Name ASC LIMIT 100';
+        for(sObject obj : database.query(sQuery)){
+            returnList.add(obj);
+        }
+        return returnList;
+    }
+
+    @AuraEnabled(cacheable=true)
+    public static sObject searchLookupAccountDefaultRecordData(String recordId, String sObjectApiName){
+        String sRecId = recordId;
+        String sQuery = 'SELECT Id, Hoya_Account_ID__c, Name FROM '+sObjectApiName+' WHERE Id=:sRecId LIMIT 1';
+        for(sObject obj : database.query(sQuery)){
             return obj;
         }
         return null;
     }
+    
 
     /**Add this class for contact id string */
     @AuraEnabled(cacheable=true)

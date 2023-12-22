@@ -18,9 +18,12 @@
                                 <abbr class="slds-required" title="required">*</abbr>
                                 {labelRelatedTo}
                             </label>
-                        <c-custom-lookup icon-name="standard:account" s-object-api-name="account" label="" id="form-input-0"
+                        <!--<c-custom-lookup icon-name="standard:account" s-object-api-name="account" label="" id="form-input-0"
                             onlookupupdate={handleLookupSelectionWhatId} placeholder="...Search Account..." default-record-id={receivedId} record-criteria=" AND Hoya_Account_ID__c!=''">
-                        </c-custom-lookup>
+                        </c-custom-lookup>-->
+                        <c-search-lookup-account icon-name="standard:account" s-object-api-name="account" label="" id="form-input-0" disabled="true" data-my-id="form-input-0"
+                            onlookupupdate={handleLookupSelectionWhatId} placeholder="...Search Account..." default-record-id={receivedId} received-id={receivedId}>
+                        </c-search-lookup-account>
                         </span>
                     </div>
                 </div>

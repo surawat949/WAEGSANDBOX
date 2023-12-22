@@ -3,4 +3,8 @@
     <aura:attribute name="helpLabel" type="String"/>
     <aura:attribute name="contactUrl" type="String"/>
     <aura:attribute name="helpUrl" type="String"/>
+    <aura:attribute name="privacyUrl" type="String" />
+    <aura:attribute name="termofuseUrl" type="String" />
+    <aura:attribute name="helpUrlSeiko" type="String" />
+    <aura:attribute name="contactUsSeiko" type="String" />
 </aura:event>

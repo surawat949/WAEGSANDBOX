@@ -4,7 +4,6 @@ import Contact_obj from '@salesforce/schema/Contact';
 import Name from '@salesforce/schema/Contact.Name';
 import ReportsTo from '@salesforce/schema/Contact.ReportsToId';
 import RecordType from '@salesforce/schema/Contact.RecordTypeId';
-//import ProfessionalTitle from '@salesforce/schema/Contact.Professional_Title__c';
 import Influence from  '@salesforce/schema/Contact.Influence__c';
 import Education from '@salesforce/schema/Contact.Education__c';
 import DecisionPower from  '@salesforce/schema/Contact.Decision_Power__c';
@@ -30,7 +29,6 @@ export default class TabContactDetails extends LightningElement {
     name = [Name];
     reportsTo =[ReportsTo];
     recordType=[RecordType];
-    //title = [ProfessionalTitle];
     influence=[Influence];
     education = [Education];
     decisionPower = [DecisionPower];

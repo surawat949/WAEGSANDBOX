@@ -1,6 +1,6 @@
 <template>
     <div class="slds-box slds-p-around_none slds-m-horizontal_none">
-        <table class=" slds-table slds-table_bordered" aria-label="ContactSystem" style="background-color: #215ca0;">
+        <table class=" slds-table slds-table_bordered" aria-label="Contact System" style="background-color: #215ca0;">
             <tr class="row" style="background-color: #aacbff;">
                 <td>
                     <h3 class="slds-section__title  test-id__section-header-container" data-aura-rendered-by="344:1408;a">
@@ -13,7 +13,7 @@
             <lightning-record-view-form record-id={receivedId} object-api-name={Contact_Obj}>
                 <div class="slds-grid">
                     <div class="slds-col slds-size_1-of-2">
-                        <label class="slds-form-element__label" for="createdBy">Created By</label>
+                        <label class="slds-form-element__label" for="createdBy">{custLabel.createdBy}</label>
                         <lightning-output-field id="createdBy" field-name="CreatedById" variant="label-hidden"> </lightning-output-field>
                     </div>
                     <div class="slds-col slds-size_1-of-2">
@@ -22,7 +22,7 @@
                 </div>
                 <div class="slds-grid">
                     <div class="slds-col slds-size_1-of-2">
-                        <label class="slds-form-element__label" for="modifiedBy">Last Modified By</label>
+                        <label class="slds-form-element__label" for="modifiedBy">{custLabel.lastModifiedBy}</label>
                         <lightning-output-field id="modifiedBy" field-name="LastModifiedById" variant="label-hidden"> </lightning-output-field>
                     </div>
                     <div class="slds-col slds-size_1-of-2">
@@ -34,7 +34,7 @@
                         <lightning-output-field field-name="Hoya_Account_Id__c"> </lightning-output-field>
                     </div>
                     <div class="slds-col slds-size_1-of-2">   
-                        <label class="slds-form-element__label" for="owner">Contact Owner</label>
+                        <label class="slds-form-element__label" for="owner">{custLabel.contactOwner}</label>
                         <lightning-output-field id="owner" field-name="OwnerId" variant="label-hidden"> </lightning-output-field>
                     </div>
                 </div>

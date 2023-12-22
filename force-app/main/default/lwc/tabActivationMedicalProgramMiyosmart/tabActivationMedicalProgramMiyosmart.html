@@ -104,8 +104,8 @@
                                 <tr class="row">
                                     <td class="cell">
                                         <br>
-                                        <lightning-button label="Cancel" variant="netural" title="Cancel" onclick={handleGobackMiopia}></lightning-button>&nbsp;&nbsp;
-                                        <lightning-button label="Save" variant="brand" title="Save" onclick={handleUpdateMainMyopiaControl}></lightning-button>
+                                        <lightning-button label={label.LabelCancel} variant="netural" title={label.LabelCancel} onclick={handleGobackMiopia}></lightning-button>&nbsp;&nbsp;
+                                        <lightning-button label={label.LabelSave} variant="brand" title={label.LabelSave} onclick={handleUpdateMainMyopiaControl}></lightning-button>
                                     </td>
                                 </tr>
                             </table>
@@ -128,7 +128,4 @@
              </lightning-layout-item>
         </lightning-layout>
     </div>
-  
-
-
 </template>

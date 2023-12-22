@@ -34,7 +34,7 @@ public with sharing class LightningLoginFormControllerTest {
     @IsTest
     static void testLoginWithInvalidCredentials() {
         Map<String,Community_label_settings__mdt> mapCommunityLabel = LightningLoginFormController.mapCommunityLabel;
-        System.assertEquals('Use a Service Provider to login.', LightningLoginFormController.login('testUser', 'fakepwd', '', 'en-us'));
+        System.assertEquals('Please use the address of the solution you are willing to access like hoyavisionhub.com instead of the address of this login page', LightningLoginFormController.login('testUser', 'fakepwd', '', 'en-us'));
         System.assertEquals('Please fill your credentials to login.', LightningLoginFormController.login('testUser', null, 'apex/WSFederation', 'en-us'));
         System.assertEquals('Utilizzare un Fornitore di Servizi per accedere.', LightningLoginFormController.login('testUser', null, '', 'it-it'));
         System.assertEquals('Inserisci le tue credenziali per accedere.', LightningLoginFormController.login('testUser', null, 'apex/WSFederation', 'it-it'));
@@ -59,7 +59,7 @@ public with sharing class LightningLoginFormControllerTest {
             AccountId = acc.Id,
             FirstName = 'John',
             LastName = 'Contact'
-            
+
         );
         insert ct;
         User u = new User();
@@ -70,14 +70,14 @@ public with sharing class LightningLoginFormControllerTest {
         u.Username = u.Email;
         u.CommunityNickname = u.Alias;
         u.contactId = ct.Id;
-        u.ProfileId = [select Id 
+        u.ProfileId = [select Id
                         from Profile
                         where Name = 'Customer Community Plus User + API'][0].Id;
         u.TimeZoneSidKey = 'America/Chicago';
         u.LocaleSidKey = 'en_US';
         u.EmailEncodingKey = 'UTF-8';
         u.LanguageLocaleKey = 'en_US';
-        insert u; 
+        insert u;
         GARequestWrapper wrapper = new GARequestWrapper(ct, 'login', 'auportal');
         GARequestWrapper wrapperUsr = new GARequestWrapper(u, 'login', 'auportal');
         LightningLoginFormController.sendEventToGA('', 'www.abc.com', 'login', ct.Id);
@@ -92,5 +92,5 @@ public with sharing class LightningLoginFormControllerTest {
         LightningLoginFormController.getSolutionFromURL('www.customer.redhab.com');
         LightningLoginFormController.getSolutionFromURL('www.eservices.hoya.fr');
     }
-    
+
 }

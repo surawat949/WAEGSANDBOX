@@ -1,4 +1,6 @@
 import { LightningElement ,api} from 'lwc';
+//Custom Labels
+import contactFollowUp from '@salesforce/label/c.Contact_FollowUp';
 //Object
 import Contact_obj from '@salesforce/schema/Contact';
 //fileds
@@ -11,4 +13,5 @@ export default class TabContactVisits extends LightningElement {
  Contact_Obj = Contact_obj;
  fields=[visitDate];
  fields2 = [totalVisits, digitalVisits, directVisits]
+ custLabel={contactFollowUp}
 }

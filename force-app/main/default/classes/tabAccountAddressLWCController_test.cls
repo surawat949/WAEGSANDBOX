@@ -101,7 +101,7 @@ public with sharing class tabAccountAddressLWCController_test {
         tabAccountAddressLWCController.getContactsRelatedAccount(acc.Id);
         tabAccountAddressLWCController.getConCount(acc.Id);
         tabAccountAddressLWCController.UpdateAccountEmail(acc.Id);
-        tabAccountAddressLWCController.searchDefaultRecord(acc.Id, 'Account');
+        //tabAccountAddressLWCController.searchDefaultRecord(acc.Id, 'Account'); **CLASS WAS REMOVED**
         tabAccountAddressLWCController.getContactId(acc.Id);
         tabAccountAddressLWCController.getContactRecordTypeDescribe();
         tabAccountAddressLWCController.getContactRecordTypeDescribeNotIn();
@@ -116,7 +116,9 @@ public with sharing class tabAccountAddressLWCController_test {
         tabAccountAddressLWCController.createTask('Test', acc.Id, 'this is a test', u.Id, duedate, 'Not Start', con.Id, u.Id, acc.Id);
         tabAccountAddressLWCController.createNewContact(acc.Id, 'Mr.', 'testx', 'testy', 'this is a test', conRecType, 'Optician', '9876533', '83373722', 'test@hotmail.com', at.Id, false, true, true);
         tabAccountAddressLWCController.searchLookupData('TEST', 'Contact', ' AND Account.Hoya_Account_ID__c !=null', acc.Id);
-        
+        tabAccountAddressLWCController.searchLookupAccountData('test', 'Account', acc.Id);
+        tabAccountAddressLWCController.searchLookupAccountDefaultRecordData(acc.Id, 'Account');
+
         List<String> newList = new List<String>();
         newList.add('Id');
         newList.add('Name');
@@ -141,12 +143,12 @@ public with sharing class tabAccountAddressLWCController_test {
         }catch(Exception e){
             System.assertEquals(e.getMessage(), e.getMessage());
         }
-
-        try{
+        /*
+        try{**CLASS WAS REMOVED | THIS CLASS NO NEED ANYMORE**
             tabAccountAddressLWCController.searchDefaultRecord(null,'Account');
         }catch(Exception e){
             System.assertEquals(e.getMessage(), e.getMessage());
-        }
+        }*/
 
         //System.assert(false);
 

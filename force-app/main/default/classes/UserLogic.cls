@@ -182,20 +182,4 @@ public with sharing class UserLogic {
         }
     }
     
-    public static void updateHoyaAccountIdBeforeInsert(List<User> newObjects){
-        List<User> userToUpdate = new List<User>();
-        List<Id> conIds = new List<Id>();
-        
-        for(User user : newObjects){
-            conIds.add(user.ContactId);
-        }
-        
-        Map<Id, Contact> conCanadaMap = new Map<Id, Contact>([select Id, Hoya_Account_Id__c,AccountId, Legacy_Account_Number__c from Contact where Id IN :conIds]);
-        for (User user : newObjects) {
-            if (user.ContactId != null && conCanadaMap.get(user.ContactId) != null) {
-                user.Hoya_Account_ID__c = conCanadaMap.get(user.ContactId).Hoya_Account_Id__c;
-            }
-        }
-
-    }
 }

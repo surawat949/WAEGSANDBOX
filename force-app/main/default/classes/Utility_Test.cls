@@ -20,7 +20,7 @@ public with sharing class Utility_Test {
         Utility.sendEmailWithTemplate('New_Employee_Registration', con.Id, 'test@test.com');
         Test.stopTest();
     }
-    
+
     public static testmethod void testMetadata() {
         Test.startTest();
         Map<String, Community_label_settings__mdt> map1 = Utility.getCommunitiesLabel();
