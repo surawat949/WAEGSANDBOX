@@ -54,7 +54,7 @@ public with sharing class pss_ContactTriggerHelper
             List<Id> authorListId = new List<Id>();
             String CtOwnerRecId = [select Id, Name from RecordType where sObjectType='Contact' and DeveloperName='Shop_Owner'].Id;
             for(Contact c : newList){
-                if(c.Hoya_Account_Id__c.startsWith('KR') && c.RecordTypeId==CtOwnerRecId){
+                if(c.Hoya_Account_Id__c != null && c.Hoya_Account_Id__c.startsWith('KR') && c.RecordTypeId==CtOwnerRecId){
                     List<Account_Template__c> holktmpList = [select Id, Name from Account_Template__c where Account__c=:c.AccountId];
                     System.debug('Found for account template record '+holktmpList.size()+' record.');
                     if(holktmpList.size()==0){
@@ -94,7 +94,7 @@ public with sharing class pss_ContactTriggerHelper
             List<Id> atTemplate = new List<Id>();
             String ownerRecId = [select Id, Name from RecordType where sObjectType='Contact' and DeveloperName='Shop_Owner'].Id;
             for(Contact c : newList){
-                if(c.Hoya_Account_Id__c.startsWith('KR') && c.RecordTypeId==ownerRecId){
+                if(c.Hoya_Account_Id__c != null && c.Hoya_Account_Id__c.startsWith('KR') && c.RecordTypeId==ownerRecId){
                     ctId.add(c.Id);
                     ctAccId.add(c.AccountId);
                 }

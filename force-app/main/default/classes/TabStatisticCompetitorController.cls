@@ -7,12 +7,14 @@ public with sharing class TabStatisticCompetitorController {
      * @Email : surawat.sakulmontreechai@hoya.com
      * @CreatedDate : 2023-09-04
      * @CreatedBy : Surawat Sakulmontreechai
-     * @LastmodifiedDate : -
+     * @LastmodifiedDate : 2024-01-18
      * @LastmodifiedBy : Surawat Sakulmontreechai
      * @version : 1.0
      * @apiVersion : via api 55.0
      * @description : This class support for LWC - in global competitor #Task-731 - SFDC V.2.0 Project
      */
+
+    private static final String Task_Status_SFDC_V2 = Schema.SObjectType.Task.getRecordTypeInfosByDeveloperName().get('SFDC_V2_Standard_Task').getRecordTypeId();
 
     @AuraEnabled(cacheable=true)
     public static sObject searchDefaultRecord(string recordId, string sObjectApiName){
@@ -96,7 +98,7 @@ public with sharing class TabStatisticCompetitorController {
                 List<Account> updSecondCompetitor = new List<Account>();
                 List<Account> newGlobalCompetitor = new List<Account>([SELECT First_Competitor_Local_Name__c, First_Competitor_Global_Name__c, Second_Competitor_global_name__c, Second_Competitor_Local_Name__c FROM Account WHERE Id=:recordId]);
                 for(Account a : newGlobalCompetitor){
-                    System.debug('Key = > '+MapGlobalCompetitor);
+                    //System.debug('Key = > '+MapGlobalCompetitor);
                     if(!MapGlobalCompetitor.isEmpty() && String.isNotBlank(a.First_Competitor_Local_Name__c)){
                         String key = a.First_Competitor_Local_Name__c;
                         String FirstGlobalCompetitor = MapGlobalCompetitor.get(key);
@@ -135,7 +137,7 @@ public with sharing class TabStatisticCompetitorController {
                 }
 
                 for(Account a : newGlobalCompetitor){
-                    System.debug('2nd key=>'+MapSecondCompetitor);
+                    //System.debug('2nd key=>'+MapSecondCompetitor);
                     if(!MapSecondCompetitor.isEmpty() && String.isNotBlank(a.Second_Competitor_Local_Name__c)){
                         String key = a.Second_Competitor_Local_Name__c;
                         String SecondCompetitor = MapSecondCompetitor.get(key);
@@ -157,7 +159,7 @@ public with sharing class TabStatisticCompetitorController {
             }
 
         } catch (Exception e) {
-            LogException.log(e);
+            //LogException.log(e);
             throw new AuraHandledException(e.getMessage());
         }
     }
@@ -197,7 +199,7 @@ public with sharing class TabStatisticCompetitorController {
             //System.debug(FirstCompetitorLocalName);
             return FirstCompetitorLocalName;
         } catch (Exception e) {
-            LogException.log(e);
+            //LogException.log(e);
             throw new AuraHandledException(e.getMessage());
         }
     }
@@ -208,7 +210,7 @@ public with sharing class TabStatisticCompetitorController {
             String SecondCompetitorLocalName = [SELECT Id, Second_Competitor_Local_Name__c FROM Account WHERE Id=:recordId].Second_Competitor_Local_Name__c;
             return SecondCompetitorLocalName;
         } catch (Exception e) {
-            LogException.log(e);
+            //LogException.log(e);
             throw new AuraHandledException(e.getMessage());
         }
     }
@@ -217,10 +219,10 @@ public with sharing class TabStatisticCompetitorController {
     public static double getFirstCompetitorSOW(String recordId){
         try {
             Double FirstComp = [SELECT First_Competitor_SOW_Last_3_Month__c FROM Last_Sales_Statistics__c WHERE Account__c=:recordId].First_Competitor_SOW_Last_3_Month__c;
-            System.debug(FirstComp);
+            //System.debug(FirstComp);
             return FirstComp;
         } catch (Exception e) {
-            LogException.log(e);
+            //LogException.log(e);
             throw new AuraHandledException(e.getMessage());
         }
     }
@@ -228,7 +230,7 @@ public with sharing class TabStatisticCompetitorController {
     @AuraEnabled(cacheable=false)
     public static void CreateNewCompetitorReq(String subject, String Instruction, String assignto, Date duedate, String sStatus, String accountName){
         try {
-            String StandardHoyatask = Schema.SObjectType.Task.getRecordTypeInfosByDeveloperName().get('Standard_New').getRecordTypeId();
+            String StandardHoyatask = Schema.SObjectType.Task.getRecordTypeInfosByDeveloperName().get('SFDC_V2_Standard_Task').getRecordTypeId();
             Task t = new Task(
                 Subject = subject,
                 Instructions__c = Instruction,
@@ -242,7 +244,7 @@ public with sharing class TabStatisticCompetitorController {
             );
             insert t;
         } catch (Exception e) {
-            LogException.log(e);
+            //LogException.log(e);
             throw new AuraHandledException(e.getMessage());
         }
     }
@@ -274,4 +276,5 @@ public with sharing class TabStatisticCompetitorController {
         }
         return returnList;
     }
+
 }

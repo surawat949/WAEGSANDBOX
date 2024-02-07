@@ -19,7 +19,6 @@ import ANNUAL_GROWTH_PREVIOUS_YEAR from '@salesforce/schema/Store_Characteristic
 import mirgrateLastYearToPrev from '@salesforce/apex/tabActivationBusiProgStoreInfoController.migrateLastYearToPreYear';
 import getStoredPictureAccountRec from '@salesforce/apex/tabActivationBusiProgStoreInfoController.getStoredPictures';
 import getStoreCharId from '@salesforce/apex/tabActivationBusiProgStoreInfoController.getStoreId';
-import NAME from '@salesforce/schema/Store_Characteristics__c.Name';
 import label_viewall from '@salesforce/label/c.ViewAllRelatedList';
 import label_new from '@salesforce/label/c.NewButtonRelatedList';
 import label_storeCharacter from '@salesforce/label/c.StoreCharacteristic';
@@ -28,8 +27,6 @@ import label_storeRelatedPicture from '@salesforce/label/c.StoreRelatedPictures'
 import label_mirgrateLastYear from '@salesforce/label/c.MigrateLastYeartoPrevious';
 import label_mirgrateSucessfully from '@salesforce/label/c.MirgateSucessfully';
 import { NavigationMixin } from 'lightning/navigation';
-import { executeQuery } from 'lightning/analyticsWaveApi';
-import { refreshApex } from '@salesforce/apex';
 import { subscribe, unsubscribe, onError } from 'lightning/empApi';
 import { encodeDefaultFieldValues } from "lightning/pageReferenceUtils";
 
@@ -54,8 +51,8 @@ export default class TabActivationBusinessProgramStoreInfo extends  NavigationMi
     storePerformanceFields=[LAST_YEAR_REFERENCE,RETAIL_LAST_YEAR,ANNUAL_GROWTH_LAST_YEAR,PREVIOUS_YEAR_REFERENCE,RETAIL_PREVIOUS_YEAR,ANNUAL_GROWTH_PREVIOUS_YEAR];
     isShowNewButton=false;
     @track columns = [
-        {   label: 'Date',
-            fieldName: 'Date__c',
+        {   label: 'Created Date',
+            fieldName: 'CreatedDate',
             type: 'text',
             sortable: true
         },
@@ -99,7 +96,8 @@ export default class TabActivationBusinessProgramStoreInfo extends  NavigationMi
            this.handleRerender();
         })
         .catch(error =>{
-        console.log('>>>>error',error.body.message);
+        this.showToast('Success', 'Success', error.body.message);
+
         })
     }   
     //show hide spinner
@@ -138,14 +136,13 @@ export default class TabActivationBusinessProgramStoreInfo extends  NavigationMi
                     this.pictureList.forEach(res=>{
                         res.picLink = '/' + res.Id;
                         res.CreatedByName=res.CreatedBy.Name;
+						res.CreatedDate = this.formattedDate(res.CreatedDate);
                     });
                     this.pictureList = [...this.pictureList].splice(0,5);
                     this.isShowDataTable= true; 
                 }
                 else{
                     this.pictureCount='0';
-                    console.log('>>>',this.pictureCount);
-
                 }
                 }else{
 
@@ -154,6 +151,11 @@ export default class TabActivationBusinessProgramStoreInfo extends  NavigationMi
                 }
             });
         }  
+		formattedDate(dateString) {
+            const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+            const originalDate = new Date(dateString);
+            return originalDate.toLocaleDateString(undefined, options);
+        }
         refreshList = ()=> {
             this.getStoredPictureAccountRec();
             this.getStoreCharId();

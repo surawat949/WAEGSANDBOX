@@ -7,21 +7,18 @@ public with sharing class AccountSalesStatisticsController_test {
         Account acc = new Account();
         acc.Name='sales test account';
         acc.hoya_account_id__c='SO3399999xx';
-        acc.RecordTypeId='012b00000000P38';
         
         insert acc;
         
         Account acc1 = new Account();
         acc1.Name='sales test Germany account';
         acc1.hoya_account_id__c='SO4900999xx';
-        acc1.RecordTypeId='012b00000000P38';
         
         insert acc1;
         
         Account Childacc = new Account();
         Childacc.Name='sales test child account';
         Childacc.hoya_account_id__c='SO3399998xx';
-        Childacc.RecordTypeId='012b00000000P38';
 		Childacc.parentId=acc.Id;
             
         insert Childacc; 

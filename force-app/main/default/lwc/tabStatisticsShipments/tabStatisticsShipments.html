@@ -2,28 +2,28 @@
     <div class="slds-box slds-p-around_none slds-var-m-top_x-small slds-var-m-bottom_medium slds-m-horizontal_none">
         <table class="slds-table slds-table_bordered " aria-label="Ordering Habits">
             <tr data-id="header1" class="row" style="background-color: #aacbff;">
-                <td><h3 class="slds-section__title">Ordering Habits (Last 3Mo)</h3></td>
+                <td><h3 class="slds-section__title">{custLabel.OrderingHabits}</h3></td>
             </tr>
         </table><br>
         <div class="slds-var-p-left_x-small slds-grid slds-gutters">
             <div class="slds-col slds-size_4-of-12"><span><label class="slds-form-element__label">Manual Orders</label></span></div>
             <div class="slds-col slds-size_2-of-12"><span><lightning-formatted-number value={ManualOrders} maximum-fraction-digits="1"></lightning-formatted-number>  %</span></div>
             
-            <div class="slds-col slds-size_4-of-12"><span><label class="slds-form-element__label">Real Shape Precal</label></span></div>
+            <div class="slds-col slds-size_4-of-12"><span><label class="slds-form-element__label">Real Shape METS</label></span></div>
             <div class="slds-col slds-size_2-of-12"><span><lightning-formatted-number value={RealShapePrecal} maximum-fraction-digits="1"></lightning-formatted-number>  %</span></div>
         </div>
         <div class="slds-var-p-left_x-small slds-grid slds-gutters">
             <div class="slds-col slds-size_4-of-12"><span><label class="slds-form-element__label">HVC Systems</label></span></div>
             <div class="slds-col slds-size_2-of-12"><span><lightning-formatted-number value={HVCSystems} maximum-fraction-digits="1"></lightning-formatted-number>  %</span></div>
             
-            <div class="slds-col slds-size_4-of-12"><span><label class="slds-form-element__label">Standard Shape Precal</label></span></div>
+            <div class="slds-col slds-size_4-of-12"><span><label class="slds-form-element__label">Standard Shape METS</label></span></div>
             <div class="slds-col slds-size_2-of-12"><span><lightning-formatted-number value={StandardShapePrecal} maximum-fraction-digits="1"></lightning-formatted-number>  %</span></div>
         </div>
         <div class="slds-var-p-left_x-small  slds-grid slds-gutters">
             <div class="slds-col slds-size_4-of-12"><span><label class="slds-form-element__label">Other Digital Orders</label></span></div>
             <div class="slds-col slds-size_2-of-12"><span><lightning-formatted-number value={OtherDigitalOrders} maximum-fraction-digits="1"></lightning-formatted-number>  %</span></div>
             
-            <div class="slds-col slds-size_4-of-12"><span><label class="slds-form-element__label">Boxing Precal</label></span></div>
+            <div class="slds-col slds-size_4-of-12"><span><label class="slds-form-element__label">Boxing METS</label></span></div>
             <div class="slds-col slds-size_2-of-12"><span><lightning-formatted-number value={BoxingPrecal} maximum-fraction-digits="1"></lightning-formatted-number>  %</span></div>
         </div>
         <br/>

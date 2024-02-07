@@ -14,7 +14,7 @@ import AccountActivationFrame from '@salesforce/label/c.AccountActivationFrame';
 import AccountActivationLensSelection from '@salesforce/label/c.AccountActivationLensSelection';//SVX Ipad Lens Demonstration Last Usage
 import AccountActivationVisionTest from '@salesforce/label/c.AccountActivationVisionTest';//SVX Ipad Reading Test Last Usage
 import SVX_Ipad_Last_Training from '@salesforce/label/c.SVX_Ipad_Last_Training';
-import Seiko_Vision_Xperience_iPAD_Measurement from '@salesforce/label/c.Seiko_Vision_Xperience_iPAD_Measurement';//Seiko Vision Xperience iPAD Measurement
+import Seiko_Vision_Xperience_iPAD_Measurement from '@salesforce/label/c.Seiko_Vision_Xperience_iPAD_Measurement';
 import Seiko_Vision_Xperience_iPAD_Lens_Demo from '@salesforce/label/c.Seiko_Vision_Xperience_iPAD_Lens_Demo';
 import Seiko_Vision_Xperience_iPAD_Reading_Test from '@salesforce/label/c.Seiko_Vision_Xperience_iPAD_Reading_Test';
 

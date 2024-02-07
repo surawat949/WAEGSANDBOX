@@ -15,7 +15,6 @@ public class TabVisitsIndicatorControllerTest {
         a1.Shop_email_address__c = 'test@gmail.com';
         a1.Surveys_Email__c = 'test@yahoo.com';
         a1.Email__c = 'test@hotmail.com';
-        //a1.Track_and_Trace_Email_Address__c = 'test@yahoo.co.jp';
         a1.Confidential_Email_Address__c = 'test@hanmail.com';
         a1.Strategic_Value_Gross_Sales__c = 0;  
         a1.Strategic_Value_Net_Sales__c=0;  
@@ -34,7 +33,6 @@ public class TabVisitsIndicatorControllerTest {
         a4.Shop_email_address__c = 'test@gmail.com';
         a4.Surveys_Email__c = 'test@yahoo.com';
         a4.Email__c = 'test@hotmail.com';
-        //a1.Track_and_Trace_Email_Address__c = 'test@yahoo.co.jp';
         a4.Confidential_Email_Address__c = 'test@hanmail.com';
         a4.Strategic_Value_Gross_Sales__c = 0;  
         a4.Strategic_Value_Net_Sales__c=0;  
@@ -53,6 +51,7 @@ public class TabVisitsIndicatorControllerTest {
         insert c1;
           Account acc2 = new Account(
             Name = 'Test AccTESR',
+            Hoya_Account_ID__c = 'TE-012354',
             phone='0103030408',
             Account_Status__c='Closed'
             
@@ -116,7 +115,6 @@ public class TabVisitsIndicatorControllerTest {
         a2.Shop_email_address__c = 'test@gmail.com';
         a2.Surveys_Email__c = 'test@yahoo.com';
         a2.Email__c = 'test@hotmail.com';
-        //a2.Track_and_Trace_Email_Address__c = 'test@yahoo.co.jp';
         a2.Confidential_Email_Address__c = 'test@hanmail.com';
         a2.Strategic_Value_Gross_Sales__c = 3;  
         a2.Strategic_Value_Net_Sales__c=12;  
@@ -178,7 +176,7 @@ public class TabVisitsIndicatorControllerTest {
         visit2.Visit_Type__c = 'Visit';
         visit2.CurrencyIsoCode = 'EUR';
         visit2.Start_Time__c = date.today()-3;
-        visit2.End_Time__c = date.today()-2;
+        //visit2.End_Time__c = date.today()-2;
         visit2.Assigned_to__c = UserInfo.getUserId();
         visit2.Visit_Status__c='Complete';
         visit2.Visitfreqchk_c__c='1';
@@ -192,7 +190,7 @@ public class TabVisitsIndicatorControllerTest {
         visit3.Visit_Type__c = 'Visit';
         visit3.CurrencyIsoCode = 'EUR';
         visit3.Visit_Status__c = 'Complete';
-        visit3.Start_Time__c = date.today()+2;
+        visit3.Start_Time__c = date.today()-2;
         visit3.End_Time__c = date.today();
         visit3.Assigned_to__c = UserInfo.getUserId();
         insert visit3;
@@ -201,7 +199,7 @@ public class TabVisitsIndicatorControllerTest {
         visit4.contact__c = c1.Id;
         visit4.Visit_Type__c = 'Visit';
         visit4.Visit_Status__c = 'Planned';
-        visit4.Start_Time__c = date.today()+65;
+        visit4.Start_Time__c = date.today()-13;
         visit4.End_Time__c = date.today();
         visit4.Assigned_to__c = UserInfo.getUserId();
         insert visit4;   
@@ -212,7 +210,8 @@ public class TabVisitsIndicatorControllerTest {
     }
      @IsTest
     static void testmultipleClass1(){
-        Account acc = [SELECT Id, Hoya_Account_ID__c,Strategic_Value_Net_Sales__c, Name,Strategic_Value_Gross_Sales__c, Shop_Name__c, CurrencyIsoCode, OwnerId, 
+        Test.StartTest();
+        Account acc = [SELECT Id, Hoya_Account_ID__c,Strategic_Value_Net_Sales__c, Name,Strategic_Value_Gross_Sales__c, Shop_Name__c, CurrencyIsoCode, OwnerId,
                         ShippingStreet, ShippingCity, ShippingState, ShippingPostalCode, ShippingCountry,
                         Shop_email_address__c, Surveys_Email__c, Email__c,
                         Confidential_Email_Address__c FROM Account
@@ -228,8 +227,7 @@ public class TabVisitsIndicatorControllerTest {
                         Confidential_Email_Address__c FROM Account
                         WHERE Hoya_Account_ID__c = 'SO4900tcy' LIMIT 1];
         date dt1= system.today();
-        Visits__c visitObj=[SELECT ID,Start_Time__c from Visits__c where Start_Time__c<:system.today() and Visit_Status__c ='Complete'];
-        system.debug('>>>visitObj'+visitObj);
+        Visits__c visitObj=[SELECT ID,Start_Time__c from Visits__c where Start_Time__c<:system.today() and Visit_Status__c ='Complete' limit 1];
         Account acc1 = [SELECT Id,Account_Status__c FROM Account Where Name = 'Test AccTESR'];
         Contact con = [SELECT Id, FirstName, LastName FROM Contact WHERE FirstName = 'test-TEST001' LIMIT 1];
          List<Last_Sales_Statistics__c> statsList = [Select Id, Lenses_Net_Sales_Last_12Mo__c, Lenses_Gross_Sales_Last_12Mo__c,
@@ -241,40 +239,42 @@ public class TabVisitsIndicatorControllerTest {
          List<Last_Sales_Statistics__c> statsList2 = [Select Id, Lenses_Net_Sales_Last_12Mo__c, Lenses_Gross_Sales_Last_12Mo__c,
                                                     Lenses_Net_Sales_LFY__c,Lenses_Gross_Sales_LFY__c
                                                     From Last_Sales_Statistics__c Where  Account__c = :acc4.Id];
-        system.debug('>>>statsList'+statsList+'>>>>statsList3'+statsList);
-        
-
-
-        Test.StartTest();
-         TabVisitsIndicatorController.getAIIndicators(acc.Id);
+        TabVisitsIndicatorController.getAIIndicators(acc.Id);
          TabVisitsIndicatorController.getAIIndicators(acc1.Id);
          TabVisitsIndicatorController.getAIIndicators(acc3.Id);
           TabVisitsIndicatorController.getAIIndicators(acc4.Id);
-         TabVisitsIndicatorController.tecticomIndicators(acc3.id,'A','Test');
-         TabVisitsIndicatorController.tecticomIndicators(acc.id,'A','Test');
-        visitObj.Start_Time__c= system.today()+3;
+         TabVisitsIndicatorController.tecticomIndicators(acc3.id,'A','Test','English');
+         //TabVisitsIndicatorController.tecticomIndicators(acc.id,'A','Test','English');
+        visitObj.Start_Time__c= system.today()-3;
         update visitObj;
         acc.Hoya_Account_ID__c = 'test';
         update acc;
         TabVisitsIndicatorController.getAIIndicators(acc.Id);
-        TabVisitsIndicatorController.tecticomIndicators(acc.id,'A','Test');
+        //TabVisitsIndicatorController.tecticomIndicators(acc.id,'A','Test','English');
         acc4.Strategic_Value_Net_Sales__c=1;
         update acc4;
         statsList2[0].Lenses_Net_Sales_LFY__c=2;
         update statsList2[0];
         TabVisitsIndicatorController.getAIIndicators(acc4.Id);
-         visitObj.Account__c = acc4.id;
-        visitObj.Start_Time__c = system.today()-10;
-         update visitObj;
+        visitObj.Account__c = acc4.id;
+        visitObj.Start_Time__c = system.today()-170;
+         visitObj.End_Time__c = null;
+        visitObj.Visit_Status__c = 'Complete';
+        update visitObj;
+        TabVisitsIndicatorController.tecticomIndicators(acc4.id,'A','Test','English');
+        visitObj.Account__c = acc4.id;
+        visitObj.Start_Time__c = system.today()+3;
+        visitObj.End_Time__c = system.today()+5;
+        visitObj.Visit_Status__c = 'Planned';
+        update visitObj;
         system.debug('>>>visitObj'+visitObj);
-        TabVisitsIndicatorController.getAIIndicators(acc4.Id);
-        
-
-         Test.StopTest();
+        TabVisitsIndicatorController.tecticomIndicators(acc4.id,'A','Test','English');
+        Test.StopTest();
     }    
     @IsTest
     static void testmultipleClass2(){
-        Account acc = [SELECT Id, Hoya_Account_ID__c, Name, Shop_Name__c, CurrencyIsoCode, OwnerId, 
+        Test.StartTest();
+        Account acc = [SELECT Id, Hoya_Account_ID__c, Name, Shop_Name__c, CurrencyIsoCode, OwnerId,
                         ShippingStreet, ShippingCity, ShippingState, ShippingPostalCode, ShippingCountry,
                         Shop_email_address__c, Surveys_Email__c, Email__c,
                         Confidential_Email_Address__c FROM Account
@@ -289,13 +289,12 @@ public class TabVisitsIndicatorControllerTest {
         Account_Campaing_Member__c accountCam = [SELECT ID,campaign_active__c,Campaign_Presented__c,Campaign_End_Date_t__c From
                                                  Account_Campaing_Member__c
                                                  WHERE campaign_active__c = false and Campaign_Presented__c=false]; 
-         system.debug('>>>accountCam'+accountCam);                                        
-        Test.StartTest();
+
         TabVisitsIndicatorController.getAIIndicators(acc.Id);
         TabVisitsIndicatorController.getAIIndicators(acc2.Id);
-        TabVisitsIndicatorController.tecticomIndicators(acc.id,'A','Test');
+        TabVisitsIndicatorController.tecticomIndicators(acc.id,'A','Test','English');
         
-        TabVisitsIndicatorController.tecticomIndicators(acc1.id,'A','Test');
+        TabVisitsIndicatorController.tecticomIndicators(acc1.id,'A','Test','English');
         acc1.TACTICOM_SOF__c ='Sub-area 1';
         update acc1;
          TabVisitsIndicatorController.getAIIndicators(acc1.Id);
@@ -320,6 +319,7 @@ public class TabVisitsIndicatorControllerTest {
     } 
      @IsTest
     static void testmultipleClass3(){
+        Test.StartTest();
         Account a2 = new Account();
         a2.Hoya_Account_ID__c = 'SO4900TEST011';
         a2.Name = 'Test Account';
@@ -329,7 +329,6 @@ public class TabVisitsIndicatorControllerTest {
         insert a2;
         Visits__c visit2 = new Visits__c();
         visit2.Account__c = a2.Id;
-        //visit2.contact__c = c1.Id;
         visit2.Visit_Type__c = 'Visit';
         visit2.CurrencyIsoCode = 'EUR';
         visit2.Start_Time__c = date.today()-3;
@@ -343,30 +342,25 @@ public class TabVisitsIndicatorControllerTest {
 
         Visits__c visit3 = new Visits__c();
         visit3.Account__c = a2.Id;
-        //visit3.contact__c = c1.Id;
         visit3.Visit_Type__c = 'Visit';
         visit3.CurrencyIsoCode = 'EUR';
         visit3.Visit_Status__c = 'Complete';
-        visit3.Start_Time__c = date.today()+2;
+        visit3.Start_Time__c = date.today()-2;
         visit3.End_Time__c = date.today();
         visit3.Assigned_to__c = UserInfo.getUserId();
         insert visit3;
         Visits__c visit4 = new Visits__c();
         visit4.Account__c = a2.Id;
-       // visit4.contact__c = c1.Id;
         visit4.Visit_Type__c = 'Visit';
         visit4.Visit_Status__c = 'Planned';
-        visit4.Start_Time__c = date.today()+6;
+        visit4.Start_Time__c = date.today()-6;
         visit4.End_Time__c = date.today();
         visit4.Assigned_to__c = UserInfo.getUserId();
         insert visit4; 
-        Test.StartTest();
-          TabVisitsIndicatorController.tecticomIndicators(a2.Id,'A','test');
+        
+        TabVisitsIndicatorController.tecticomIndicators(a2.Id,'A','test','English');
         Test.StopTest();
-        
-        
-        
+     
     }
-        
-
+    
 }

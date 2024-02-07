@@ -51,10 +51,10 @@ public with sharing class TabAccountInvoiceController {
                 dataList.add(wraperCls);
                 
             }
-            System.debug(dataList);
+            
             return dataList;
         }catch(Exception e){
-            LogException.log(e);
+            
             throw new AuraHandledException(e.getMessage());
         }
         

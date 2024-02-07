@@ -1,18 +1,25 @@
 import { LightningElement,api ,wire } from 'lwc';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 //Apex
 import getIndicators from '@salesforce/apex/tabShowPadController.getAIIndicators';
 //Static Resources
 import AI_Indicators from '@salesforce/resourceUrl/SFDC_V2_AI_Indicators';
+//labels
+import presentations from '@salesforce/label/c.Presentations_Indicator';
+import sharing from '@salesforce/label/c.Sharing_Indicator';
+import viewing from '@salesforce/label/c.Viewing_Indicator';
 export default class TabShowPad extends LightningElement {
     @api recordId;
     presentationIndicator;
     sharingIndicator;
     openingIndicator;
     viewingIndicator;
+    custLabel={
+        presentations,sharing,viewing
+    }
     @wire(getIndicators, {recordId: '$recordId'}) 
      getIndicators ({error, data}) {
         if(data){
-            console.log(data);
             // Set the variable value here based on apex response.
             this.presentationIndicator = AI_Indicators + '/'+this.getIndicatorImage(data.presenatationFlag);
             this.sharingIndicator = AI_Indicators + '/'+this.getIndicatorImage(data.sharingFlag);
@@ -21,7 +28,7 @@ export default class TabShowPad extends LightningElement {
             
           
         }else if(error){
-            console.log('XXX An error was occurred ==>'+JSON.stringify(error));
+            this.showToast('Error', 'Error',JSON.stringify(error));
         }
     }
     getIndicatorImage(indicator){
@@ -38,5 +45,14 @@ export default class TabShowPad extends LightningElement {
         else if(indicator == 'GREENALERT')
             return 'GreenLightAlert.png';
 
+    }
+    showToast(title, variant, message) {
+        this.dispatchEvent(
+            new ShowToastEvent({
+                title: title,
+                message: message,
+                variant: variant,
+            }),
+        );
     }
 }

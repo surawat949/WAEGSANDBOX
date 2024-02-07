@@ -33,7 +33,6 @@ export default class TabStatisticsAverageSalesPrice extends LightningElement {
            this.lensesDataLst = JSON.parse(JSON.stringify(result.data)); 
            var lensesDataCY = this.lensesDataLst[0];
            var lensesDataLY = this.lensesDataLst[1];
-           console.log(lensesDataLY);
            var totalLensesSalesCFY = 0;
            var totalLensesSalesLFY = 0;
            var totalLensesQtyCFY = 0;
@@ -162,11 +161,9 @@ export default class TabStatisticsAverageSalesPrice extends LightningElement {
 
             if(avgSalesCYTotal != 0 && avgSalesLYTotal != 0)
             variationTotal = ((avgSalesCYTotal-avgSalesLYTotal)/avgSalesLYTotal)*100; 
-            console.log(variationTotal);
             this.totalVar = variationTotal;
             this.cFYvsLFY.push(this.totalVar);
             this.averageSalesLFY = this.avgSalesLFY;
-            console.log(this.cFYvsLFY);
             this.test = this.avgSalesLFY[0];
         }        
         else if(result.error){
@@ -181,9 +178,7 @@ export default class TabStatisticsAverageSalesPrice extends LightningElement {
         getMonthWithSales({ recordId: this.receivedId})
         .then(response => {
            this.maxMonth = response;
-           console.log(this.maxMonth);
         }).catch(error => {
-            console.log(error);
             this.showToast('Error', error.message, error.message);
         })  
     }

@@ -12,6 +12,8 @@
  *                          once finished, system will assigned the task to someone else
  */
 import { LightningElement, api, track, wire } from 'lwc';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+import { getPicklistValuesByRecordType } from 'lightning/uiObjectInfoApi';
 
 import label_relatedTo from '@salesforce/label/c.tabTaskModalRelatedTo';
 import label_newTask from '@salesforce/label/c.tabTaskModalNewTask';
@@ -29,17 +31,17 @@ import label_Close from '@salesforce/label/c.tabLabelClose';
 import label_instruction from '@salesforce/label/c.SFDC_V_2_Account_Membership_Instruction';
 
 import createTask from '@salesforce/apex/tabAccountAddressLWCController.createTask';
-//import AccountName from '@salesforce/schema/Account.Name';
+import SFDC_V2_StandardTask from '@salesforce/apex/Utility.getTaskSFDCStandardTask';
+
 import strusrId from '@salesforce/user/Id';
 import copytoId from '@salesforce/user/Id';
 import LightningModal from 'lightning/modal';
-//import Account from '@salesforce/schema/Case.Account';
 
 export default class TabAccountAddressToCreateNewTaskModal extends LightningModal{
     //@api fields;
     @api receivedId;
     errors;
-    @track value='Nicht begonnen';
+    @track value='New';
     labelRelatedTo = label_relatedTo;
     labelNewTask = label_newTask;
     labelAccContact = label_AccContact;
@@ -67,12 +69,28 @@ export default class TabAccountAddressToCreateNewTaskModal extends LightningModa
     CopyTo = this.copiedtoId;
     AccountId = this.receivedId;
 
-    get options(){
-        return [
-            { label : 'Not Started', value : 'Nicht begonnen'},
-            { label : 'On Going', value : 'In Progress'},
-            { label : 'Completed', value : 'Completed'}
-        ];
+    @track StatusOptions;
+    TaskRecordTypeId;
+
+    @wire(SFDC_V2_StandardTask)
+    standard_sfdcv2_task({data,error}){
+        if(data){
+            data = JSON.parse(JSON.stringify(data));
+            this.TaskRecordTypeId = data;
+            console.log('Task Record Type Id ==>'+this.TaskRecordTypeId);
+        }else if(error){
+            this.showToast('Error', JSON.stringify(error.message), 'error');
+        }
+    }
+
+    @wire(getPicklistValuesByRecordType, {objectApiName : 'Task', recordTypeId: '$TaskRecordTypeId'})
+    STATUS_PICKLIST_VALUE({data,error}){
+        if(data){
+            this.StatusOptions = data.picklistFieldValues.Status.values;
+            //console.log(data);
+        }else if(error){
+            this.showToast('Error', JSON.stringify(error.message), 'error');
+        }
     }
 
     subjectCH(event){
@@ -97,15 +115,15 @@ export default class TabAccountAddressToCreateNewTaskModal extends LightningModa
     statusCH(event){
         this.Status = event.target.value;
         this.Status = event.detail.value;
-        console.log('XXX Selected Value == > '+event.detail.value);
+        
     }
     contactCH(event){
         this.ContactName = event.target.value;
-        console.log('XXX Selected Contact Id == > '+event.target.value);
+        
     }
     copyToCH(event){
         this.CopyTo = event.target.value;
-        console.log('XXX Select Copy To == > '+event.target.value);
+        
     }
     closePopupSuccess(event) {
         this.close(event.detail.id);
@@ -133,13 +151,12 @@ export default class TabAccountAddressToCreateNewTaskModal extends LightningModa
                 AccountId : this.receivedId
             }).then(result=>{
                 this.message = 'Task Created';
-                //this.updateRecordView();
                 console.log('Task Created');
                 this.closePopup();
                 this.updateRecordView();
             }).catch(error=>{
                 this.message = 'Error Creating Task';
-                console.log('Error during task creation');
+                
             });
         }
     }
@@ -148,43 +165,47 @@ export default class TabAccountAddressToCreateNewTaskModal extends LightningModa
         if(event.detail.selectedRecord != undefined){
             console.log('Selected Record Value on Parent Component is ' +  
             JSON.stringify(event.detail.selectedRecord));
-            //alert(event.detail.selectedRecord.Id + ' '+ event.detail.selectedRecord.Name);
+            
             this.WhatId = event.detail.selectedRecord.Id;
-            /*
-            this.OwnerId = event.detail.selectedRecord.Id;
-            this.ContactName = event.detail.selectedRecord.Id;
-            this.CopyTo = event.detail.selectedRecord.Id;
-            */
+           
             this.template.querySelector('lightning-input[data-my-id=form-input-1]').value=event.detail.selectedRecord.Id;
-            //this.template.querySelector('lightning-input[data-my-id=form-input-5]').value=event.detail.selectedRecord.Id;
-            //this.template.querySelector('lightning-input[data-my-id=form-input-2]').value=event.detail.selectedRecord.Id;
-            //this.template.querySelector('lightning-input[data-my-id=form-input-7]').value=event.detail.selectedRecord.Id;
+            
         }
     }
     handleLookupSelectionOwnerId(event){
         if(event.detail.selectedRecord != undefined){
-            console.log('Select contactid value on parent component is '+JSON.stringify(event.detail.selectedRecord.Id));
+            
             this.OwnerId = event.detail.selectedRecord.Id;
             this.template.querySelector('lightning-input[data-my-id=form-input-5]').value=event.detail.selectedRecord.Id;
         }
     }
     handleLookupSelectionCopiedTo(event){
         if(event.detail.selectedRecord != undefined){
-            console.log('Select copied to id value on parent component is '+JSON.stringify(event.detail.selectedRecord));
+            
             this.CopyTo = event.detail.selectedRecord.Id;
             this.template.querySelector('lightning-input[data-my-id=form-input-7]').value=event.detail.selectedRecord.Id;
         }
     }
     handleLookupSelectionAccounContact(event){
         if(event.detail.selectedRecord != undefined){
-            console.log('Select Account Contact id value on parent component is '+JSON.stringify(event.detail.selectedRecord.Id));
+            
             this.ContactName = event.detail.selectedRecord.Id;
             this.template.querySelector('lightning-input[data-my-id=form-input-2]').value=event.detail.selectedRecord.Id;
         }
     }
     updateRecordView(){
         setTimeout(() => {
-            eval("$A.get('e.force:refreshView').fire();");
+            //eval("$A.get('e.force:refreshView').fire();");
         },1000);
     }
+
+    showToast(title, message, variant){
+        const event = new ShowToastEvent({
+            title : title,
+            message : message,
+            variant : variant
+        });
+        this.dispatchEvent(event);
+    }
+
 }

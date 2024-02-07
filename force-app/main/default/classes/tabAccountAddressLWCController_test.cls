@@ -11,10 +11,15 @@ public with sharing class tabAccountAddressLWCController_test {
 
     @TestSetup
     static void makeData(){
+        Opportunity_Custom__c oppdefault = new Opportunity_Custom__c();
+        oppdefault.Name = 'DEFAULT';
+        oppdefault.Company_Name__c = 'DEFAULT';
+        insert oppdefault;
+        
         Profile p = [SELECT Id FROM Profile WHERE Name ='System Administrator'];
 
-        String accCopy = [SELECT Id FROM RecordType WHERE SObjectType='Account_Template__c' AND DeveloperName='Copy'].Id;
-        String accMaster = [SELECT Id FROM RecordType WHERE SObjectType='Account_Template__c' AND DeveloperName = 'MasterRT'].Id;
+        String accCopy = Schema.SObjectType.Account_Template__c.getRecordTypeInfosByDeveloperName().get('Copy').getRecordTypeId();
+        String accMaster = Schema.SObjectType.Account_Template__c.getRecordTypeInfosByDeveloperName().get('MasterRT').getRecordTypeId();
 
         User u = new User();
         u.Firstname = 'test_visits';
@@ -44,7 +49,6 @@ public with sharing class tabAccountAddressLWCController_test {
         a1.Shop_email_address__c = 'test@gmail.com';
         a1.Surveys_Email__c = 'test@yahoo.com';
         a1.Email__c = 'test@hotmail.com';
-        //a1.Track_and_Trace_Email_Address__c = 'test@yahoo.co.jp';
         a1.Confidential_Email_Address__c = 'test@hanmail.com';
         
         insert a1;
@@ -61,10 +65,8 @@ public with sharing class tabAccountAddressLWCController_test {
         insert c1;
 
         Account_Template__c Acc_Master = new Account_Template__c();
-        //Acc_Master.Account__c = a1.Id;
+        
         Acc_Master.Name = 'Master-template';
-        //Acc_Master.Active_Authorization_Template__c = true;
-        //Acc_Master.Default__c = true;
         Acc_Master.RecordTypeId = accMaster;
         insert Acc_Master;
 
@@ -82,6 +84,8 @@ public with sharing class tabAccountAddressLWCController_test {
 
     @IsTest
     static void testmultipleClass1(){
+        Test.StartTest();
+
         Account acc = [SELECT Id, Hoya_Account_ID__c, Name, Shop_Name__c, CurrencyIsoCode, OwnerId, 
                         ShippingStreet, ShippingCity, ShippingState, ShippingPostalCode, ShippingCountry,
                         Shop_email_address__c, Surveys_Email__c, Email__c,
@@ -95,13 +99,10 @@ public with sharing class tabAccountAddressLWCController_test {
         String conRecType = [SELECT Id FROM RecordType WHERE sObjectType='Contact' AND DeveloperName='Shop_Owner'].Id;
         
         Date duedate = System.today();
-
-        Test.StartTest();
         tabAccountAddressLWCController.fetchAccforMapAccountId(acc.Id);
         tabAccountAddressLWCController.getContactsRelatedAccount(acc.Id);
         tabAccountAddressLWCController.getConCount(acc.Id);
         tabAccountAddressLWCController.UpdateAccountEmail(acc.Id);
-        //tabAccountAddressLWCController.searchDefaultRecord(acc.Id, 'Account'); **CLASS WAS REMOVED**
         tabAccountAddressLWCController.getContactId(acc.Id);
         tabAccountAddressLWCController.getContactRecordTypeDescribe();
         tabAccountAddressLWCController.getContactRecordTypeDescribeNotIn();
@@ -118,12 +119,12 @@ public with sharing class tabAccountAddressLWCController_test {
         tabAccountAddressLWCController.searchLookupData('TEST', 'Contact', ' AND Account.Hoya_Account_ID__c !=null', acc.Id);
         tabAccountAddressLWCController.searchLookupAccountData('test', 'Account', acc.Id);
         tabAccountAddressLWCController.searchLookupAccountDefaultRecordData(acc.Id, 'Account');
+        tabAccountAddressLWCController.getTaskSFDCStandardTask();
 
         List<String> newList = new List<String>();
         newList.add('Id');
         newList.add('Name');
         tabAccountAddressLWCController.getDataAndColumns('Account', newList, acc.Id, ' AND Hoya_Account_ID__c!=null', ' AND OwnerId!=null', ' ORDER BY Hoya_Account_ID__c ASC');
-        //System.assert(true);
         Test.StopTest();
 
         try{
@@ -143,14 +144,5 @@ public with sharing class tabAccountAddressLWCController_test {
         }catch(Exception e){
             System.assertEquals(e.getMessage(), e.getMessage());
         }
-        /*
-        try{**CLASS WAS REMOVED | THIS CLASS NO NEED ANYMORE**
-            tabAccountAddressLWCController.searchDefaultRecord(null,'Account');
-        }catch(Exception e){
-            System.assertEquals(e.getMessage(), e.getMessage());
-        }*/
-
-        //System.assert(false);
-
     }
 }

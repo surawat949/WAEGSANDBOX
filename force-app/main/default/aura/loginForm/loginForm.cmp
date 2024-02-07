@@ -25,7 +25,14 @@
     <aura:attribute name="descriptionLabelFirst" type="String" />
     <aura:attribute name="createAccountLabel" type="String" />
     <aura:attribute name="contactUrl" type="String" required="false" />
+    <aura:attribute name="contactLabel" type="String" required="false" />
     <aura:attribute name="helpUrl" type="String" required="false" />
+    <aura:attribute name="helpLabel" type="String" required="false" />
+    <aura:attribute name="privacyUrl" type="String" required="false" />
+    <aura:attribute name="privacyLabel" type="String" required="false" />
+    <aura:attribute name="termsUrl" type="String" required="false" />
+    <aura:attribute name="termsLabel" type="String" required="false" />
+
     <aura:attribute name="backgroundSeiko" type="String" />
     <aura:attribute name="cssToHoya" type="String" />
     <aura:attribute name="descriptionSeiko" type="String" />
@@ -223,10 +230,14 @@
                     </div>
                     <div class="col-xs-12 col-lg-4">
                         <p class="xs-text-center" style="text-align: right;">
-                            <a href="{!v.helpUrl}" style="color: #ffffff !important;">Help</a>
-                            <a href="{!v.contactUrl}" style="color: #ffffff !important;">Contact</a>
-                            <a href="" style="color: #ffffff !important;">Privacy</a>
-                            <a href="" style="color: #ffffff !important;">Terms of use</a>
+                            <a href="{!v.helpUrl}" style="color: #ffffff !important;">{!v.helpLabel}</a>
+                            <a href="{!v.contactUrl}" style="color: #ffffff !important;">{!v.contactLabel}</a>
+                            <a href="{!v.privacyUrl}" style="color: #ffffff !important;">{!v.privacyLabel}</a>
+                            <a href="{!v.termsUrl}" style="color: #ffffff !important;">{!v.termsLabel}</a>
+                            <!--a href="{!v.helpUrl}" style="color: #ffffff !important;">Help</a>
+                            <a href="{!v.contactUrl}" style="color: #ffffff !important;">Contact Us</a>
+                            <a href="{!v.privacyUrl}" style="color: #ffffff !important;">Privacy</a>
+                            <a href="{!v.termsUrl}" style="color: #ffffff !important;">Terms of use</a-->
                         </p>
                     </div>
                 </div>

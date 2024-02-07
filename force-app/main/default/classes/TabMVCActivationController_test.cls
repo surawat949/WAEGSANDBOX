@@ -2,10 +2,13 @@
 public class TabMVCActivationController_test {
 	@IsTest
     static void runTest(){
+        
+       String SeikoRec = Schema.SObjectType.ECP_Training__c.getRecordTypeInfosByDeveloperName().get('SEIKO_Training').getRecordTypeId();
+
         Account acc = new Account();
         acc.Name='sales test account';
         acc.hoya_account_id__c='SO3399999xx';
-        acc.AnnualRevenue = 10000;
+        acc.Lenses_Net_Sales_Last_12Mo__c = 10000;
         acc.RecordTypeId='012b00000000P38';        
         insert acc;
         
@@ -17,9 +20,11 @@ public class TabMVCActivationController_test {
         ECP_Training__c training = new ECP_Training__c();
         training.Training_status__c ='completed';
         training.start__c = System.today()-2;
+        training.end__C = System.today()-1;
         training.Account__c = acc.Id;
         training.Type__c = 'In Store';
         training.Training__c = 'MIYOSMART';
+        training.RecordTypeId = SeikoRec;
         Insert training;
         
         ECP_Training_Member__c member = new ECP_Training_Member__c();

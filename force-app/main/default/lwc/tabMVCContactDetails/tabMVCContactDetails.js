@@ -82,7 +82,7 @@ export default class TabMVCContactDetails extends LightningElement {
     contactProfessionalTitle = Contact_Professional_Title;
     contactProfTitle = Contact_ProfTitle;
     
-    LocalDBFields = [Contact_RecType, Contact_Specialization, Contact_Education, Contact_ReportTo, Contact_Influence, Contact_HealthNationalId, Contact_Note];
+    LocalDBFields = [Contact_Education, Contact_Specialization, Contact_RecType, Contact_ReportTo, Contact_Influence, Contact_HealthNationalId, Contact_Note];
     CommunicationFields1 = [Contact_PreferContact, Contact_Phone, Contact_Donotvisit];
     CommunicationFields2 = [Contact_Fax, Contact_FaxOutOpp];
     CommunicationFields3 = [Contact_appointment, Contact_Email, Contact_EmailOptOut, Contact_AcceptLunch, Contact_AcceptTraining, Contact_AcceptRoundTable];

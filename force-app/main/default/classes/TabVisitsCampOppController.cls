@@ -8,10 +8,12 @@ public With Sharing class TabVisitsCampOppController {
     }
     
     //Method to get all Campaign Membership
-    @AuraEnabled(cacheable=true)
+    @AuraEnabled
     public static List<Account_Campaing_Member__c> getCampaignMembership(String accountId){
+        system.debug('>>>>>');
         List<Account_Campaing_Member__c> campaigns=[Select  id,Name, Campaign_Start_Date_t__c,Campaign_Name_t__c,  Campaign_End_Date_t__c, Date_of_presentation__c,Campaign_Interested__c,Account_Name__c 
                                                     from Account_Campaing_Member__c where Account_Name__c=:accountId];
+        system.debug('>>>'+campaigns);
         return campaigns;
     }
     

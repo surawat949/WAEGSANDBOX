@@ -36,6 +36,7 @@ import AvgDelay from '@salesforce/schema/Last_Sales_Statistics__c.Lenses_Shipmen
 
 //custom labels
 import AccountLensDelays from '@salesforce/label/c.AccountLensesDelays';
+import OrderingHabits from '@salesforce/label/c.Ordering_Habits';
 //Apex
 import getLastSalesId from '@salesforce/apex/TabStatisticsController.getLastSalesStatisticsId';
 const fields = [ManualOrders,HVCSystems,OtherDigitalOrders,UncutLenses,RemoteEdging,Mounting,RealShapePrecal,
@@ -48,7 +49,7 @@ export default class TabStatisticsReturns extends LightningElement {
     lastSalesStatistics;
     lastSalesId;
     custLabel = {
-        AccountLensDelays
+        AccountLensDelays,OrderingHabits
     }
     //Get Last Sales Statistics Object Id based current Account Record Id
     @wire(getLastSalesId,{accId:'$receivedId'})

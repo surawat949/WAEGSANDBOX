@@ -8,9 +8,6 @@
  */
 @IsTest
 public with sharing class TabMVAActivationContactController_test {
-    public TabMVAActivationContactController_test() {
-
-    }
 
     @TestSetup
     static void makeData(){
@@ -76,6 +73,7 @@ public with sharing class TabMVAActivationContactController_test {
 
     @IsTest
     static void testWholeClass(){
+        Test.StartTest();
         Account acc = [SELECT Id, Hoya_Account_ID__c FROM Account WHERE Hoya_Account_ID__c = 'TEST-0001' LIMIT 1];
         Contact c1 = [SELECT Id FROM Contact WHERE AccountId=:acc.Id LIMIT 1];
         Contact c2 = [SELECT Id FROM Contact WHERE FirstName='test2null' LIMIT 1];
@@ -88,7 +86,6 @@ public with sharing class TabMVAActivationContactController_test {
         for(Account a : accList){
             accIds.add(a.ParentId);
         }
-        Test.StartTest();
         TabMVAActivationContactController.getAllContactsHierarchy(acc.Id);
         TabMVAActivationContactController.getRecursiveAccountList(accIds);
         Test.StopTest();

@@ -8,9 +8,6 @@
         <div if:true={errors} class="slds-notify slds-notify_alert slds-alert_error">
             {errors}
         </div>
-        <!--<div class="slds grid">
-            <div class="slds-col slds-size_1-of-1"><font color="blue"><strong>Ready to use {receivedId}</strong></font></div> 
-        </div>-->
         <template if:false={isLoading}>
             <header>
                 <p class="slds-m-left_medium slds-m-right_medium">
@@ -32,6 +29,7 @@
                 <div class="slds-grid slds-gutters">
                     <div class="slds-col slds-size_1-of-6"><p class="slds-m-left_medium"><lightning-input type="radio" name="salutation" id="mr" data-my-id="mr" label={labelMr} onclick={handleClickCheck1} onchange={handleClickCheck1}></lightning-input></p></div>
                     <div class="slds-col slds-size_1-of-6"><p class="slds-m-left_medium"><lightning-input type="radio" name="salutation" id="mrs" data-my-id="mrs" label={labelMrs} onclick={handleclickCheck2} onchange={handleClickCheck2}></lightning-input></p></div>
+                    <div class="slds-col slds-size_1-of-6"><p class="slds-m-left_medium"><lightning-input type="radio" name="salutation" id="miss" data-my-id="miss" label={labelMiss} onclick={handleClikCheck5} onchange={handleClikCheck5}></lightning-input></p></div>
                     <div class="slds-col slds-size_1-of-6"><p class="slds-m-left_medium"><lightning-input type="radio" name="salutation" id="dr" data-my-id="dr" label={labelDr} onclick={handleClickCheck3} onchange={handleClickCheck3}></lightning-input></p></div>
                     <div class="slds-col slds-size_1-of-6"><p class="slds-m-left_medium"><lightning-input type="radio" name="salutation" id="prof" data-my-id="prof" label={labelProf} onclick={handleClickCheck4} onchange={handleClickCheck4}></lightning-input></p></div>
                     <div class="slds-col slds-size_1-of-6 slds-m-right_medium">
@@ -80,7 +78,7 @@
                 <div class="slds-form-element slds-form-element_vertical slds-m-left_small">
                     <div class="slds-grid">
                         <div class="slds-col slds-size_1-of-4">
-                            <p class="slds-m-left_medium slds-m-top_medium"><strong><font color="#FF3333">*</font></strong>&nbsp;<strong><lightning-formatted-text value={labelRole}></lightning-formatted-text></strong></p>
+                            <p class="slds-m-left_medium slds-m-top_medium"><strong><font color="#FF3333">*</font></strong>&nbsp;<strong><lightning-formatted-text value={labelRole}></lightning-formatted-text>&nbsp;:&nbsp;</strong></p>
                         </div>
                         <div class="slds-col slds-size_1-of-4">
                             <ul class="slds-list_vertical">
@@ -117,7 +115,7 @@
                             </div>
                         </div>
                         <div class="slds-col slds-size_1-of-4">
-                            <p class="slds-m-left_medium slds-m-top_medium"><strong><font color="#FF3333">*</font></strong>&nbsp;<strong><lightning-formatted-text value={labelEducation}></lightning-formatted-text></strong></p>
+                            <p class="slds-m-left_medium slds-m-top_medium"><strong><font color="#FF3333">*</font></strong>&nbsp;<strong><lightning-formatted-text value={labelEducation}></lightning-formatted-text>&nbsp;:&nbsp;</strong></p>
                         </div>
                         <div class="slds-col slds-size_1-of-4">
                             <ul class="slds-list_vertical">
@@ -144,29 +142,7 @@
                         </div>
                     </div>
                 </div><br>
-                <!--
-                <div class="slds-form-element slds-form-element_vertical slds-m-left_small">
-                    <div class="slds-grid">
-                        <p class="slds-m-left_medium"><strong><font color="#FF3333">*</font></strong>&nbsp;<strong><lightning-formatted-text value="EDUCATION:"></lightning-formatted-text></strong></p>
-                        <div class="slds-col slds-size_1-of-1">
-                            <ul class="slds-list_horizontal slds-m-left_large">
-                                <li class="slds-m-left_large slds-m-right_large"><lightning-input type="radio" name="education" id="optician" data-my-id="optician" label="Optician" onclick={handleEduClick1} onchange={handleEduClick1}></lightning-input></li>
-                                <li class="slds-m-left_large slds-m-right_large"><lightning-input type="radio" name="education" id="optometris" data-my-id="optometris" label="Optometrist" onclick={handleEduClick2} onchange={handleEduClick2}></lightning-input></li>
-                                <li class="slds-m-left_large slds-m-right_large"><lightning-input type="radio" name="education" id="opthalmologist" data-my-id="opthalmologist" label="Opthalmologist" onclick={handleEduClick3} onchange={handleEduClick3}></lightning-input></li>
-                                <li class="slds-m-left_large slds-m-right_large">
-                                    <lightning-combobox
-                                        data-my-id="OthEducation"
-                                        name="education"
-                                        value={value}
-                                        placeholder="--Other Education--"
-                                        options={optionEdu}
-                                        onchange={handleOptEducationChange}
-                                        label="Other Education">
-                                    </lightning-combobox></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>-->
+
                 <div class="slds-grid slds-gutters slds-m-top_medium">
                     <div class="slds-col slds-size_1-of-1 slsd-m-bottom_large slsd-m-tom_medium">
                         <p class="slds-m-left_medium slds-m-bottom_large" align="right">
@@ -227,12 +203,6 @@
                     </div>
                 </div><br>
                 <div class="slds-form-element slds-form-element_vertical slds-m-left_medium slds-m-top_medium slds-m-right_medium">
-                    <!--
-                    <div class="slds-grid slds-gutters">
-                        <div class="slds-col slds-size_1-of-3"><lightning-input type="checkbox" label="System invitation email" id="SysInviteEmail" name="SysInviteEmail" data-my-id="SysInviteEmail" onclick={handleSendInviteEmail}></lightning-input></div>
-                        <div class="slds-col slds-size_1-of-3"><lightning-input type="checkbox" label="Send Invitation to Portal" id="SendInvitePortal" name="SendInvitePortal" data-my-id="SendInvitePortal" onclick={handleSendInvitePortal}></lightning-input></div>
-                    </div>
-                    -->
                     <div class="slds-grid slds-gutters">
                         <div class="slds-col slds-size_1-of-3 slds-m-left_small">
                             <lightning-combobox
@@ -242,7 +212,8 @@
                                 placeholder={labelAccTemplatePlace}
                                 options={AccTemplateOptions}
                                 onchange={handleAccTemplate}
-                                label={labelAccTemplate}>
+                                label={labelAccTemplate}
+                                disabled={IsDisabled}>
                             </lightning-combobox>
                         </div>
                         <div class="slds-col slds-size_1-of-3">
@@ -257,6 +228,13 @@
                             ></lightning-combobox>
                         </div>
                     </div>
+                    <template lwc:if={IsAccountTemplate}>
+                        <div class="slds-grid slds-gutters slds-m-top_medium">
+                            <div class="slds-col slds-size_1-of-2 slds-m-left_small">
+                                <p style="color: #F70606">{labelNoAccountTemplate}</p>
+                            </div>
+                        </div>
+                    </template>
                     <div class="SendEmail slds-grid slds-gutters slds-m-top_medium slds-hide">
                         <div class="slds-col slds-size_1-of-3 slds-m-left_small">
                             <lightning-input type="checkbox" label={labelSendEmailImm} data-my-id="SendInviteImm" id="SendInviteImm" name="SendInviteImm" onclick={handleSendInviteEmail}></lightning-input>
@@ -274,9 +252,7 @@
             </div>
         <lightning-modal-footer>
             <div class="slds-grid">
-                <div class="slds-col slds-size_1-of-2">
-                    <!--<lightning-button class="slds-m-top_medium" label="Close" value="netural" onclick={closePopup}></lightning-button>-->
-                </div>
+                <div class="slds-col slds-size_1-of-2"></div>
             </div>
         </lightning-modal-footer>
     </lightning-card>

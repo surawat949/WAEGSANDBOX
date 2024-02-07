@@ -3,9 +3,6 @@ import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 //Fields
 import PrescriptionPotential from '@salesforce/schema/Contact.Prescription_Potential__c'; 
 import Total_Prescriptions from '@salesforce/schema/Contact.Total_Prescriptions_Per_Week__c'; 
-import Hoys_Seiko_Prescriptions from '@salesforce/schema/Contact.Total_HOYA_SEIKO_Prescription_Per_week__c'; 
-import Hoya_SOW from '@salesforce/schema/Contact.HOYA_SEIKO_Sow__c'; 
-import Total_Presc_Segmentation from '@salesforce/schema/Contact.Total_Prescribing_Segmentation__c';
 // labels
 import PrescribingCapacity from '@salesforce/label/c.tabActivationPotentialCapacity';
 import PrescribingSegmentation from '@salesforce/label/c.tabActivationPotentialSegmentation';

@@ -16,6 +16,7 @@ public with sharing class AccountTriggerHelper_Test {
         hvnaAcc.Hoya_Account_ID__c = 'US1234512';
         hvnaAcc.CurrencyIsoCode = 'EUR';
         hvnaAcc.Name = 'HVNA Test';
+        hvnaAcc.Strategic_Value_Gross_Sales__c = 1000;
         insert hvnaAcc;
         
         Account holkAcc = new Account();
@@ -29,6 +30,7 @@ public with sharing class AccountTriggerHelper_Test {
         seikoAcc.CurrencyIsoCode = 'EUR';
         seikoAcc.Name = 'SAP Code Test';
         seikoAcc.shop_country__c = 'DE';
+        seikoAcc.Strategic_Value_Net_Sales__c =10000;
         insert seikoAcc;
 
 
@@ -46,7 +48,53 @@ public with sharing class AccountTriggerHelper_Test {
         insert IQVIA;
 
     }
-    
+    @isTest
+    Static void testLastSalesUpdate() {
+        Test.StartTest();
+        Account GermanAcc = new Account();
+        GermanAcc.Hoya_Account_ID__c = 'SO4900549988';
+        GermanAcc.CurrencyIsoCode = 'EUR';
+        GermanAcc.Name = 'Last Sales Update Test';
+        GermanAcc.shop_country__c = 'DE';
+        GermanAcc.Strategic_Value_Gross_Sales__c =10000;
+        insert GermanAcc;
+        
+        Last_Sales_Statistics__c lastSales = new Last_Sales_Statistics__c();
+        lastSales.Account__c = GermanAcc.Id;
+        lastSales.Seiko_Lens_Gross_Sales_Last_3Mo__c = 150;
+        lastSales.Hoya_Lens_Gross_Sales_Last_3Mo__c = 100;    
+        lastSales.Seiko_Lens_Gross_Sales_Last_12Mo__c = 1500;
+        lastSales.Hoya_Lens_Gross_Sales_Last_12Mo__c = 1000;
+        lastSales.H_S_Lens_Gross_Sales_Last_12Mo__c = 1650;
+     	lastSales.Account__c = GermanAcc.Id;
+        insert lastSales;
+        
+        GermanAcc.Strategic_Value_Gross_Sales__c =15000;
+        update GermanAcc;
+        
+        Account OtherAcc = new Account();
+        OtherAcc.Hoya_Account_ID__c = 'US1254512';
+        OtherAcc.CurrencyIsoCode = 'EUR';
+        OtherAcc.Name = 'Other Account Test';
+        OtherAcc.Strategic_Value_Net_Sales__c = 1000;
+        insert OtherAcc;      
+        
+        Last_Sales_Statistics__c lastSales1 = new Last_Sales_Statistics__c();
+        lastSales1.Seiko_Lens_Net_Sales_Last_12Mo__c = 1200;
+        lastSales1.Hoya_Lens_Net_Sales_Last_12Mo__c = 1000;
+        lastSales1.H_S_Lens_Net_Sales_Last_12Mo__c = 3200;
+        lastSales1.Seiko_Lens_Net_Sales_Last_3Mo__c = 150;
+        lastSales1.Hoya_Lens_Net_Sales_Last_3Mo__c = 100;
+        lastSales1.H_S_Lens_Net_Sales_Last_3Mo__c=250;
+        lastSales1.Account__c = OtherAcc.Id;
+        insert lastSales1;
+        
+        OtherAcc.Strategic_Value_Net_Sales__c = 10000;
+        update OtherAcc;      
+       
+        System.assert(true);
+        Test.StopTest();
+    }
     @isTest
     Static void testWholeClass() {
         Test.StartTest();

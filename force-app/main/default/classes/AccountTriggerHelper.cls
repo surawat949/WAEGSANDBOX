@@ -20,11 +20,13 @@ public with sharing class AccountTriggerHelper {
         List<Account> hlukList = new List<Account>();
         List<Account> oppList = new List<Account>();
         List<Account> ecList = new List<Account>();
-        List<Account> strategicNetUpdateList = new List<Account>();
-        List<Account> strategicGrossUpdateList = new List<Account>(); 
+        List<Account> oneKeyList = new List<Account>();
         Set<Id> blockedAccs = new Set<Id>();
         Set<Id> unblockedAccs = new Set<Id>();
         Boolean somethingToDo = false;
+        
+        List<Account> strategicNetUpdateList = new List<Account>();
+        List<Account> strategicGrossUpdateList = new List<Account>(); 
 
         if(newList!=null && newList.size()>0){
             for(Account a:newList){
@@ -75,6 +77,10 @@ public with sharing class AccountTriggerHelper {
                     ecList.add(a);
                     somethingToDo = true;
                 }
+                if (a.QIDC__OneKeyId_IMS__c != null && a.QIDC__OneKeyId_IMS__c != '') {
+                    oneKeyList.add(a);
+                    somethingToDo = true;
+                }
                 if(triggerEvent == System.TriggerOperation.AFTER_UPDATE ){
                     if (newMap.get(a.Id).Account_Status__c != oldMap.get(a.Id).Account_Status__c) {
                         if (a.Account_Status__c =='Closed' || a.Account_Status__c =='Blocked' || a.Account_Status__c =='Suspended') {
@@ -84,16 +90,13 @@ public with sharing class AccountTriggerHelper {
                             unblockedAccs.add(a.Id);
                             somethingToDo = true;
                         }  
-                    }   
-                    //For Strategic Value Net Calculation
-                    if(newMap.get(a.Id).Strategic_Value_Gross_Sales__c != oldMap.get(a.Id).Strategic_Value_Gross_Sales__c){
-                        somethingToDo = true;
-                    }
+                    } 
                 }
                 //For Statistics Potential
                 //only for before Update
                 if(triggerEvent == System.TriggerOperation.BEFORE_UPDATE && oldMap != null){
                     Account oldAccount = oldMap.get(a.Id);
+                    System.debug(a.Strategic_Value_Gross_Sales__c +''+oldAccount.Strategic_Value_Gross_Sales__c);
                     if(a.Strategic_Value_Gross_Sales__c != oldAccount.Strategic_Value_Gross_Sales__c){
                         strategicGrossUpdateList.add(a);
                         somethingToDo = true;
@@ -109,16 +112,15 @@ public with sharing class AccountTriggerHelper {
                       somethingToDo = true;
                 }
             }
-        }
-        else if(triggerEvent == System.TriggerOperation.BEFORE_DELETE && oldMap != null ) {
+        } else if(triggerEvent == System.TriggerOperation.BEFORE_DELETE && oldMap != null ) {
             for (Account a : oldMap.values()) {
-                if (a.hoya_account_id__c.startsWith('US') ||a.hoya_account_id__c.startsWith('CA')||a.hoya_account_id__c.startsWith('VE')||a.hoya_account_id__c.startsWith('SOA')) {
-                    hvnaList.add(a);
-                    somethingToDo = true;			
-                }
-                
+	              if (a.hoya_account_id__c.startsWithIgnoreCase('US') ||a.hoya_account_id__c.startsWithIgnoreCase('CA')||a.hoya_account_id__c.startsWithIgnoreCase('VE')||a.hoya_account_id__c.startsWithIgnoreCase('SOA')) {
+            			hvnaList.add(a);
+            			somethingToDo = true;			
+    		      }  
             }
-        }		
+        }
+
         switch on triggerEvent {
             when BEFORE_INSERT {
                 if (somethingToDo) {
@@ -126,6 +128,7 @@ public with sharing class AccountTriggerHelper {
                     doHOLKBeforeInsert(holkList);
                     doAPACAccountBeforeInsert(apacList);
                     validateEndConsumer(ecList);
+                   // modifyOnekeyRecords(oneKeyList);
                     //To assign the Strategic Net Sales based on Gross Sales
                     //As there is no Id before insert sending the null as newMap
                     doLastSalesStatisticsUpdate(strategicGrossUpdateList,null,'gross','INSERT');
@@ -146,8 +149,9 @@ public with sharing class AccountTriggerHelper {
                     doHLFRBeforeUpdate(hlfrList, oldMap);
                     doAPACAccountBeforeUpdate(apacList, oldMap);
                     //For Statistics Potential and Strategic Net Sales
+                    System.debug(strategicNetUpdateList);
                     doLastSalesStatisticsUpdate(strategicGrossUpdateList,newMap,'gross','UPDATE');
-                    doLastSalesStatisticsUpdate(strategicNetUpdateList,newMap,'net','UPDATE');   
+                    doLastSalesStatisticsUpdate(strategicNetUpdateList,newMap,'net','UPDATE');  
                 }
             }
             when AFTER_UPDATE {
@@ -174,154 +178,7 @@ public with sharing class AccountTriggerHelper {
             }
         }
     }
-   
-    private static void doLastSalesStatisticsUpdate(List<Account> accountsList,Map<Id,Account> accNewMap,String type,String operationType){
-        Map<Id,Last_Sales_Statistics__c> salesMap = new Map<Id,Last_Sales_Statistics__c>();
-        List<Last_Sales_Statistics__c> lastSalesNetLst = new List<Last_Sales_Statistics__c>();
-        List<Last_Sales_Statistics__c> lastSalesGrossLst = new List<Last_Sales_Statistics__c>();
-        List<Id> accList =new List<Id>();
-        if(accountsList.size() > 0){
-            //Assign the Strategic NetSales based on Gross sales
-            if(operationType == 'INSERT' || operationType == 'UPDATE'){
-                for(Account acc:accountsList){
-                    double avgDiscount = 0;
-                    if(accNewMap != null && accNewMap.get(acc.Id).Market_Avg_Disc_Ind_L12M__c != null)
-                        avgDiscount = accNewMap.get(acc.Id).Market_Avg_Disc_Ind_L12M__c;
-                    double stategicGross = acc.Strategic_Value_Gross_Sales__c != null ? acc.Strategic_Value_Gross_Sales__c:0;
-                    acc.Strategic_Value_Net_Sales__c = stategicGross*(1+avgDiscount);
-                }
-            }
-            else if( operationType == 'UPDATE'){
-                for(Account acc:accountsList){
-                    accList.add(acc.Id);
-                }
-                Double seikoLensGrossSOWLast12Mo = 0;
-                Double seikoLensGrossSOWLast3Mo = 0;
-                Double seikoLensNetSOWLast12Mo = 0;
-                Double seikoLensNetSOWLast3Mo = 0;
-                Double hoyaLensGrossSOWLast12Mo = 0;
-                Double hoyaLensGrossSOWLast3Mo = 0;
-                Double hoyaLensNetSOWLast12Mo = 0;
-                Double hoyaLensNetSOWLast3Mo = 0;
-                Double hsLensGrossSOWLast12Mo = 0;
-                Double hsLensGrossSOWLast3Mo = 0;
-                Double hsLensNetSOWLast3Mo = 0;
-                Double hsLensNetSOWLast12Mo = 0;
-                List<Last_Sales_Statistics__c> lastSalesLst = [select Id,Account__c,Account__r.Strategic_Value_Net_Sales__c,Account__r.Strategic_Value_Gross_Sales__c,
-                                                               Seiko_Lens_Net_Sales_Last_12Mo__c,Hoya_Lens_Net_Sales_Last_12Mo__c,H_S_Lens_Net_Sales_Last_12Mo__c,
-                                                               Seiko_Lens_Net_Sales_Last_3Mo__c,Hoya_Lens_Net_Sales_Last_3Mo__c,H_S_Lens_Net_Sales_Last_3Mo__c,
-                                                               Seiko_Lens_Gross_Sales_Last_12Mo__c,Hoya_Lens_Gross_Sales_Last_12Mo__c,H_S_Lens_Gross_Sales_Last_12Mo__c,
-                                                               Seiko_Lens_Gross_Sales_Last_3Mo__c,Hoya_Lens_Gross_Sales_Last_3Mo__c,H_S_Lens_Gross_Sales_Last_3Mo__c from Last_Sales_Statistics__c where Account__c in :accList];
-                if(lastSalesLst.size () > 0){
-                    for(Last_Sales_Statistics__c sale : lastSalesLst){
-                        if(accNewMap.containsKey(sale.Account__c)){
-                            //calculate Hoya,Seiko,H+s SOW 
-                            if(type == 'gross'){    
-                                double strategicGrossSales = accNewMap.get(sale.Account__c).Strategic_Value_Gross_Sales__c;
-                                if(sale.Seiko_Lens_Gross_Sales_Last_12Mo__c != null && (strategicGrossSales != 0 && strategicGrossSales != null))
-                                    seikoLensGrossSOWLast12Mo = (sale.Seiko_Lens_Gross_Sales_Last_12Mo__c/strategicGrossSales)*100; 
-                                if(seikoLensGrossSOWLast12Mo > 100)
-                                    seikoLensGrossSOWLast12Mo = 100; 
-                                if(sale.Hoya_Lens_Gross_Sales_Last_12Mo__c != null && (strategicGrossSales != 0  && strategicGrossSales != null))
-                                    hoyaLensGrossSOWLast12Mo = (sale.Hoya_Lens_Gross_Sales_Last_12Mo__c/strategicGrossSales)*100; 
-                                if(hoyaLensGrossSOWLast12Mo > 100)
-                                    hoyaLensGrossSOWLast12Mo = 100;				            
-                                if(sale.H_S_Lens_Gross_Sales_Last_12Mo__c != null && (strategicGrossSales != 0  && strategicGrossSales != null))
-                                    hsLensGrossSOWLast12Mo = (sale.H_S_Lens_Gross_Sales_Last_12Mo__c/strategicGrossSales)*100; 
-                                if(hsLensGrossSOWLast12Mo > 100)
-                                    hsLensGrossSOWLast12Mo = 100;
-                                double strategicShare = 0;
-                                if(strategicGrossSales != null){
-                                    strategicShare = strategicGrossSales/4;
-                                }
-                                if(strategicShare != 0)
-                                {					        	
-                                    if(sale.Seiko_Lens_Gross_Sales_Last_3Mo__c != null)
-                                        seikoLensGrossSOWLast3Mo =(sale.Seiko_Lens_Gross_Sales_Last_3Mo__c/strategicShare)*100; 
-                                    if(seikoLensGrossSOWLast3Mo > 100)
-                                        seikoLensGrossSOWLast3Mo = 100;                                
-                                    if(sale.Hoya_Lens_Gross_Sales_Last_3Mo__c != null)
-                                        hoyaLensGrossSOWLast3Mo =(sale.Hoya_Lens_Gross_Sales_Last_3Mo__c/strategicShare)*100; 
-                                    if(hoyaLensGrossSOWLast3Mo > 100)
-                                        hoyaLensGrossSOWLast3Mo = 100;                                
-                                    if(sale.H_S_Lens_Gross_Sales_Last_3Mo__c != null)
-                                        hsLensGrossSOWLast3Mo =(sale.H_S_Lens_Gross_Sales_Last_3Mo__c/strategicShare)*100; 
-                                    if(hsLensGrossSOWLast3Mo > 100)
-                                        hsLensGrossSOWLast3Mo = 100;
-                                }
-                                sale.Hoya_Gross_Sales_SOW_Last_12Mo__c = hoyaLensGrossSOWLast12Mo;
-                                sale.Hoya_Gross_Sales_SOW_Last_3Mo__c = hoyaLensGrossSOWLast3Mo;
-                                sale.Seiko_Gross_Sales_SOW_Last_12Mo__c = seikoLensGrossSOWLast12Mo;
-                                sale.Seiko_Gross_Sales_SOW_Last_3Mo__c = seikoLensGrossSOWLast3Mo;                            
-                                sale.H_S_Gross_Sales_SOW_Last_12Mo__c = hsLensGrossSOWLast12Mo;
-                                sale.H_S_Gross_Sales_SOW_Last_3Mo__c = hsLensGrossSOWLast3Mo;
-                            }
-                            else{
-                                double strategicNetSales = accNewMap.get(sale.Account__c).Strategic_Value_Net_Sales__c;
-                                if(sale.Seiko_Lens_Net_Sales_Last_12Mo__c != null && (strategicNetSales != 0 && strategicNetSales != null))
-                                    seikoLensNetSOWLast12Mo =(sale.Seiko_Lens_Net_Sales_Last_12Mo__c/strategicNetSales)*100; 
-                                System.debug(seikoLensNetSOWLast12Mo+'--'+sale.Seiko_Lens_Net_Sales_Last_12Mo__c+'--'+strategicNetSales);
-                                if(seikoLensNetSOWLast12Mo > 100)
-                                    seikoLensNetSOWLast12Mo = 100;
-                                if(sale.Hoya_Lens_Net_Sales_Last_12Mo__c != null && (strategicNetSales != 0 && strategicNetSales != null))
-                                    hoyaLensNetSOWLast12Mo =(sale.Hoya_Lens_Net_Sales_Last_12Mo__c/strategicNetSales)*100; 
-                                if(hoyaLensNetSOWLast12Mo > 100)
-                                    hoyaLensNetSOWLast12Mo = 100;
-                                if(sale.H_S_Lens_Net_Sales_Last_12Mo__c != null && (strategicNetSales != 0 && strategicNetSales != null))
-                                    hsLensNetSOWLast12Mo =(sale.H_S_Lens_Net_Sales_Last_12Mo__c/strategicNetSales)*100; 
-                                if(hsLensNetSOWLast12Mo > 100)
-                                    hsLensNetSOWLast12Mo = 100;
-                                double strategicShare = strategicNetSales/4;
-                                if(strategicShare != 0)
-                                {
-                                    if(sale.Seiko_Lens_Net_Sales_Last_3Mo__c != null && (strategicShare != null && strategicShare != 0))
-                                        seikoLensNetSOWLast3Mo =(sale.Seiko_Lens_Net_Sales_Last_3Mo__c/strategicShare)*100; 
-                                    if(seikoLensNetSOWLast3Mo > 100)
-                                        seikoLensNetSOWLast3Mo = 100.0;
-                                    if(sale.Hoya_Lens_Net_Sales_Last_3Mo__c != null && (strategicShare != null && strategicShare != 0))
-                                        hoyaLensNetSOWLast3Mo =(sale.Hoya_Lens_Net_Sales_Last_3Mo__c/strategicShare)*100; 
-                                    if(hoyaLensNetSOWLast3Mo > 100)
-                                        hoyaLensNetSOWLast3Mo = 100.0;
-                                    if(sale.H_S_Lens_Net_Sales_Last_3Mo__c != null && (strategicShare != null && strategicShare != 0))
-                                        hsLensNetSOWLast3Mo =(sale.H_S_Lens_Net_Sales_Last_3Mo__c/strategicShare)*100; 
-                                    if(hsLensNetSOWLast3Mo > 100)
-                                        hsLensNetSOWLast3Mo = 100.0;
-                                }
-                                sale.Hoya_Net_Sales_SOW_Last_12Mo__c = hoyaLensNetSOWLast12Mo;
-                                sale.Hoya_Net_Sales_SOW_Last_3Mo__c = hoyaLensNetSOWLast3Mo;
-                                sale.Seiko_Net_Sales_SOW_Last_12Mo__c = seikoLensNetSOWLast12Mo;
-                                sale.Seiko_Net_Sales_SOW_Last_3Mo__c = seikoLensNetSOWLast3Mo;
-                                sale.H_S_Net_Sales_SOW_Last_12Mo__c = hsLensNetSOWLast12Mo;
-                                sale.H_S_Net_Sales_SOW_Last_3Mo__c = hsLensNetSOWLast3Mo;
-                            }
-                        }         
-                        salesMap.put(sale.Account__c,sale);
-                    }
-                    if(salesMap.size() > 0){
-                        if(type == 'gross')
-                            lastSalesGrossLst.add(salesMap.values());
-                        else
-                            lastSalesNetLst.add(salesMap.values());
-                    }
-                    if(lastSalesGrossLst.size() > 0)
-                        update lastSalesGrossLst;
-                    if(lastSalesNetLst.size() > 0){
-                        update lastSalesNetLst;
-                        //Assign Account fields
-                       /* for (Account newAcc : accNewMap.values()) {
-                            if(salesMap.containsKey(newacc.Id) && salesMap.get(newacc.Id).H_S_Net_Sales_SOW_Last_3Mo__c != null ){
-                                Double hsNetSalesSOW =salesMap.get(newacc.Id).H_S_Net_Sales_SOW_Last_3Mo__c/100;
-                                Double firstCompetitorSOW = ((1-hsNetSalesSOW)*0.7)*100;
-                                Double secondCompetitorSOW = ((1-hsNetSalesSOW)*0.3)*100;
-                                newAcc.First_Competitor_Net_SOW_L3Mo__c  = firstCompetitorSOW;
-                                newAcc.Second_Competitor_Net_SOW_L3Mo__c = secondCompetitorSOW;
-                            }
-                        }*/
-                    }
-                }
-             }
-    	}
-    }   
+
     private static void addSAPCompanyCode(List<Account> newList) {
         List<Entity_Detail__mdt> entityList = [Select Id, SAP_Company_Code__c, Country_Code__c, Brand__c From Entity_detail__mdt];
         Map<String, String> keyToSAPCodeMapping =  new Map<String,String>();
@@ -355,10 +212,35 @@ public with sharing class AccountTriggerHelper {
                 eachAcc.addError('Hoya Account Id must start with \'EC-\' for End Consumers');
             } else if (eachAcc.parentId == null) {
                 eachAcc.addError('Parent Account is required for End Consumers');
-            }    
+            }
         }
-        
+
     }
+   /* private static void modifyOnekeyRecords(List<Account> newList) {
+        String clinicRecordTypeId = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('Clinic').getRecordTypeId();
+        Map<String, Owner_Assignmet_Rules_IQVIA__mdt> allMetadadata = Owner_Assignmet_Rules_IQVIA__mdt.getAll();
+        for (Account eachAcc : newList) {
+            // set record type
+            eachAcc.recordTypeId = clinicRecordTypeId;
+            eachAcc.Channel__c = 'Clinic';
+            eachAcc.CHCUSTCLASSIFICATIONID__c = 'Clinic';
+
+            // set fake Hoya account Id
+            eachAcc.hoya_account_id__c = eachAcc.QIDC__OneKeyId_IMS__c;
+            if (String.isBlank(eachAcc.name) || eachAcc.Name.equalsIgnoreCase('NO NAME')) {
+                eachAcc.name = 'PRIVATE STUDIO';
+            }
+            // Set the country specific pre-defined owners for newly inserted iqvia records
+            if (eachAcc.OwnerId == '005b0000000EOhtAAG') { // record downloaded using automated process
+                for (Owner_Assignmet_Rules_IQVIA__mdt eachCountry : allMetadadata.values()) {
+                    if (eachAcc.QIDC__OneKeyId_IMS__c.startsWith(eachCountry.Country_Code__c) && !String.isEmpty(eachCountry.Default_Owner_Id__c)) {
+                        eachAcc.OwnerId = eachCountry.Default_Owner_Id__c;
+                    }
+                }   
+            }
+        }
+    }*/
+
     public static void deactivateContacts(Set<Id> accIds) {
         if(!System.isFuture() && !System.isBatch()) {
             AccountTriggerHelper.toggleContactActivation(accIds, true);
@@ -405,7 +287,7 @@ public with sharing class AccountTriggerHelper {
         }
         
     }
-    
+
     @TestVisible private static void doSeikoInsert(List<Account> newList){
         //managing SEIKO data
         if(newList.size()>0){
@@ -522,7 +404,7 @@ public with sharing class AccountTriggerHelper {
             //String oppCustomDefaultId = [select Id from Opportunity_Custom__c where Company_Name__c='DEFAULT'].Id;
 
             List<Opportunity_Custom__c> oppCustomDefaultId = [select Id from Opportunity_Custom__c where Company_Name__c='DEFAULT' LIMIT 1];
-            String oppCustDefaultId = String.valueOf(oppCustomDefaultId);
+            String oppCustDefaultId = String.ValueOf(oppCustomDefaultId[0].Id);
             
             System.debug('XXX Opporutnity Custom Default '+oppCustDefaultId);
 
@@ -547,10 +429,13 @@ public with sharing class AccountTriggerHelper {
                     }
 
                     for(Opportunity_Custom__c oppCust : oppCustomList){
+                        System.debug(oppCustomList);
+                        System.debug(a.Account_Owner_Company__c);
                         if(a.Account_Owner_Company__c == oppCust.Company_Name__c){
                             o.Opportunity_Custom__c = oppCust.Id;
                         }else if(a.Account_Owner_Company__c != oppCust.Company_Name__c){
                             o.Opportunity_Custom__c = oppCustDefaultId;
+                            System.debug(oppCustDefaultId);
                         }
                     }
 
@@ -561,7 +446,7 @@ public with sharing class AccountTriggerHelper {
 
         }
     }
-    
+
     /**
      * @Author : Surawat Sakulmontreechai
      * @Class name : ####doAPACUpdateAfterUpdate#####  === > doAPACUpdateAfterUpdate
@@ -599,7 +484,7 @@ public with sharing class AccountTriggerHelper {
             List<Opportunity_Custom__c> oppCustomList = [select Id, Name, Company_Name__c from Opportunity_Custom__c where Company_Name__c IN:companyIds];
             //String oppCustomDefaultId = [select Id from Opportunity_Custom__c where Company_Name__c='DEFAULT'].Id;
             List<Opportunity_Custom__c> oppCustomDefaultId = [select Id from Opportunity_Custom__c where Company_Name__c='DEFAULT'];
-            String oppCustDefaultId = String.valueOf(oppCustomDefaultId);
+            String oppCustDefaultId = String.valueOf(oppCustomDefaultId[0].Id);
             //System.debug('XXX Opporutnity Custom Default '+oppCustDefaultId);
 
             for(Account a : newList){
@@ -660,7 +545,7 @@ public with sharing class AccountTriggerHelper {
             }
         }
     }
-    
+
     @TestVisible private static void doHVNABeforeinsert(List<Account> newList){
         if(newList.size()>0){
             List<Additionnal_account_data__c> insertList = new List<Additionnal_account_data__c>();
@@ -680,6 +565,13 @@ public with sharing class AccountTriggerHelper {
                 //link account and additional data
                 for(Integer i = 0; i < newList.size(); i++) {
                     newList.get(i).additionnal_account_data__c = insertList.get(i).id;
+					//Update Account Portal for US and Canada Accounts
+                    if(newList.get(i).hoya_account_id__c.startsWithIgnoreCase('US')){
+                    newList.get(i).Portal__c=System.Label.US_Portal;  
+                    }
+                    else if(newList.get(i).hoya_account_id__c.startsWithIgnoreCase('CA')){
+                        newList.get(i).Portal__c=System.Label.Canada_Portal;
+                    }
                 }
             }
         }
@@ -756,6 +648,11 @@ public with sharing class AccountTriggerHelper {
     */
     private static void doHVNAAfterUpdate(List<Account> newList, Map<Id, Account> newMap, Map<Id, Account> oldMap){
         List<Task> taskList = new List<Task>();
+		
+        Set<Id> accids=new set<Id>();
+        List<Additionnal_account_data__c> updateList = new List<Additionnal_account_data__c>();
+        Map<String, String> accountDataMap = new Map<String, String>();
+       
         //List<Account> newListHVNA = new List<Account>([select Id, Name, OwnerId, RecordTypeId, Hoya_Account_ID__c, CurrencyIsoCode, Create_New_Account_Tasks__c, HVNA_Create_Onboarding_Tasks__c from Account where Hoya_Account_ID__c like 'US%' order by LastModifiedDate desc limit 50]);
         //String srxRecordTypeId = [select Id,Name from RecordType where sObjectType='Task' and Name='SRX Sales Support'].Id;
         String srxRecordTypeId = Schema.SObjectType.Task.getRecordTypeInfosByName().get('SRX Sales Support').getRecordTypeId();
@@ -772,7 +669,28 @@ public with sharing class AccountTriggerHelper {
             if(oldAccount.HVNA_Create_Onboarding_Tasks__c<>a.HVNA_Create_Onboarding_Tasks__c && a.HVNA_Create_Onboarding_Tasks__c==true){
                 taskList.addAll(manageHvnaOnboardingTasks(a, onBoardingRecordTypeId));
             }
+			
+			
+            if(oldAccount.OwnerId<>a.OwnerId){
+                accids.add(a.Id);
+                accountDataMap.put(a.Id,a.OwnerId);                
+            }
+           
+			
         }
+		
+        if (!accids.isEmpty()) {
+            List<Additionnal_account_data__c> datas = [select id,OwnerId, master_account__c from additionnal_account_data__c where master_account__c in :accids ];
+            for(Additionnal_account_data__c data: datas){
+                data.OwnerId = accountDataMap.get(data.master_account__c);   
+                updateList.add(data);
+            }
+        
+            if(updateList.size()>0){
+                    update updateList;
+            }     
+        }
+
         if(taskList.size()>0){insert taskList;}
     }
     
@@ -1143,5 +1061,149 @@ public with sharing class AccountTriggerHelper {
             return result.Sales_Role__c;
         }
     }
-
+	
+    private static void doLastSalesStatisticsUpdate(List<Account> accountsList,Map<Id,Account> accNewMap,String type,String operationType){
+        Map<Id,Last_Sales_Statistics__c> salesMap = new Map<Id,Last_Sales_Statistics__c>();
+        List<Last_Sales_Statistics__c> lastSalesNetLst = new List<Last_Sales_Statistics__c>();
+        List<Last_Sales_Statistics__c> lastSalesGrossLst = new List<Last_Sales_Statistics__c>();
+        List<Id> accList =new List<Id>();
+        if(accountsList.size() > 0){
+            //Assign the Strategic NetSales based on Gross sales for countries who are using Gross sales only
+            if(operationType == 'INSERT' || operationType == 'UPDATE'){
+                for(Account acc:accountsList){
+                    String HoyaAccountID = acc.Hoya_Account_ID__c;
+                    Boolean isGermanyAccount = false;
+                    if(HoyaAccountID != null && (HoyaAccountID.startsWith('SO4900') ||  HoyaAccountID.startsWith('SO4990')))
+                		isGermanyAccount = true;
+                    if(isGermanyAccount){
+                        double avgDiscount = 0;
+                        if(accNewMap != null && accNewMap.get(acc.Id).Market_Avg_Disc_Ind_L12M__c != null)
+                            avgDiscount = accNewMap.get(acc.Id).Market_Avg_Disc_Ind_L12M__c;
+                        double stategicGross = acc.Strategic_Value_Gross_Sales__c != null ? acc.Strategic_Value_Gross_Sales__c:0;
+                        acc.Strategic_Value_Net_Sales__c = stategicGross*(1+avgDiscount);
+                    }
+                }
+            	if( operationType == 'UPDATE'){
+                    for(Account acc:accountsList){
+                        accList.add(acc.Id);
+                    }
+                    Double seikoLensGrossSOWLast12Mo = 0;
+                    Double seikoLensGrossSOWLast3Mo = 0;
+                    Double seikoLensNetSOWLast12Mo = 0;
+                    Double seikoLensNetSOWLast3Mo = 0;
+                    Double hoyaLensGrossSOWLast12Mo = 0;
+                    Double hoyaLensGrossSOWLast3Mo = 0;
+                    Double hoyaLensNetSOWLast12Mo = 0;
+                    Double hoyaLensNetSOWLast3Mo = 0;
+                    Double hsLensGrossSOWLast12Mo = 0;
+                    Double hsLensGrossSOWLast3Mo = 0;
+                    Double hsLensNetSOWLast3Mo = 0;
+                    Double hsLensNetSOWLast12Mo = 0;
+                    List<Last_Sales_Statistics__c> lastSalesLst = [select Id,Account__c,Account__r.Strategic_Value_Net_Sales__c,Account__r.Strategic_Value_Gross_Sales__c,
+                                                                   Seiko_Lens_Net_Sales_Last_12Mo__c,Hoya_Lens_Net_Sales_Last_12Mo__c,H_S_Lens_Net_Sales_Last_12Mo__c,
+                                                                   Seiko_Lens_Net_Sales_Last_3Mo__c,Hoya_Lens_Net_Sales_Last_3Mo__c,H_S_Lens_Net_Sales_Last_3Mo__c,
+                                                                   Seiko_Lens_Gross_Sales_Last_12Mo__c,Hoya_Lens_Gross_Sales_Last_12Mo__c,H_S_Lens_Gross_Sales_Last_12Mo__c,
+                                                                   Seiko_Lens_Gross_Sales_Last_3Mo__c,Hoya_Lens_Gross_Sales_Last_3Mo__c,H_S_Lens_Gross_Sales_Last_3Mo__c from Last_Sales_Statistics__c where Account__c in :accList];
+                    if(lastSalesLst.size () > 0){
+                        for(Last_Sales_Statistics__c sale : lastSalesLst){
+                            if(accNewMap.containsKey(sale.Account__c)){
+                                System.debug(type);
+                                //calculate Hoya,Seiko,H+s SOW 
+                                if(type == 'gross'){    
+                                    double strategicGrossSales = accNewMap.get(sale.Account__c).Strategic_Value_Gross_Sales__c;
+                                    if(sale.Seiko_Lens_Gross_Sales_Last_12Mo__c != null && (strategicGrossSales != 0 && strategicGrossSales != null))
+                                        seikoLensGrossSOWLast12Mo = (sale.Seiko_Lens_Gross_Sales_Last_12Mo__c/strategicGrossSales)*100; 
+                                    if(seikoLensGrossSOWLast12Mo > 100)
+                                        seikoLensGrossSOWLast12Mo = 100; 
+                                    if(sale.Hoya_Lens_Gross_Sales_Last_12Mo__c != null && (strategicGrossSales != 0  && strategicGrossSales != null))
+                                        hoyaLensGrossSOWLast12Mo = (sale.Hoya_Lens_Gross_Sales_Last_12Mo__c/strategicGrossSales)*100; 
+                                    if(hoyaLensGrossSOWLast12Mo > 100)
+                                        hoyaLensGrossSOWLast12Mo = 100;				            
+                                    if(sale.H_S_Lens_Gross_Sales_Last_12Mo__c != null && (strategicGrossSales != 0  && strategicGrossSales != null))
+                                        hsLensGrossSOWLast12Mo = (sale.H_S_Lens_Gross_Sales_Last_12Mo__c/strategicGrossSales)*100; 
+                                    if(hsLensGrossSOWLast12Mo > 100)
+                                        hsLensGrossSOWLast12Mo = 100;
+                                    double strategicShare = 0;
+                                    if(strategicGrossSales != null){
+                                        strategicShare = strategicGrossSales/4;
+                                    }
+                                    if(strategicShare != 0)
+                                    {					        	
+                                        if(sale.Seiko_Lens_Gross_Sales_Last_3Mo__c != null)
+                                            seikoLensGrossSOWLast3Mo =(sale.Seiko_Lens_Gross_Sales_Last_3Mo__c/strategicShare)*100; 
+                                        if(seikoLensGrossSOWLast3Mo > 100)
+                                            seikoLensGrossSOWLast3Mo = 100;                                
+                                        if(sale.Hoya_Lens_Gross_Sales_Last_3Mo__c != null)
+                                            hoyaLensGrossSOWLast3Mo =(sale.Hoya_Lens_Gross_Sales_Last_3Mo__c/strategicShare)*100; 
+                                        if(hoyaLensGrossSOWLast3Mo > 100)
+                                            hoyaLensGrossSOWLast3Mo = 100;                                
+                                        if(sale.H_S_Lens_Gross_Sales_Last_3Mo__c != null)
+                                            hsLensGrossSOWLast3Mo =(sale.H_S_Lens_Gross_Sales_Last_3Mo__c/strategicShare)*100; 
+                                        if(hsLensGrossSOWLast3Mo > 100)
+                                            hsLensGrossSOWLast3Mo = 100;
+                                    }
+                                    sale.Hoya_Gross_Sales_SOW_Last_12Mo__c = hoyaLensGrossSOWLast12Mo;
+                                    sale.Hoya_Gross_Sales_SOW_Last_3Mo__c = hoyaLensGrossSOWLast3Mo;
+                                    sale.Seiko_Gross_Sales_SOW_Last_12Mo__c = seikoLensGrossSOWLast12Mo;
+                                    sale.Seiko_Gross_Sales_SOW_Last_3Mo__c = seikoLensGrossSOWLast3Mo;                            
+                                    sale.H_S_Gross_Sales_SOW_Last_12Mo__c = hsLensGrossSOWLast12Mo;
+                                    sale.H_S_Gross_Sales_SOW_Last_3Mo__c = hsLensGrossSOWLast3Mo;
+                                }
+                                else{
+                                    double strategicNetSales = accNewMap.get(sale.Account__c).Strategic_Value_Net_Sales__c;
+                                    if(sale.Seiko_Lens_Net_Sales_Last_12Mo__c != null && (strategicNetSales != 0 && strategicNetSales != null))
+                                        seikoLensNetSOWLast12Mo =(sale.Seiko_Lens_Net_Sales_Last_12Mo__c/strategicNetSales)*100; 
+                                    System.debug(seikoLensNetSOWLast12Mo+'--'+sale.Seiko_Lens_Net_Sales_Last_12Mo__c+'--'+strategicNetSales);
+                                    if(seikoLensNetSOWLast12Mo > 100)
+                                        seikoLensNetSOWLast12Mo = 100;
+                                    if(sale.Hoya_Lens_Net_Sales_Last_12Mo__c != null && (strategicNetSales != 0 && strategicNetSales != null))
+                                        hoyaLensNetSOWLast12Mo =(sale.Hoya_Lens_Net_Sales_Last_12Mo__c/strategicNetSales)*100; 
+                                    if(hoyaLensNetSOWLast12Mo > 100)
+                                        hoyaLensNetSOWLast12Mo = 100;
+                                    if(sale.H_S_Lens_Net_Sales_Last_12Mo__c != null && (strategicNetSales != 0 && strategicNetSales != null))
+                                        hsLensNetSOWLast12Mo =(sale.H_S_Lens_Net_Sales_Last_12Mo__c/strategicNetSales)*100; 
+                                    if(hsLensNetSOWLast12Mo > 100)
+                                        hsLensNetSOWLast12Mo = 100;
+                                    double strategicShare = strategicNetSales/4;
+                                    if(strategicShare != 0)
+                                    {
+                                        if(sale.Seiko_Lens_Net_Sales_Last_3Mo__c != null && (strategicShare != null && strategicShare != 0))
+                                            seikoLensNetSOWLast3Mo =(sale.Seiko_Lens_Net_Sales_Last_3Mo__c/strategicShare)*100; 
+                                        if(seikoLensNetSOWLast3Mo > 100)
+                                            seikoLensNetSOWLast3Mo = 100.0;
+                                        if(sale.Hoya_Lens_Net_Sales_Last_3Mo__c != null && (strategicShare != null && strategicShare != 0))
+                                            hoyaLensNetSOWLast3Mo =(sale.Hoya_Lens_Net_Sales_Last_3Mo__c/strategicShare)*100; 
+                                        if(hoyaLensNetSOWLast3Mo > 100)
+                                            hoyaLensNetSOWLast3Mo = 100.0;
+                                        if(sale.H_S_Lens_Net_Sales_Last_3Mo__c != null && (strategicShare != null && strategicShare != 0))
+                                            hsLensNetSOWLast3Mo =(sale.H_S_Lens_Net_Sales_Last_3Mo__c/strategicShare)*100; 
+                                        if(hsLensNetSOWLast3Mo > 100)
+                                            hsLensNetSOWLast3Mo = 100.0;
+                                    }
+                                    sale.Hoya_Net_Sales_SOW_Last_12Mo__c = hoyaLensNetSOWLast12Mo;
+                                    sale.Hoya_Net_Sales_SOW_Last_3Mo__c = hoyaLensNetSOWLast3Mo;
+                                    sale.Seiko_Net_Sales_SOW_Last_12Mo__c = seikoLensNetSOWLast12Mo;
+                                    sale.Seiko_Net_Sales_SOW_Last_3Mo__c = seikoLensNetSOWLast3Mo;
+                                    sale.H_S_Net_Sales_SOW_Last_12Mo__c = hsLensNetSOWLast12Mo;
+                                    sale.H_S_Net_Sales_SOW_Last_3Mo__c = hsLensNetSOWLast3Mo;
+                                }
+                            }         
+                            salesMap.put(sale.Account__c,sale);
+                        }
+                        if(salesMap.size() > 0){
+                            if(type == 'gross')
+                                lastSalesGrossLst.add(salesMap.values());
+                            else
+                                lastSalesNetLst.add(salesMap.values());
+                        }
+                        if(lastSalesGrossLst.size() > 0)
+                            update lastSalesGrossLst;
+                        if(lastSalesNetLst.size() > 0){
+                            update lastSalesNetLst;                       
+                        }
+                    }
+             }
+            }
+    	}
+    }   
 }

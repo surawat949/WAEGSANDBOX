@@ -2,11 +2,12 @@ import { api, LightningElement, wire } from 'lwc';
 
 import { getRecord } from 'lightning/uiRecordApi';
 import ACCOUNT_BRAND from '@salesforce/schema/Account.Brand__c';
-import ACCOUNT_CHANNEL from '@salesforce/schema/Account.Channel__c';
+import ACCOUNT_CHANNEL from '@salesforce/schema/Account.RecordType.Name';
 import TOTAL_LOYALTY_POINTS from '@salesforce/schema/Account.Total_Loyalty_Points__c'; 
 
 //labels
 import businessProgramTab from '@salesforce/label/c.Business_Program';
+import portalnameTab from '@salesforce/label/c.Portal_Name';
 
 // apex
 import getSeikoData from '@salesforce/apex/TabActivationController.getSeikoData';
@@ -22,7 +23,7 @@ export default class TabActivation extends LightningElement {
     record({ error, data }) {
         if (data) {
             this.brand = data.fields.Brand__c.value;
-            this.channel = data.fields.Channel__c.value;
+            this.channel = data.fields.RecordType.displayValue;
             this.loyaltyPoints = data.fields.Total_Loyalty_Points__c.value;
         }
     }
@@ -33,7 +34,8 @@ export default class TabActivation extends LightningElement {
     }
 
     custLabel = {
-        businessProgramTab
+        businessProgramTab,
+        portalnameTab
     }
     connectedCallback() {
         console.log('parent connected callback call' + this.recordId);

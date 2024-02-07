@@ -2,7 +2,8 @@ import { LightningElement, api ,track ,wire} from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 import Account_obj from '@salesforce/schema/Account'; 
-import Last_Sales_Statistics_obj from '@salesforce/schema/Last_Sales_Statistics__c'; 
+import Last_Sales_Statistics_obj from '@salesforce/schema/Last_Sales_Statistics__c';
+import { getPicklistValuesByRecordType } from 'lightning/uiObjectInfoApi'; 
 
 //Fields
 import Account_First_Global_Name from '@salesforce/schema/Account.First_Competitor_global_name__c';  
@@ -45,6 +46,7 @@ import wireUpdateRecord from '@salesforce/apex/TabStatisticCompetitorController.
 import FirstLocalCompetitor from '@salesforce/apex/TabStatisticCompetitorController.getFirstLocalCompetitorName';
 import SecondLocalCompetitor from '@salesforce/apex/TabStatisticCompetitorController.getSecondLocalCompetitorName';
 import CreateTaskRecord from '@salesforce/apex/TabStatisticCompetitorController.CreateNewCompetitorReq';
+import SFDC_V2_StandardTask from '@salesforce/apex/Utility.getTaskSFDCStandardTask';
 //import FirstCompSOW from '@salesforce/apex/TabStatisticCompetitorController.getFirstCompetitorSOW';
 import { refreshApex } from '@salesforce/apex';
 
@@ -52,7 +54,6 @@ import { refreshApex } from '@salesforce/apex';
 import HSLensNetSales from '@salesforce/label/c.H_S_Lens_Net_Sales_Header';
 import HSLensGrossSales from '@salesforce/label/c.H_S_Lens_Gross_Sales_Header';
 import CompetitorLensSuppliers from '@salesforce/label/c.Competitor_Lens_Suppliers_Header';
-import NetSales from '@salesforce/label/c.AccountNetSalesHeader';
 import lblErrorAssignTo from '@salesforce/label/c.SFDC_V_2_AccountMembership_AssignErrBody';
 import lblErrorSubject from '@salesforce/label/c.SFDC_V_2_AccountMembership_SubjectErrBody';
 import lblAccount from '@salesforce/label/c.tabTaskModalAccContact';
@@ -90,11 +91,10 @@ export default class TabStatisticsPotential extends LightningElement {
 
     @track isModalOpen = false;
     @track isNewTaskModalOpen = false;
-    @track value = 'Nicht begonnen';
+    @track value = 'New';
     @track labelSubject = 'Request to Add New Competitor in SFDC';
     @track labelInstructionDefault = 'Request to change for Competitor';
     @track defaultAccountId = this.receivedId;
-    //@track disableClase = '';
 
     subject = this.labelSubject;
     duedate;
@@ -105,10 +105,13 @@ export default class TabStatisticsPotential extends LightningElement {
     status = this.value;
     whatid = this.receivedId;
 
+    @track StatusOptions;
+    TaskStatusRecordTypeId;
+
     custLabel = {
         CompetitorLensSuppliers,
         HSLensGrossSales,
-        HSLensNetSales,NetSales,
+        HSLensNetSales,
         lblErrorAssignTo, lblErrorSubject,
         lblAccount, lblAccountError
     }
@@ -116,6 +119,26 @@ export default class TabStatisticsPotential extends LightningElement {
         super();
         // passed parameters are not yet received here
         
+    }
+
+    @wire(SFDC_V2_StandardTask)
+    standard_sfdcv2_task({data,error}){
+        if(data){
+            data = JSON.parse(JSON.stringify(data));
+            this.TaskStatusRecordTypeId = data;
+        }else if(error){
+            this.showToast('Error', JSON.stringify(error.message), 'error');
+        }
+    }
+
+    @wire(getPicklistValuesByRecordType, {objectApiName : 'Task', recordTypeId: '$TaskStatusRecordTypeId'})
+    STATUS_PICKLIST_VALUE({data,error}){
+        if(data){
+            this.StatusOptions = data.picklistFieldValues.Status.values;
+            //console.log(data);
+        }else if(error){
+            this.showToast('Error', JSON.stringify(error.message), 'error');
+        }
     }
 
     subjectCH(event){
@@ -146,12 +169,12 @@ export default class TabStatisticsPotential extends LightningElement {
     firstCompetitorLocalChange(event){
         this.firstCompetitorLocalName = event.target.value;
 
-        const localcompetitor = this.firstCompetitorLocalName;
+        var localcompetitor = this.firstCompetitorLocalName;
         if(this.firstCompetitorLocalName==undefined || this.firstCompetitorLocalName==null){
             localcompetitor = '';
         }
 
-        const globalcompetitor = this.firstCompetitorGlobalName;
+        var globalcompetitor = this.firstCompetitorGlobalName;
         if(this.firstCompetitorGlobalName==undefined || this.firstCompetitorGlobalName==null){
             globalcompetitor = '';
         }
@@ -164,12 +187,12 @@ export default class TabStatisticsPotential extends LightningElement {
 
     firstCompeitorGlobalChange(event){
         this.firstCompetitorGlobalName = event.target.value;
-        const localcompetitor = this.firstCompetitorLocalName;
+        var localcompetitor = this.firstCompetitorLocalName;
         if(this.firstCompetitorLocalName==undefined || this.firstCompetitorLocalName==null){
             localcompetitor = '';
         }
 
-        const globalcompetitor = this.firstCompetitorGlobalName;
+        var globalcompetitor = this.firstCompetitorGlobalName;
         if(this.firstCompetitorGlobalName==undefined || this.firstCompetitorGlobalName==null){
             globalcompetitor = '';
         }
@@ -182,7 +205,6 @@ export default class TabStatisticsPotential extends LightningElement {
 
     handleLookupSelectionOwnerId(event){
         if(event.detail.selectedRecord != undefined){
-            //console.log('Select contactid value on parent component is '+JSON.stringify(event.detail.selectedRecord.Id));
             this.whomid = event.detail.selectedRecord.Id;
             this.template.querySelector('lightning-input[data-my-id=FormInput7]').value=event.detail.selectedRecord.Id;
         }
@@ -242,7 +264,6 @@ export default class TabStatisticsPotential extends LightningElement {
         if(error){
             this.showToast2('Error', error, 'error');
         }else if(data){
-            //console.log('First Local Competitor = >'+JSON.stringify(data));
             this.FirstCompLocalName = JSON.parse(JSON.stringify(data));
 
         }
@@ -253,7 +274,6 @@ export default class TabStatisticsPotential extends LightningElement {
         if(error){
             this.showToast2('Error', error, 'error');
         }else if(data){
-            console.log('Second Local Competitor = >'+JSON.stringify(data));
             this.SecondCompLocalName = JSON.parse(JSON.stringify(data));
         }
     }
@@ -264,7 +284,6 @@ export default class TabStatisticsPotential extends LightningElement {
         if(error){
             this.showToast('Error', error, error);
         }else if(data){
-            console.log('data == ', JSON.stringify(data));
             this.lastSalesId = JSON.parse(JSON.stringify(data));
         }
     } 
@@ -273,6 +292,7 @@ export default class TabStatisticsPotential extends LightningElement {
         this.showToast('Success', 'Success', 'The update is success.Please wait a while to get the changes reflected');
         this.showLoading = true;
         this.isRender =false;
+        console.log('submit');
         this.updateRecordView();    
     }
 
@@ -296,8 +316,9 @@ export default class TabStatisticsPotential extends LightningElement {
     }
     
     updateRecordView(){
+        console.log('submitted');
         setTimeout(() => {
-            eval("$A.get('e.force:refreshView').fire();");
+           // eval("$A.get('e.force:refreshView').fire();");
             this.showLoading = false;
             this.isRender = true;            
         },30000);
@@ -305,10 +326,8 @@ export default class TabStatisticsPotential extends LightningElement {
     }
 
     connectedCallback() {
-        // console.log('child connected call-' + this.receivedId);
         this.FirstCompetitorLocal = this.FirstCompLocalName;
-        this.SecondCompetitorLocal = this.SecondCompLocalName;
-        
+        this.SecondCompetitorLocal = this.SecondCompLocalName;        
     }
 
     renderedCallback(){
@@ -386,11 +405,7 @@ export default class TabStatisticsPotential extends LightningElement {
     }
 
     get options(){
-        return [
-            { label : 'Not Started', value : 'Nicht begonnen'},
-            { label : 'On Going', value : 'In Progress'},
-            { label : 'Completed', value : 'Completed'}
-        ];
+        return this.items;
     }
 
     openModal(){

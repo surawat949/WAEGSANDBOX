@@ -24,25 +24,20 @@ public with sharing class tabShowPadController {
             DateTime twelveMonthsAgo = currentDate.addMonths(-12);
             // Calculate the date 6 months ago from the current date
             DateTime sixMonthsAgo = currentDate.addMonths(-6);
-
             if (currAcc.Account_Status__c == 'Closed') {
-                system.debug('Showpad01');
                 wrapper.sharingFlag = 'GREY';  	
                 wrapper.viewingFlag = 'GREY';
             } else{
                     if (listContact.size() > 0) {
                         Boolean activityFound = false;
                         for (Contact con : listContact) {
-                            system.debug('>>>con1'+con.ShowpadForSF__Showpad_Last_Activity_Date__c);
                             if(con.ShowpadForSF__Showpad_Last_Activity_Date__c != null && con.ShowpadForSF__Showpad_Last_Activity_Date__c >= sixMonthsAgo && con.ShowpadForSF__Showpad_Last_Activity_Date__c <= currentDate) {
                                 activityFound = true;
-                                system.debug('Showpad10');
                                 wrapper.viewingFlag = 'GREENALERT';
                                 wrapper.sharingFlag = 'GREEN'; 
                                 break;
                             }  
                             else{
-                                system.debug('Showpad09');
                                 wrapper.sharingFlag = 'RED';     
                                 wrapper.viewingFlag = 'RED';								
                                 
@@ -51,9 +46,8 @@ public with sharing class tabShowPadController {
                         if (activityFound) {
                             // check if for any of the contacts we have last view date as expected
                             for (Contact con : listContact) {
-                                 system.debug('>>>con'+con.ShowpadForSF__Showpad_Last_View_Date__c);
                                 if (con.ShowpadForSF__Showpad_Last_View_Date__c != null && con.ShowpadForSF__Showpad_Last_View_Date__c >= threeMonthsAgo && con.ShowpadForSF__Showpad_Last_View_Date__c <= currentDate) {
-                                    system.debug('Showpad11');
+                                    
                                     wrapper.sharingFlag = 'GREEN';
                                     wrapper.viewingFlag = 'GREENALERT';
                                     break; 
@@ -66,7 +60,6 @@ public with sharing class tabShowPadController {
                         }
 
                     } else {
-                        system.debug('Showpad09');
                         wrapper.sharingFlag = 'RED';  
                         wrapper.viewingFlag = 'RED';						
                     }  

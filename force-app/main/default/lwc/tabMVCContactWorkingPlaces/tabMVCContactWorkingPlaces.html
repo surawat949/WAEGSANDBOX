@@ -6,6 +6,9 @@
              <td>
                 <h3  class="slds-section__title  test-id__section-header-container" data-aura-rendered-by="344:1408;a"><p align="left"><lightning-icon icon-name="standard:facility_bed" alternative-text="doctore" size="small"></lightning-icon> &nbsp; {lables.other_Related_Clinics}</p></h3>
             </td>
+            <td>
+                <p align="right"><lightning-button variant="brand-outline" label="Add Relationship" onclick={navigateToContactRelationship}></lightning-button></p>
+            </td>
            </tr>
         </table><br>
         <div if:true={isLoading}>

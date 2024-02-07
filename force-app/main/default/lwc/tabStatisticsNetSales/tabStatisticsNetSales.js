@@ -24,6 +24,7 @@ import LensesLFY from '@salesforce/label/c.AccountLensesSalesLFY';
 import LensesVariation from '@salesforce/label/c.AccountLensesVariation';
 import Save from '@salesforce/label/c.Save_Button';
 import LensSalesForecast from '@salesforce/label/c.Lens_Sales_Forecast_Header';
+import Volumes from '@salesforce/label/c.Volumes';
 //Object
 import Account_obj from '@salesforce/schema/Account';
 //Fields
@@ -92,7 +93,7 @@ export default class TabStatisticsNetSales extends LightningElement {
     maxMonth;
     Revenue;
     custLabel = {
-        SalesTarget,MonthlyNetSales,LensesNetSales,ParentNetSales,
+        SalesTarget,MonthlyNetSales,LensesNetSales,ParentNetSales,Volumes,
         MonthlyObjective,Last12MoVsObjective,Save,LensSalesForecast,
         Lenses,Frames,ContactLenses,Instruments,Others,NetSales,TotalFY,TotalLFY,Variation,LensesLFY,LensesVariation
     }
@@ -149,7 +150,6 @@ export default class TabStatisticsNetSales extends LightningElement {
         .then(response => {
            this.maxMonth = response;
         }).catch(error => {
-            console.log(error);
             this.showToast('Error', error.message, error.message);
         })   
         getStatisticsSales({ recordId: this.receivedId})
@@ -419,7 +419,6 @@ export default class TabStatisticsNetSales extends LightningElement {
                             forecastCFYTD = 0;
                         break;              
             }
-            console.log(forecastCFYTD);
             //Calculate variation
             for(let i=0; i<=11; i++){
                 var totalSalesVariation = 0;                
@@ -608,23 +607,21 @@ export default class TabStatisticsNetSales extends LightningElement {
             ]).then(() => {
                 const ctx = this.template.querySelector('canvas.chartNetSales').getContext('2d');
                 this.chart = new window.Chart(ctx,this.config);
-                console.log(this.config);
                 const ctx1 = this.template.querySelector('canvas.volumeChart').getContext('2d');
                 this.chart = new window.Chart(ctx1,this.configVol);
                 
             }).catch(error => {
                 this.dispatchEvent(
                     new ShowToastEvent({
-                        title: error.message,
-                        message: 'error',
-                        variant: 'error',
+                        title: 'Error',
+                        message: error.message,
+                        variant: 'Error',
                     }),
                 );
             });
         })
         .catch(error => {
-            console.log(error);
-            this.showToast('Error', error.message, error.message);
+            this.showToast('Error', 'Error',error.message );
         })       
     }
     showToast(title, variant, message) {

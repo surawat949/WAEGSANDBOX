@@ -65,6 +65,7 @@ public with sharing class TabAccountMemberParentId_Test {
         TabAccountMemberParentId.searchLookupAccountData('test', 'Account', a1.Id);
         TabAccountMemberParentId.searchLookupAccountDefaultRecordData(a1.Id, 'Account');
         TabAccountMemberParentId.searchLookupContactData('test', 'Contact', c1.Id);
+        TabAccountMemberParentId.getTaskSFDCStandardTask();
         
         Test.StopTest();
 

@@ -19,7 +19,8 @@ import AppointmentOnly from  '@salesforce/schema/Contact.By_appointment_only__c'
 import FaxOpt from  '@salesforce/schema/Contact.HasOptedOutOfFax';
 import Email from '@salesforce/schema/Contact.Email';
 import EmailOpt from  '@salesforce/schema/Contact.HasOptedOutOfEmail';
-import SMSopt from  '@salesforce/schema/Contact.tdc_tsw__SMS_Opt_out__c';
+import Title from  '@salesforce/schema/Contact.Title';
+//import SMSopt from  '@salesforce/schema/Contact.tdc_tsw__SMS_Opt_out__c';
 //Custom Labels
 import Communication from '@salesforce/label/c.SFDC_V2_MVC_Contact_Details_Comm';
 
@@ -44,6 +45,7 @@ export default class TabContactDetails extends LightningElement {
     appointmentOnly=[AppointmentOnly];
     email = [Email];
     emailOpt =[EmailOpt];
-    smsOpt = [SMSopt];
+   // smsOpt = [SMSopt];
     custLabel={Communication};
+    title=[Title];
 }

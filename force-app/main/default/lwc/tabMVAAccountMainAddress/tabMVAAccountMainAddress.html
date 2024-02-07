@@ -11,42 +11,9 @@
                         <p align="left">{label.label_AccAddress}</p>
                     </h3>
                 </td>
-                <!--td><p align="right"><lightning-button label="Demand of modification" onclick={showPopup}></lightning-button></p></td-->
             </tr>
         </table><br>
-        <!--
-        <div class="slds-grid">
-            <div class="slds-col slds-size_1-of-3 slds-m-left_medium">
-                <lightning-record-form
-                        record-id={receivedId}
-                        object-api-name={ObjectApiName}
-                        fields="Responsible_Customer_Service_Agent__c"
-                        mode="view"  
-                        columns="1"               
-                        >
-                    </lightning-record-form>
-            </div>
-        </div>-->
-        <!--<lightning-record-view-form record-id={receivedId} id="AddressForm" object-api-name={ObjectApiName}>
-            <div class="slds-grid slds-m-left_medium">
-                <div class="slds-col slds-size_1-of-3">
-                    <lightning-output-field field-name="Name"></lightning-output-field>
-                </div>
-                <div class="slds-col slds-size_1-of-3">
-                    <lightning-output-field field-name="ShippingStreet"></lightning-output-field>
-                </div>
-                <div class="slds-col slds-size_1-of-3">
-                    <lightning-record-form
-                        record-id={receivedId}
-                        object-api-name={ObjectApiName}
-                        fields="Responsible_Customer_Service_Agent__c"
-                        mode="view"  
-                        columns="1"   
-                        onsuccess={handleSuccess}  
-                    ></lightning-record-form>
-                </div>
-            </div>
-        </lightning-record-view-form>-->
+        
         <div class="slds-grid slds-m-top_small slds-m-left_medium slds-m-right_medium slds-m-bottom_medium">
             <div class="slds-col slsd-size_2-of-3">
                 <lightning-record-form
@@ -60,7 +27,7 @@
                     columns="3"
                 ></lightning-record-form>
             </div>
-            <div class="slds-col slds-size_1-of-3">
+            <div class="slds-col slds-size_1-of-3 slds-m-left_medium">
                 <lightning-record-form
                     record-id={receivedId}
                     object-api-name={ObjectApiName}
@@ -71,52 +38,7 @@
                 ></lightning-record-form>
             </div>
         </div>
-        <!--<lightning-record-view-form record-id={receivedId} id="AddressForm2" object-api-name={ObjectApiName}>
-            <div class="slds-grid slds-m-left_medium">
-                <div class="slds-col slds-size_1-of-3">
-                    <lightning-output-field field-name="Shop_Name__c"></lightning-output-field>
-                </div>
-                <div class="slds-col slds-size_1-of-3">
-                    <lightning-output-field field-name="ShippingPostalCode"></lightning-output-field>
-                </div>
-                <div class="slds-col slds-size_1-of-3">
-                    <lightning-output-field field-name="Phone"></lightning-output-field>
-                </div>
-            </div>
-            <div class="slds-grid slds-m-left_medium">
-                <div class="slds-col slds-size_1-of-3">
-                    <lightning-output-field field-name="Hoya_Account_ID__c"></lightning-output-field>
-                </div>
-                <div class="slds-col slds-size_1-of-3">
-                    <lightning-output-field field-name="ShippingCity"></lightning-output-field>
-                </div>
-                <div class="slds-col slds-size_1-of-3">
-                    <lightning-output-field field-name="Fax"></lightning-output-field>
-                </div>
-            </div>
-            <div class="slds-grid slds-m-left_medium">
-                <div class="slds-col slds-size_1-of-3">
-                    <lightning-output-field field-name="ParentId"></lightning-output-field>
-                </div>
-                <div class="slds-col slds-size_1-of-3">
-                    <lightning-output-field field-name="ShippingState"></lightning-output-field>
-                </div>
-                <div class="slds-col slds-size_1-of-3">
-                    <lightning-output-field field-name="email__c"></lightning-output-field>
-                </div>
-            </div>
-            <div class="slds-grid slds-m-left_medium">
-                <div class="slds-col slds-size_1-of-3">
-                    <lightning-output-field field-name="Account_Status__c"></lightning-output-field>
-                </div>
-                <div class="slds-col slds-size_1-of-3">
-                    <lightning-output-field field-name="ShippingCountry"></lightning-output-field>
-                </div>
-                <div class="slds-col slds-size_1-of-3">
-                    <lightning-output-field field-name="Website"></lightning-output-field>
-                </div>
-            </div>
-        </lightning-record-view-form>-->
+        
         <div class="slds-grid slds-m-top_small slds-m-left_medium slds-m-right_medium slds-m-bottom_medium">
             <div class="slds-size_1-of-1">
                 <lightning-record-form
@@ -142,49 +64,7 @@
                     </td>
                 </tr>
             </table><br>
-            <!--<lightning-record-view-form object-api-name={ObjectApiName} record-id={receivedId} id="ClinicProfile">
-                <div class="slds-grid slds-m-left_medium">
-                    <div class="slds-col slds-size_1-of-3">
-                        <lightning-output-field field-name="Clinic_type__c"></lightning-output-field>
-                    </div>
-                    <div class="slds-col slds-size_1-of-3">
-                        <lightning-output-field field-name="Clinic_Sub_type__c"></lightning-output-field>
-                    </div>
-                    <div class="slds-col slds-size_1-of-3">
-                        <lightning-output-field field-name="Clinic_Speciality__c"></lightning-output-field>
-                    </div>
-                </div>
-                <div class="slds-grid slds-m-left_medium">
-                    <div class="slds-col slds-size_1-of-3">
-                        <lightning-record-form
-                            object-api-name={ObjectApiName}
-                            record-id={receivedId}
-                            fields="Manual_Segment__c"
-                            columns="1"
-                            density="comfy"
-                            mode="view"
-                            onsuccess={handleSuccess}
-                        ></lightning-record-form>
-                    </div>
-                    <div class="slds-col slds-size_1-of-3">
-                        <lightning-output-field field-name="QIDC__OK_MDM_Is_Privacy_Law_Enabled_IMS__c"></lightning-output-field>
-                    </div>
-                </div>
-                <div class="slds-grid slds-m-left_medium">
-                    <div class="slds-col slds-size_1-of-1">
-                        <lightning-record-form
-                            object-api-name={ObjectApiName}
-                            record-id={receivedId}
-                            fields="Long_Text__c"
-                            columns="1"
-                            density="comfy"
-                            mode="view"
-                            onsuccess={handleSuccess}
-                        >
-                        </lightning-record-form>
-                    </div>
-                </div>
-            </lightning-record-view-form>-->
+            
             <div class="slds-grid slds-m-top_small slds-m-left_medium slds-m-right_medium slds-m-bottom_medium">
                 <div class="slds-col slds-size_1-of-1">
                     <lightning-record-form
@@ -249,7 +129,7 @@
             <div class="slds-grid slds-m-left_medium slds-m-top_small slds-m-right_medium slds-m-bottom_medium slds-border_bottom">
                 <div class="slds-col slds-size_1-of-4">
                     <p align="left">
-                        <!--<lightning-formatted-url value={urlGoogle} label={urlGoogleLabel} target="_blank"></lightning-formatted-url>-->
+                        
                         <a href={urlGoogle} target="_blank">
                             {Street}<br>
                             {City}<br>

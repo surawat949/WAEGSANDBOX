@@ -3,10 +3,10 @@
         <table class="slds-table slds-table_bordered " aria-label="Sales Targets">
             <tr data-id="header1" class="row" style="background-color: #aacbff;">
                 <template lwc:if={isTypeNet}>  
-                     <td><h3 class="slds-section__title">Local Key of Consolidation - Net Sales Trends</h3></td>
+                     <td><h3 class="slds-section__title">{custLabel.LocalKeyNet}</h3></td>
                 </template>
                 <template lwc:else>
-                    <td><h3 class="slds-section__title">Local Key of Consolidation - Gross Sales Trends</h3></td>
+                    <td><h3 class="slds-section__title">{custLabel.LocalKeyGross}</h3></td>
                 </template>
             </tr>
         </table><br>  

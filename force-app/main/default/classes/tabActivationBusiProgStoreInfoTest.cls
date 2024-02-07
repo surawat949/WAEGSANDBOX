@@ -26,7 +26,7 @@ public class tabActivationBusiProgStoreInfoTest {
             insert storeCharObj;
         
             Store_Related_Pictures__c storePicObj = new Store_Related_Pictures__c();
-            storePicObj.Date__c = date.valueOf(system.now());
+            //storePicObj.Date__c = date.valueOf(system.now());
             storePicObj.Description__c = 'test';
             storePicObj.Account__c = a1.id;
             insert storePicObj;
@@ -36,7 +36,7 @@ public class tabActivationBusiProgStoreInfoTest {
         Account acc = [SELECT Id, Hoya_Account_ID__c, Name, Shop_Name__c, CurrencyIsoCode, OwnerId
                         FROM Account
                         WHERE Hoya_Account_ID__c = 'TEST001' LIMIT 1];
-         list<Store_Related_Pictures__c> storeRelatedPic =[SELECT ID,Name, Date__c,Description__c,Account__c
+         list<Store_Related_Pictures__c> storeRelatedPic =[SELECT ID,Name,Description__c,Account__c
                                                           FROM Store_Related_Pictures__c WHERE Account__c=: acc.Id];
         list<Store_Characteristics__c> storeCharObj =[SELECT ID,Name, Last_Year_of_Reference__c,
                                                       Retail_Turnover_Last_Year_of_Ref__c,Account__c,Annual_Growth_Last_Year_of_Ref__c
@@ -45,6 +45,7 @@ public class tabActivationBusiProgStoreInfoTest {
          tabActivationBusiProgStoreInfoController.migrateLastYearToPreYear(acc.id);
          tabActivationBusiProgStoreInfoController.getStoredPictures(acc.id);
          tabActivationBusiProgStoreInfoController.getStoreId(acc.id);
+         Test.StopTest();
         
 
     }    

@@ -6,7 +6,7 @@ import deleteRelationShip from '@salesforce/apex/TabActivationMedicalProgramCont
 
 import {ShowToastEvent} from 'lightning/platformShowToastEvent';
 // Labels
-import New from '@salesforce/label/c.New';
+import New from '@salesforce/label/c.NewButtonRelatedList';
 import Referring_Prescribers from '@salesforce/label/c.SFDC_V_2_Referring_Prescriber';
 import Prescribers_Nearby from '@salesforce/label/c.SFDC_V_2_Prescribers_Nearby';
 import First_Speciality from '@salesforce/label/c.SFDC_V_2_Prescribers_First_Speciality';
@@ -334,7 +334,7 @@ export default class TabActivationMedicalProgramPrescribers extends LightningEle
 
         }).catch(error => {
             this.error = error;
-            this.showToastMethod('Error', this.error.body.message, 'error', 'dismissible');
+            this.showToastMethod('Error', this.error, 'error', 'dismissible');
         });
 
 
@@ -351,24 +351,18 @@ export default class TabActivationMedicalProgramPrescribers extends LightningEle
     handleDeleteRow(recordIdToDelete) {
 
         this.isLoading = true;
+        
         deleteRelationShip(recordIdToDelete).then(result => {
-
+            this.data = result;
             this.isLoading = false;
-
             const evt = new ShowToastEvent({title: 'Success Message', message: 'Record deleted successfully ', variant: 'success', mode: 'dismissible'});
-
-
             this.dispatchEvent(evt);
 
             return refreshApex(this.data);
 
         }).catch(error => {
-
-
             this.error = error;
-            window.console.log('Unable to delete record due to ' + error.body.message);
-
-
+            this.showToastMethod('Error', this.error, 'error', 'dismissible');
         });
 
     }
@@ -381,12 +375,10 @@ export default class TabActivationMedicalProgramPrescribers extends LightningEle
             totalPrescribingSegmentation: this.totalPrescribingSValue,
             miyosmartSegmentation: this.miyosmartSegmentationvalue
         }).then(result => { 
-            console.log(' handleKeyChangeMap 1-');
             this.mapMarker = [];
             if (result != undefined) 
                 for (var i = 0; i < result.length; i++) {
                     if (i == 0) { // show star on map
-                        console.log(' Account map  is', result[0]);
                         this.mapMarker = [
                             ...this.mapMarker, {
                                 location: {
@@ -412,7 +404,6 @@ export default class TabActivationMedicalProgramPrescribers extends LightningEle
                             }
                         ];
                     } else {
-                        console.log(' Contact map  is', result[i]);
 
                         // show red pin on map
                         this.mapMarker = [
@@ -448,11 +439,11 @@ export default class TabActivationMedicalProgramPrescribers extends LightningEle
                     PostalCode: result[0].accountShippingPostalCode
                 }
             }
-            console.log(' handleKeyChangeMap 4-');
 
         }).catch(error => {
             this.errors = error;
-            console.log('Line 260 error ' + this.error);
+            this.showToastMethod('Error', this.error, 'error', 'dismissible');
+
 
         });
     }

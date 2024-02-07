@@ -7,9 +7,9 @@ trigger LiveChatTranscriptTrigger on LiveChatTranscript (before insert,before up
         }
     }else if(trigger.isAfter){
         if(trigger.isInsert){
-        
+            //LiveChatTranscriptTriggerHelper.doAttachExistingCases(trigger.new);
         }else if(trigger.isUpdate){ 
-            LiveChatTranscriptTriggerHelper.doCreateTaskforChat(trigger.new,trigger.oldMap);    
+            LiveChatTranscriptTriggerHelper.doUpdateContactDetails(trigger.new);   
         }
     }
 }

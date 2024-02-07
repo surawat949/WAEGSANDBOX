@@ -2,10 +2,6 @@ public with sharing class tabMVAVisitsClinicNearbyController {
 
     @AuraEnabled(cacheable=true)
     public static List<Account> getAccountsNearBy(String recordId, Double distance, String AccType, String MiyoSmartAuth, Integer prescribers){
-        //System.debug('distance'+distance);
-        //System.debug('AccType'+AccType);
-        //System.debug('MiyoSmartAuth'+MiyoSmartAuth);
-        //System.debug('prescribers'+prescribers);
         
         try {
             
@@ -41,7 +37,6 @@ public with sharing class tabMVAVisitsClinicNearbyController {
                         + 'ShippingLatitude, ShippingLongitude, Record_Type_Name__c, Phone, Segmentation_Box__c, Brand__c, Myo_Smart_AuthorizeDealer__c, First_Competitor_global_name__c, First_Competitor_local_name__c, First_Competitor_SOW__c, RecordType.DeveloperName, (SELECT Id, Name FROM Contacts WHERE RecordType.DeveloperName=\'Opthalmologist\') FROM Account WHERE '
                         + 'DISTANCE(ShippingAddress, GEOLOCATION('+latitude+', '+longitude+'), \'km\')<'+distance + AccType + IsMyoSmart +' AND Hoya_Account_ID__c <> \''+HoyaAccountId+'\' ORDER BY CreatedDate DESC LIMIT 500';
             
-            //System.debug('XXX SOQL is =>'+soql);
 
             List<Account> aList = database.query(soql);
             
@@ -55,14 +50,10 @@ public with sharing class tabMVAVisitsClinicNearbyController {
                 result.addAll(aList);    
             }
             
-            
-           // System.debug('XXX Found Account =>'+result.size()+' : '+result);
-            //System.debug('XXX Get Result Data = >'+result);
             return result;
 
 
         } catch (Exception e) {
-            LogException.log(e);
             throw new AuraHandledException(e.getMessage());
         }
     }
@@ -80,10 +71,10 @@ public with sharing class tabMVAVisitsClinicNearbyController {
                 dataset.add(new optionSet(pListLabelName, pListValue));
 
             }
-            //System.debug('XXX Get Picklist value, Clinic Type =>'+dataset);
+            
             return dataset;
         } catch (Exception e) {
-            LogException.log(e);
+            
             throw new AuraHandledException(e.getMessage());
         }
     }

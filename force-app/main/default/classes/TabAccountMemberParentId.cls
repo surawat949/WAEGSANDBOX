@@ -7,12 +7,15 @@ public with sharing class TabAccountMemberParentId {
      * @Email : surawat.sakulmontreechai@hoya.com
      * @CreatedDate : 2023-08-21
      * @CreatedBy : Surawat Sakulmontreechai
-     * @LastmodifiedDate : 2023-08-24
+     * @LastmodifiedDate : 2024-01-31
      * @LastmodifiedBy : Surawat Sakulmontreechai
      * @version : 1.0
      * @apiVersion : via api 49.0 or higher (force.com)
      * @description : This class support for LWC - TabAccountMembership in SFDC V.2.0 Project
      */
+
+    
+    private static final String Task_Status_SFDC_V2 = Schema.SObjectType.Task.getRecordTypeInfosByDeveloperName().get('SFDC_V2_Standard_Task').getRecordTypeId();
 
     public class NumOfAccount{
         @AuraEnabled public double childAccount{get;set;}
@@ -35,11 +38,11 @@ public with sharing class TabAccountMemberParentId {
                 numList.add(n);
             }
 
-            System.debug('Get number of child account => '+numList);
+            
             return numList;
 
         } catch (Exception e) {
-            LogException.log(e);
+            
             throw new AuraHandledException(e.getMessage());
         }
     }
@@ -143,7 +146,7 @@ public with sharing class TabAccountMemberParentId {
                 return null;
             }
         } catch (Exception e) {
-            LogException.log(e);
+            
             throw new AuraHandledException(e.getMessage());
         }
     }
@@ -151,7 +154,7 @@ public with sharing class TabAccountMemberParentId {
     @AuraEnabled(cacheable=false)
     public static void CreateTask(String subject, String relatedTo, String Instruction, String assignTo, Date DueDate, String sStatus, String sFlowContact, String CopyTo, String AccountId){
         try {
-            String StandardHoyatask = Schema.SObjectType.Task.getRecordTypeInfosByDeveloperName().get('Standard_New').getRecordTypeId();
+            String StandardHoyatask = Schema.SObjectType.Task.getRecordTypeInfosByDeveloperName().get('SFDC_V2_Standard_Task').getRecordTypeId();
             Task t = new Task(
                 Subject = subject,
                 WhatId = relatedTo,
@@ -167,8 +170,9 @@ public with sharing class TabAccountMemberParentId {
             );
             insert t;
         } catch (Exception e) {
-            LogException.log(e);
+            
             throw new AuraHandledException(e.getMessage());
         }
     }
+
 }

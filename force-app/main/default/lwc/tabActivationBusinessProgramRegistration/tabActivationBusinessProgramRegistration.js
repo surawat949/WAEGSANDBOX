@@ -1,6 +1,7 @@
 import { LightningElement, api, wire } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { getRecord } from 'lightning/uiRecordApi';
+import { RefreshEvent } from 'lightning/refresh';
 
 import ACCOUNT_OBJ from '@salesforce/schema/Account';
 import SEIKO_DATA_OBJ from '@salesforce/schema/Seiko_Data__c';
@@ -8,10 +9,9 @@ import SEIKO_DATA_OBJ from '@salesforce/schema/Seiko_Data__c';
 // fields
 import VISIONARY_ALLIANCE from '@salesforce/schema/Account.Visionary_Alliance__c';
 import LOYALTY_PROGRAMS from '@salesforce/schema/Account.Loyalty_Programms__c';
-import LOYALTY_POINT_STATUS from '@salesforce/schema/Account.Loyalty_Point_Status__c';
 import TOTAL_LOYALTY_POINTS from '@salesforce/schema/Account.Total_Loyalty_Points__c'; 
 import NETWORK_SIGN_IN from '@salesforce/schema/Account.SVS_sign_in__c';
-import NETWORK_SIGN_OUT from '@salesforce/schema/Account.Network_Sign_Out__c';
+import NETWORK_SIGN_OUT from '@salesforce/schema/Account.SVS_sign_out__c';
 import COMMERCIAL_NETWORK from '@salesforce/schema/Account.Seiko_Network__c';
 
 import SEIKO_CATALOG_LAST_TRAINING from '@salesforce/schema/Seiko_Data__c.SEIKO_catalogues_training__c';
@@ -104,7 +104,7 @@ export default class TabActivationBusinessProgramRegistration extends LightningE
         // passed parameters are not yet received here
     }
     connectedCallback() {
-        console.log('child connected call-' + this.receivedId);
+        /*console.log('child connected call-' + this.receivedId);
         console.log('child connected call-' + this.seikoData);
 
         // load grey indicators tempoprarily for demo
@@ -112,7 +112,7 @@ export default class TabActivationBusinessProgramRegistration extends LightningE
         this.portalIndicator = AI_Indicators + '/'+ 'GreyLight.png';
         this.DataOrderIndicator = AI_Indicators + '/'+ 'GreyLight.png';
         this.RemoteEdgingIndicator = AI_Indicators + '/'+ 'GreyLight.png';
-        this.MountingIndicator = AI_Indicators + '/'+ 'GreyLight.png';
+        this.MountingIndicator = AI_Indicators + '/'+ 'GreyLight.png';*/
         
     }
 
@@ -136,7 +136,7 @@ export default class TabActivationBusinessProgramRegistration extends LightningE
         if (this.accBrand != undefined && this.accBrand == 'HOYA') {
             this.isHoyaAccount = true;
         }
-        if (this.accChannel != undefined && this.accChannel === 'Independent') {
+        if (this.accChannel != undefined && (this.accChannel === 'Independent' || this.accChannel === 'Chain')) {
             this.isIndependentChannel = true;
         }
     }
@@ -155,7 +155,8 @@ export default class TabActivationBusinessProgramRegistration extends LightningE
         startOnboarding({accountId : this.receivedId, state:state})
         .then(response => {
             setTimeout(() => {
-                eval("$A.get('e.force:refreshView').fire();");
+                //eval("$A.get('e.force:refreshView').fire();");
+                this.dispatchEvent(new RefreshEvent());
                 this.showLoading = false;
                 if(state){
                     this.showToast('Success', 'Success', 'Started On-boarding process');

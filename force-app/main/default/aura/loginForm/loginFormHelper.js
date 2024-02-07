@@ -39,6 +39,13 @@
         component.set("v.createAccountLabel", urls.createAccountLabel);
         component.set("v.contactUrl", urls.contactUrl);
         component.set("v.helpUrl", urls.helpUrl);
+        component.set("v.privacyUrl", urls.privacyURL);
+        component.set("v.termsUrl", urls.termsURL);
+
+        component.set("v.contactLabel", urls.contactLabel);
+        component.set("v.helpLabel", urls.helpLabel);
+        component.set("v.privacyLabel", urls.privacyLabel);
+        component.set("v.termsLabel", urls.termsLabel);
 
         var cmpEvent = $A.get("e.c:urlsAndLabels");
         cmpEvent.setParams({

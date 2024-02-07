@@ -477,7 +477,7 @@
 
 <div class="slds-grid slds-gutters">
     <div class="slds-col slds-size_2-of-12"><span><label class="slds-form-element__label">Annual Revenue</label></span></div>
-    <div class="slds-col slds-size_2-of-12"><span><lightning:formattedNumber style="currency" currencyCode="{!v.sales.account.CurrencyIsoCode}" value="{!v.sales.account.AnnualRevenue}" maximumFractionDigits="0"/></span></div>
+    <div class="slds-col slds-size_2-of-12"><span><lightning:formattedNumber style="currency" value="{!v.sales.account.AnnualRevenue}" maximumFractionDigits="0"/></span></div>
     <div class="slds-col slds-size_2-of-12"><span></span></div>
     <div class="slds-col slds-size_2-of-12"><span>Annual Quantity</span></div>
     <div class="slds-col slds-size_2-of-12"><span><lightning:formattedNumber value="{!v.sales.AnnualQuantity}" maximumFractionDigits="0"/></span></div>

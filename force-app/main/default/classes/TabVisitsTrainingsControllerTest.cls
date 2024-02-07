@@ -7,6 +7,10 @@ public class TabVisitsTrainingsControllerTest {
     
     @TestSetup
     static void makeData(){
+
+        String HoyaRec = Schema.SObjectType.ECP_Training__c.getRecordTypeInfosByDeveloperName().get('HOYA_Training').getRecordTypeId();
+        String SeikoRec = Schema.SObjectType.ECP_Training__c.getRecordTypeInfosByDeveloperName().get('SEIKO_Training').getRecordTypeId();
+        
         Account hvnaAcc = new Account();
         hvnaAcc.Hoya_Account_ID__c = 'US1234512';
         hvnaAcc.CurrencyIsoCode = 'EUR';
@@ -19,6 +23,7 @@ public class TabVisitsTrainingsControllerTest {
         training.Training__c ='SEIKO Pro';
         training.Training_status__c  ='Completed';
         training.Type__c = 'Webinar';
+        training.RecordTypeId = HoyaRec;
         insert training;
         
         eLearning__c  eLearning =new eLearning__c();

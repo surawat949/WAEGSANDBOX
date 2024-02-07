@@ -119,7 +119,6 @@ public with sharing class TabStatisticsController {
     public static Id getLastSalesStatisticsId(Id accId){
         List<Last_Sales_Statistics__c> sales = [Select Id From Last_Sales_Statistics__c Where Account__c=:accId];
         if(sales.size() > 0){
-            System.debug(sales[0].Id);
             return sales[0].Id;
         }
         else 
@@ -130,65 +129,76 @@ public with sharing class TabStatisticsController {
         List<AccountRelatedSales> relatedAccountList =new List<AccountRelatedSales>(); 
         List<Account> accounts =[select Local_Consolidation_Key__c,Account_Owner_Company__c from Account where Id =:recordId];
         String localConsolidationKey = accounts[0].Local_Consolidation_Key__c;
+        Map<Id,String> hoyaAccIdMap = new Map<Id,String>();
         if(localConsolidationKey != null){
             String ownerCompany = accounts[0].Account_Owner_Company__c;
             List<Id> accountIdList =new List<Id>();
-            List<Account> accs = [select Id from Account where Local_Consolidation_Key__c=:localConsolidationKey and Account_Owner_Company__c =:ownerCompany];
+            List<Account> accs = [select Id,Hoya_Account_ID__c from Account where Local_Consolidation_Key__c=:localConsolidationKey and Account_Owner_Company__c =:ownerCompany];
             for(Account acc:accs){
                 accountIdList.add(acc.Id);
+                hoyaAccIdMap.put(acc.Id,acc.Hoya_Account_ID__c);
             }
+            Map<Id,Last_Sales_Statistics__c> accountSalesMap = new Map<Id,Last_Sales_Statistics__c>();
             List<Last_Sales_Statistics__c> lastSalesLst = [select Account__c,Hoya_Account_Id__c,Lenses_Net_Sales_CFY__c,Lenses_Gross_Sales_CFY__c,Lenses_Net_Sales_LFY_YTD__c,Lenses_Gross_Sales_LFY_YTD__c,Lenses_Net_Sales_CFY_vs_LFY_YTD__c,Lenses_Gross_Sales_CFY_vs_LFY_YTD__c,Lenses_Qty_CFY__c,Lenses_Qty_LFY_YTD__c,Lenses_Qty_CFY_vs_LFY_YTD__c from Last_Sales_Statistics__c where Account__c in :accountIdList];
-            if(lastSalesLst.size() > 0){    
-                AccountRelatedSales totalSales = new AccountRelatedSales();
-                totalSales.salesCFY = 0;
-                totalSales.salesLFYYTD = 0;
-                totalSales.volumesCFY = 0;
-                totalSales.volumesLFYYTD = 0;
-            	for(Last_Sales_Statistics__c record:lastSalesLst){
-                    AccountRelatedSales relatedSales=new AccountRelatedSales();
-                    relatedSales.AccountId = record.Account__c ;
-                    relatedSales.hoyaAccountId = record.Hoya_Account_Id__c;   
-                    relatedSales.volumesLFYYTD =  record.Lenses_Qty_LFY_YTD__c;                  
-                    relatedSales.volumesCFY =  record.Lenses_Qty_CFY__c;
-                    relatedSales.variationVolumes = record.Lenses_Qty_CFY_vs_LFY_YTD__c;
-                    if(type == 'Net'){
-                        relatedSales.salesCFY = record.Lenses_Net_Sales_CFY__c;
-                    	relatedSales.salesLFYYTD = record.Lenses_Net_Sales_LFY_YTD__c;
-                    	relatedSales.variationSales = record.Lenses_Net_Sales_CFY_vs_LFY_YTD__c;
-                    }
-                    else{
-                        relatedSales.salesCFY = record.Lenses_Gross_Sales_CFY__c;
-                    	relatedSales.salesLFYYTD = record.Lenses_Gross_Sales_LFY_YTD__c;
-                    	relatedSales.variationSales = record.Lenses_Gross_Sales_CFY_vs_LFY_YTD__c;
-                    }
-                    relatedAccountList.add(relatedSales);
-                    if(type == 'Net'){
-                        totalSales.salesCFY +=  record.Lenses_Net_Sales_CFY__c;
-                    	totalSales.salesLFYYTD += record.Lenses_Net_Sales_LFY_YTD__c;
-                    }
-                    else{
-                        totalSales.salesCFY +=  record.Lenses_Gross_Sales_CFY__c;
-                   	    totalSales.salesLFYYTD += record.Lenses_Gross_Sales_LFY_YTD__c;
-                    }                   
-                    totalSales.volumesCFY += record.Lenses_Qty_CFY__c;
-                    totalSales.volumesLFYYTD += record.Lenses_Qty_LFY_YTD__c;                 
-            	}
-                if(totalSales.salesLFYYTD != 0 )
-                    totalSales.variationSales=(( totalSales.salesCFY- totalSales.salesLFYYTD)/ totalSales.salesLFYYTD)*100;
-                else
-                    totalSales.variationSales=0;
-                
-                if(totalSales.volumesLFYYTD != 0){
-                    totalSales.variationVolumes =((totalSales.volumesCFY-totalSales.volumesLFYYTD)/totalSales.volumesLFYYTD)*100;
+            if(lastSalesLst.size() > 0){  
+                for(Last_Sales_Statistics__c sale:lastSalesLst){
+                    accountSalesMap.put(sale.Account__c,sale);
                 }
-                else
-                    totalSales.variationVolumes = 0;
-                totalSales.AccountId = null;
-                totalSales.hoyaAccountId = null;
-                relatedAccountList.add(totalSales);
-            }   
-            System.debug(relatedAccountList);
-        }
+            }
+            AccountRelatedSales totalSales = new AccountRelatedSales();
+            totalSales.salesCFY = 0;
+            totalSales.salesLFYYTD = 0;
+            totalSales.volumesCFY = 0;
+            totalSales.volumesLFYYTD = 0;
+            for(Id account:accountIdList){
+                AccountRelatedSales relatedSales=new AccountRelatedSales();
+                relatedSales.AccountId = account ;
+                relatedSales.hoyaAccountId = hoyaAccIdMap.get(account);
+                if(accountSalesMap.size() > 0 && accountSalesMap.containskey(account)){
+                    relatedSales.volumesLFYYTD =  accountSalesMap.get(account).Lenses_Qty_LFY_YTD__c;                  
+                    relatedSales.volumesCFY =  accountSalesMap.get(account).Lenses_Qty_CFY__c;
+                    relatedSales.variationVolumes = accountSalesMap.get(account).Lenses_Qty_CFY_vs_LFY_YTD__c;
+                    if(type == 'Net'){
+                        relatedSales.salesCFY = accountSalesMap.get(account).Lenses_Net_Sales_CFY__c;
+                        relatedSales.salesLFYYTD = accountSalesMap.get(account).Lenses_Net_Sales_LFY_YTD__c;
+                        relatedSales.variationSales = accountSalesMap.get(account).Lenses_Net_Sales_CFY_vs_LFY_YTD__c;
+                        totalSales.salesCFY +=  accountSalesMap.get(account).Lenses_Net_Sales_CFY__c;
+                        totalSales.salesLFYYTD += accountSalesMap.get(account).Lenses_Net_Sales_LFY_YTD__c;
+                    }
+                    else{
+                        relatedSales.salesCFY = accountSalesMap.get(account).Lenses_Gross_Sales_CFY__c;
+                        relatedSales.salesLFYYTD = accountSalesMap.get(account).Lenses_Gross_Sales_LFY_YTD__c;
+                        relatedSales.variationSales = accountSalesMap.get(account).Lenses_Gross_Sales_CFY_vs_LFY_YTD__c;
+                        totalSales.salesCFY +=  accountSalesMap.get(account).Lenses_Gross_Sales_CFY__c;
+                        totalSales.salesLFYYTD += accountSalesMap.get(account).Lenses_Gross_Sales_LFY_YTD__c;
+                    }               
+                    totalSales.volumesCFY += accountSalesMap.get(account).Lenses_Qty_CFY__c;
+                    totalSales.volumesLFYYTD += accountSalesMap.get(account).Lenses_Qty_LFY_YTD__c;                    
+                }
+                else{
+                    relatedSales.salesCFY = 0;
+                    relatedSales.salesLFYYTD = 0;
+                    relatedSales.variationSales = 0;
+                    relatedSales.volumesLFYYTD  = 0;                 
+                    relatedSales.volumesCFY  = 0;
+                    relatedSales.variationVolumes  = 0;                        
+                }
+                relatedAccountList.add(relatedSales);                                    
+            }
+            if(totalSales.salesLFYYTD != 0 )
+                totalSales.variationSales=(( totalSales.salesCFY- totalSales.salesLFYYTD)/ totalSales.salesLFYYTD)*100;
+            else
+                totalSales.variationSales=0;
+            
+            if(totalSales.volumesLFYYTD != 0){
+                totalSales.variationVolumes =((totalSales.volumesCFY-totalSales.volumesLFYYTD)/totalSales.volumesLFYYTD)*100;
+            }
+            else
+                totalSales.variationVolumes = 0;
+            totalSales.AccountId = null;
+            totalSales.hoyaAccountId = null;
+            relatedAccountList.add(totalSales);
+        }  
         return relatedAccountList;
     }
   
@@ -214,9 +224,9 @@ public with sharing class TabStatisticsController {
         Map<Integer,LensSales> MonthlyLYLensMap=new Map<Integer,LensSales>();
         MonthlyLYLensMap =(Map<Integer,LensSales>)LensesSalesLst[1];
         Map<Integer,LensSales> MonthlyNYLensMap=new Map<Integer,LensSales>();
-        MonthlyNYLensMap =(Map<Integer,LensSales>)LensesSalesLst[2];
-        system.debug(MonthlyCYLensMap.size()+'   '+MonthlyCYLensMap);
-        system.debug(MonthlyLYLensMap.size()+'   '+MonthlyLYLensMap);       
+        MonthlyNYLensMap =(Map<Integer,LensSales>)LensesSalesLst[2];     
+																	 
+																			
         /*
         * compute data other than lens
         */
@@ -282,7 +292,7 @@ public with sharing class TabStatisticsController {
             salesDataObj.totalQty=salesDataObj.framesQty+salesDataObj.instrumentsQty+salesDataObj.OthersQty+salesDataObj.lensQty+salesDataObj.contactLensQty;
             
             MonthlyCYData.put(i,salesDataObj);
-            system.debug(MonthlyCYData.size());
+											   
         }        
         //prepare the data for Ly        
         for(Integer i = 1; i <= 12; i++){
@@ -337,92 +347,102 @@ public with sharing class TabStatisticsController {
         	salesList = new List<Object>{MonthlyCYLensMap,MonthlyLYLensMap,MonthlyNYLensMap,MonthlyCYData,MonthlyLYData,lastSales[0]};
         else
             salesList = new List<Object>{MonthlyCYLensMap,MonthlyLYLensMap,MonthlyNYLensMap,MonthlyCYData,MonthlyLYData,null};    
+        System.debug(salesList);
         return salesList;
     }
     @AuraEnabled(cacheable=true)
     public static List<AccountRelatedSales> getRelatedSalesList(Id recordId,String type){
-        List<AccountRelatedSales> relatedAccountList =new List<AccountRelatedSales>();       
-
+        String EndConsumerRecordType = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('End_Consumer_Account').getRecordTypeId();
+        List<AccountRelatedSales> relatedAccountList =new List<AccountRelatedSales>(); 
         try {
             String parentId = '';
-            List<Account> accounts=[select parentId from account where id=:recordId];
+            Map<Id,String> hoyaAccIdMap = new Map<Id,String>();
+            List<Account> accounts=[select Id,parentId,Hoya_Account_ID__c from account where id=:recordId];
             if(accounts.size() > 0){
-                parentId=accounts[0].parentId;
+                parentId = accounts[0].parentId;
+                hoyaAccIdMap.put(accounts[0].Id,accounts[0].Hoya_Account_ID__c);
             }
-            System.debug(parentId);
             /* current account */
-            List<Id> accountIdLst =new List<Id>();
+            Set<Id> accountIdLst =new Set<Id>();
             accountIdLst.add(recordId);
             
-           	List<Account> childAccList=[select Id from Account where parentid=:recordId];
+           	List<Account> childAccList=[select Id,Hoya_Account_ID__c from Account where parentid=:recordId AND RecordTypeId !=: EndConsumerRecordType];
             if(childAccList.size() > 0){
                 for(Account acc:childAccList){
                     accountIdLst.add(acc.Id);
+                    hoyaAccIdMap.put(acc.Id,acc.Hoya_Account_ID__c);
                 }
         	}
             if(parentId != null){
-                List<Account> parentsSiblingsList = [select id,Hoya_Account_ID__c from account where parentid=:parentId or id=:parentId];
+                List<Account> parentsSiblingsList = [select id,Hoya_Account_ID__c from account where (parentid=:parentId or id=:parentId) AND RecordTypeId !=: EndConsumerRecordType ];
                  if(parentsSiblingsList.size() > 0){
                     for(Account acc:parentsSiblingsList){
                         accountIdLst.add(acc.Id);
+                        hoyaAccIdMap.put(acc.Id,acc.Hoya_Account_ID__c);
                     }
                 }
             }
+            Map<Id,Last_Sales_Statistics__c> accountSalesMap = new Map<Id,Last_Sales_Statistics__c>();
             List<Last_Sales_Statistics__c> lastSalesLst = [select Account__c,Hoya_Account_Id__c,Lenses_Net_Sales_CFY__c,Lenses_Gross_Sales_CFY__c,Lenses_Net_Sales_LFY_YTD__c,Lenses_Gross_Sales_LFY_YTD__c,Lenses_Net_Sales_CFY_vs_LFY_YTD__c,Lenses_Gross_Sales_CFY_vs_LFY_YTD__c,Lenses_Qty_CFY__c,Lenses_Qty_LFY_YTD__c,Lenses_Qty_CFY_vs_LFY_YTD__c from Last_Sales_Statistics__c where Account__c in :accountIdLst];
-
-            if(lastSalesLst.size() > 0){    
-                AccountRelatedSales totalSales = new AccountRelatedSales();
-                totalSales.salesCFY = 0;
-                totalSales.salesLFYYTD = 0;
-                totalSales.volumesCFY = 0;
-                totalSales.volumesLFYYTD = 0;
-            	for(Last_Sales_Statistics__c record:lastSalesLst){
-                    AccountRelatedSales relatedSales=new AccountRelatedSales();
-                    
-                    relatedSales.AccountId = record.Account__c ;
-                    relatedSales.hoyaAccountId = record.Hoya_Account_Id__c; 
-                    if(type == 'Net'){
-                        relatedSales.salesCFY = record.Lenses_Net_Sales_CFY__c;
-                    	relatedSales.salesLFYYTD = record.Lenses_Net_Sales_LFY_YTD__c;
-                    	relatedSales.variationSales = record.Lenses_Net_Sales_CFY_vs_LFY_YTD__c;
-                    }
-                    else{
-                        relatedSales.salesCFY = record.Lenses_Gross_Sales_CFY__c;
-                    	relatedSales.salesLFYYTD = record.Lenses_Gross_Sales_LFY_YTD__c;
-                    	relatedSales.variationSales = record.Lenses_Gross_Sales_CFY_vs_LFY_YTD__c;
-                    }
-                   
-                    relatedSales.volumesLFYYTD =  record.Lenses_Qty_LFY_YTD__c;                  
-                    relatedSales.volumesCFY =  record.Lenses_Qty_CFY__c;
-                    relatedSales.variationVolumes = record.Lenses_Qty_CFY_vs_LFY_YTD__c;
-                    relatedAccountList.add(relatedSales);
-                    
-                    if(type == 'Net'){                        
-                        totalSales.salesCFY +=  record.Lenses_Net_Sales_CFY__c;     
-                        totalSales.salesLFYYTD += record.Lenses_Net_Sales_LFY_YTD__c;
-                    }
-                    else{
-                        totalSales.salesCFY +=  record.Lenses_Gross_Sales_CFY__c;   
-                        totalSales.salesLFYYTD += record.Lenses_Gross_Sales_LFY_YTD__c;
-                    }
-                    totalSales.volumesCFY += record.Lenses_Qty_CFY__c;
-                    totalSales.volumesLFYYTD += record.Lenses_Qty_LFY_YTD__c;                 
-            	}
-                if(totalSales.salesLFYYTD != 0 )
-                    totalSales.variationSales=(( totalSales.salesCFY- totalSales.salesLFYYTD)/ totalSales.salesLFYYTD)*100;
-                else
-                    totalSales.variationSales=0;
-                
-                if(totalSales.volumesLFYYTD != 0){
-                    totalSales.variationVolumes =((totalSales.volumesCFY-totalSales.volumesLFYYTD)/totalSales.volumesLFYYTD)*100;
+            if(lastSalesLst.size() > 0){  
+                for(Last_Sales_Statistics__c sale:lastSalesLst){
+                    accountSalesMap.put(sale.Account__c,sale);
                 }
-                else
-                    totalSales.variationVolumes = 0;
-                totalSales.AccountId = null;
-                totalSales.hoyaAccountId = null;
-                relatedAccountList.add(totalSales);
-            }   
-            System.debug(relatedAccountList);
+            }
+            
+            AccountRelatedSales totalSales = new AccountRelatedSales();
+            totalSales.salesCFY = 0;
+            totalSales.salesLFYYTD = 0;
+            totalSales.volumesCFY = 0;
+            totalSales.volumesLFYYTD = 0;
+            for(Id account:accountIdLst){
+                AccountRelatedSales relatedSales=new AccountRelatedSales();                    
+                relatedSales.AccountId = account ;
+                relatedSales.hoyaAccountId = hoyaAccIdMap.get(account); 
+                if(accountSalesMap.size() > 0 && accountSalesMap.containskey(account)){
+                    if(type == 'Net'){
+                        relatedSales.salesCFY = accountSalesMap.get(account).Lenses_Net_Sales_CFY__c;
+                        relatedSales.salesLFYYTD = accountSalesMap.get(account).Lenses_Net_Sales_LFY_YTD__c;
+                        relatedSales.variationSales = accountSalesMap.get(account).Lenses_Net_Sales_CFY_vs_LFY_YTD__c;
+                        totalSales.salesCFY +=  accountSalesMap.get(account).Lenses_Net_Sales_CFY__c;     
+                        totalSales.salesLFYYTD += accountSalesMap.get(account).Lenses_Net_Sales_LFY_YTD__c;
+                    }
+                    else{
+                        relatedSales.salesCFY = accountSalesMap.get(account).Lenses_Gross_Sales_CFY__c;
+                        relatedSales.salesLFYYTD = accountSalesMap.get(account).Lenses_Gross_Sales_LFY_YTD__c;
+                        relatedSales.variationSales = accountSalesMap.get(account).Lenses_Gross_Sales_CFY_vs_LFY_YTD__c;
+                        totalSales.salesCFY +=  accountSalesMap.get(account).Lenses_Gross_Sales_CFY__c;   
+                        totalSales.salesLFYYTD += accountSalesMap.get(account).Lenses_Gross_Sales_LFY_YTD__c;
+                    }                   
+                    relatedSales.volumesLFYYTD =  accountSalesMap.get(account).Lenses_Qty_LFY_YTD__c;                  
+                    relatedSales.volumesCFY =  accountSalesMap.get(account).Lenses_Qty_CFY__c;
+                    relatedSales.variationVolumes = accountSalesMap.get(account).Lenses_Qty_CFY_vs_LFY_YTD__c;
+                    totalSales.volumesCFY += accountSalesMap.get(account).Lenses_Qty_CFY__c;
+                    totalSales.volumesLFYYTD += accountSalesMap.get(account).Lenses_Qty_LFY_YTD__c;
+                }
+                else{
+                    relatedSales.salesCFY = 0;
+                    relatedSales.salesLFYYTD = 0;
+                    relatedSales.variationSales = 0;
+                    relatedSales.volumesLFYYTD  = 0;                 
+                    relatedSales.volumesCFY  = 0;
+                    relatedSales.variationVolumes  = 0;                        
+                }
+                relatedAccountList.add(relatedSales); 
+            }
+            if(totalSales.salesLFYYTD != 0 )
+                totalSales.variationSales=(( totalSales.salesCFY- totalSales.salesLFYYTD)/ totalSales.salesLFYYTD)*100;
+            else
+                totalSales.variationSales=0;
+            
+            if(totalSales.volumesLFYYTD != 0){
+                totalSales.variationVolumes =((totalSales.volumesCFY-totalSales.volumesLFYYTD)/totalSales.volumesLFYYTD)*100;
+            }
+            else
+                totalSales.variationVolumes = 0;
+            totalSales.AccountId = null;
+            totalSales.hoyaAccountId = null;
+            relatedAccountList.add(totalSales);
             
         } catch (Exception e) {
             LogException.log(e);
@@ -645,14 +665,16 @@ public with sharing class TabStatisticsController {
     }
     @AuraEnabled(cacheable=true)
     public static List<Object> getNonAdaptationReturns(Id recordId){
-        List<Object> returnsList = new List<Object>();
+        List<Object> returnsList;
  		Integer year = Date.today().year();
         Integer month = Date.today().month();
+        if(Test.isRunningTest())
+            month=testMonth;
         //fiscal year is current year-1 from january to April, year from may to december
         if(month <= 4){
             year = year-1;
         }
-        List<Sales_Statistics__c> lensSales=[SELECT NonAdaptationReturnsJson__c,Month__c,Fiscal_Year__c,Type__c from Sales_Statistics__c where Account__c=:recordId and (Type__c='0' OR Type__c='1') and (Fiscal_Year__c=:year OR Fiscal_Year__c=:year-1)];
+        List<Sales_Statistics__c> lensSales=[SELECT Month__c,NonAdaptationReturnsJson__c,Fiscal_Year__c,Type__c from Sales_Statistics__c where Account__c=:recordId and (Type__c='0' OR Type__c='1') and (Fiscal_Year__c=:year OR Fiscal_Year__c=:year-1)];
         if(lensSales.size() > 0){
         	Map<Decimal,Sales_Statistics__c> lensSalesCyHoya0Map = new Map<Decimal,Sales_Statistics__c>();
         	Map<Decimal,Sales_Statistics__c> lensSalesCyHoya1Map = new Map<Decimal,Sales_Statistics__c>();
@@ -760,15 +782,20 @@ public with sharing class TabStatisticsController {
                 } 
             }  
            
-            returnsList.add(lensRets3MonJson);
-            returnsList.add(lensRets12MonJson);
+            returnsList = new List<Object>();            
+            if(lensRets3MonJson.size() > 0)
+                returnsList.add(0,lensRets3MonJson);
+            else
+                returnsList.add(0,null);
+            if( lensRets12MonJson.size() > 0)
+                returnsList.add(1,lensRets12MonJson);
+             else
+                returnsList.add(1,null);
         }
-        System.debug(returnsList);
+        system.debug(returnsList);
         return returnsList;
 	}
     public static Map<Integer,Map<String,Integer>> getNonAdaptationMap(Map<Decimal,Sales_Statistics__c> Type0Map,Map<Decimal,Sales_Statistics__c> Type1Map){
-        System.debug(Type0Map);
-        System.debug(Type1Map);
         Map<String,Integer> nonAdaptationMap ;
         Map<Integer,Map<String,Integer>> nonAdaptationMonthlyMap = new Map<Integer,Map<String,Integer>>();
         if(Type0Map.size() > 0 || Type1Map.size() > 0){
@@ -777,21 +804,17 @@ public with sharing class TabStatisticsController {
                   Map<String,Object> MapType0 = new Map<String,Object>();
                   Map<String,Object> MapType1 = new Map<String,Object>();
                   if(Type0Map.size() > 0 && Type0Map.containsKey(i)){
-                      System.debug(Type0Map.get(i).NonAdaptationReturnsJson__c);
                       if(Type0Map.get(i).NonAdaptationReturnsJson__c != null){
                         MapType0  = (Map<String,Object>)JSON.deserializeUntyped(Type0Map.get(i).NonAdaptationReturnsJson__c); 
                       }  
-                      System.debug(MapType0);
                   }
                   if(Type1Map.size() > 0 && Type1Map.containsKey(i)){
-                       System.debug(Type1Map.get(i).NonAdaptationReturnsJson__c);
                       if(Type1Map.get(i).NonAdaptationReturnsJson__c != null){
                         MapType1  = (Map<String,Object>)JSON.deserializeUntyped(Type1Map.get(i).NonAdaptationReturnsJson__c); 
                       }  
-                      System.debug(MapType1);
                   }
                   //Combine both Type0 and Type1 to single Map
-                  if(MapType0.size() > 0 || MapType1.size() > 0){
+                  if(MapType0.size() > 0){
                       for(String lens0Type : MapType0.keySet()){
                           Integer qty = (Integer)MapType0.get(lens0Type);
                           if(MapType1.size() > 0 && MapType1.containsKey(lens0Type)){
@@ -799,17 +822,17 @@ public with sharing class TabStatisticsController {
                           }
                           nonAdaptationMap.put(lens0Type,qty);
 					  }
-                      for(String lens1Type : MapType1.keySet()){
+                  }
+                  if( MapType1.size() > 0){
+                     for(String lens1Type : MapType1.keySet()){
                           if(nonAdaptationMap.size() == 0 || (nonAdaptationMap.size() > 0 && !nonAdaptationMap.containsKey(lens1Type))){
                                nonAdaptationMap.put(lens1Type,Integer.valueOf(MapType1.get(lens1Type)));
                           }                       
                       }
                   }
-                  System.debug(nonAdaptationMap);
                   nonAdaptationMonthlyMap.put(i,nonAdaptationMap);                  
               }
-        }        
-        System.debug(nonAdaptationMonthlyMap);
+        }       
         return nonAdaptationMonthlyMap;
     }
     public static List<nonAdaptationWrapper> getNonAdaptationJson(Map<Integer,Map<String,Integer>> CYMap,Map<Integer,Map<String,Integer>> LYMap,List<String> monthNoList){
@@ -840,6 +863,9 @@ public with sharing class TabStatisticsController {
                             qty = lensQtyMap.get(lensType);
                             qty += lensQtyTemp.get(lensType);
                         }
+                        else{
+                            qty = lensQtyTemp.get(lensType);
+                        }
                         lensQtyMap.put(lensType,qty);
                     }
                 }
@@ -855,25 +881,35 @@ public with sharing class TabStatisticsController {
             }
         }
         if(LYMap != null && LYMap.size() > 0  && LYMonList.size() > 0){
-            for(Integer LYmon:LYMonList){  
+            for(Integer LYmon:LYMonList){ 
                 Map<String,Integer> lensQtyTemp = new Map<String,Integer>();
                 if(LYMap.containsKey(LYmon)){
-                    lensQtyTemp = CYMap.get(LYmon);
+                    lensQtyTemp = LYMap.get(LYmon);
                 }
-                if(lensQtyMap.size() > 0){
-                    for(String lensType:lensQtyTemp.keySet()){
-                        Integer qty = 0;
-                        if(lensQtyMap.containsKey(lensType)){
-                            qty = lensQtyMap.get(lensType);
-                            qty += lensQtyTemp.get(lensType);
-                        }
-                        lensQtyMap.put(lensType,qty);
-                    }                   
+                Set<String> allKeysSet =new Set<String>();
+                allKeysSet.addAll(lensQtyTemp.keySet());
+                if(lensQtyMap.size() > 0){                    
+                	allKeysSet.addAll(lensQtyMap.keySet());
+                    if(allKeysSet.size() > 0){
+                        for(String lensType:allKeysSet){
+                            Integer qty = 0;
+                            if(lensQtyMap.containsKey(lensType)){
+                                qty = lensQtyMap.get(lensType);
+                                if(lensQtyTemp.size() > 0 && lensQtyTemp.containsKey(lensType))
+                                	qty += lensQtyTemp.get(lensType);
+                            }
+                            else{
+                                if(lensQtyTemp.size() > 0 && lensQtyTemp.containsKey(lensType))                               
+                                	qty = lensQtyTemp.get(lensType);
+                            }
+                            lensQtyMap.put(lensType,qty);
+                        } 
+                    }
                 }
                 else{
                     lensQtyMap = lensQtyTemp;
                     if(lensQtyMap.size() > 0){
-                        for(String lensType:lensQtyMap.keySet()){
+                        for(String lensType:allKeysSet){
                            	Integer qty = lensQtyMap.get(lensType);
                             lensQtyMap.put(lensType,qty);
                         }
@@ -881,7 +917,6 @@ public with sharing class TabStatisticsController {
                 }                
             }
         }
-        System.debug(lensQtyMap);
         List<sortNonAdaptationWrapper> sortWrapperList = new List<sortNonAdaptationWrapper>();
         if(lensQtyMap.size() > 0){
             for(string key: lensQtyMap.keyset())
@@ -891,13 +926,11 @@ public with sharing class TabStatisticsController {
             }
             // sorting list in ascending order 
             sortWrapperList.sort();
-            System.debug(sortWrapperList);
             List<sortNonAdaptationWrapper> finalList = new List<sortNonAdaptationWrapper>();
             for(Integer i = sortWrapperList.size()-1; i>=0;i--)
             {
                 finalList.add(sortWrapperList.get(i));
             }
-            System.debug(finalList);
             sortNonAdaptationWrapper wrap =new sortNonAdaptationWrapper('Total Non-Adaptation',totalQty);
 			finalList.add(wrap);            
             for(sortNonAdaptationWrapper finalwrapper:finalList){
@@ -908,7 +941,6 @@ public with sharing class TabStatisticsController {
                 wrapperList.add(wrapper);
             }
     	}
-        System.debug(wrapperList);
         return wrapperList;
     }
     @AuraEnabled(cacheable=true)
@@ -916,6 +948,8 @@ public with sharing class TabStatisticsController {
         String returns='';
  		Integer year = Date.today().year();
         Integer month = Date.today().month();
+        if(Test.isRunningTest())
+            month=testMonth;
         //fiscal year is current year-1 from january to April, year from may to december
         if(month <= 4){
             year = year-1;
@@ -976,6 +1010,7 @@ public with sharing class TabStatisticsController {
                 lensRets3MonJson = getlensRets(CYLensRetsMap,LYLensRetsMap,monthNoList,last3MoQty,'Qty');
                 lensRets12MonJson = getlensRets(CYLensRetsMap,LYLensRetsMap,twelveMonList,last12MoQty,'Qty');
                 lensRetsSales3MonJson = getlensRets(CYLensRetsSalesMap,LYLensRetsSalesMap,monthNoList,last3MoSales,'Sales');
+                System.debug(lensRets3MonJson+'---'+lensRets12MonJson);
                 lensRetsSales12MonJson = getlensRets(CYLensRetsSalesMap,LYLensRetsSalesMap,twelveMonList,last12MoSales,'Sales');
             }
             when  2{
@@ -1342,7 +1377,6 @@ public with sharing class TabStatisticsController {
                  salesRetperc = (agrementRetMonSales/totalCount)*100;
                  orderingRetPerc = (mistakeRetMonSales/totalCount)*100;
                  nonadapRetPerc = (nonAdapRetMonSales/totalCount)*100;
-                 System.debug(nonAdapRetMonSales+'--'+totalCount+'--'+nonadapRetPerc);
                  
                  deliveryRetPerc = (deliveryRetMonSales/totalCount)*100;
                  otherRetPerc = (otherRetMonSales/totalCount)*100;
@@ -1364,7 +1398,6 @@ public with sharing class TabStatisticsController {
 			else
                  lensRetsJson = ',\"ProdRetSales12\":\"'+String.valueOf(prodRetPerc)+'\",\"CutRetSales12\":\"'+String.valueOf(cutRetPerc)+'\",\"MountRetSales12\":\"'+String.valueOf(mountingRetPerc)+'\",\"SalesRetSales12\":\"'+String.valueOf(salesRetperc)+'\",\"OrderMisRetSales12\":\"'+String.valueOf(orderingRetPerc)+'\",\"NonAdapRetSales12\":\"'+String.valueOf(nonadapRetPerc)+'\",\"DeliveryRetSales12\":\"'+String.valueOf(deliveryRetPerc)+'\",\"OtherRetSales12\":\"'+String.valueOf(otherRetPerc)+'\",\"TotalProdRetSales12\":\"'+String.valueOf(totalProdRetPerc)+'\",\"TotalNonProdRetSales12\":\"'+String.valueOf(totalNonProdRetPerc)+'\",\"TotalRetSales12\":\"'+String.valueOf(totalRetPerc)+'\"';
         }
-        System.debug(lensRetsJson);
         return lensRetsJson;
     }
 	public class lensRetsWrapper{

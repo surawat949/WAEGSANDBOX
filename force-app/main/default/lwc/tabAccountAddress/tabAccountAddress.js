@@ -16,18 +16,12 @@
 
 import { LightningElement, api, wire, track } from 'lwc';
 import { RefreshEvent } from 'lightning/refresh';
-import Account_Retail_Name from '@salesforce/schema/Account.Retail_Name__c';      //new field - need create on Account object
+import Account_Retail_Name from '@salesforce/schema/Account.Shop_Name__c';      //new field - need create on Account object
 import Account_Phone from '@salesforce/schema/Account.Phone';                       
-//import Account_Type from '@salesforce/schema/Account.Type';
 import Account_Fax from '@salesforce/schema/Account.Fax';
-//import Account_Channel from '@salesforce/schema/Account.Channel__c';
-//import Account_Local_Classification from '@salesforce/schema/Account.Pre_Boarding_Status__c';
-//import Account_Status from '@salesforce/schema/Account.Account_Status__c';  
 import Account_Email_Survey_Email_Address from '@salesforce/schema/Account.Surveys_Email__c';    //new field - need create on Account object
 import Account_Email_Confidentail_Email_Address from '@salesforce/schema/Account.Confidential_Email_Address__c';    //new field - need create on Account object
 import Account_Email_Marketing_Email_Address from '@salesforce/schema/Account.email__c';  //new field - need create on Account object
-//import Account_Email_Track_and_Trace_Email_Addreess from '@salesforce/schema/Account.Track_and_Trace_Email_Address__c'; //new field - need create on Account object
-import Account_Brand from '@salesforce/schema/Account.Brand__c';
 import Account_Mobile_Phone from '@salesforce/schema/Account.Account_Mobile_Phone__c';
 
 /**=== TO IMPORT FOR NEW FIELDS FROM ACCOUNT OBJECT FROM Shop__ Address instead using fro new fields =============== **/
@@ -36,14 +30,9 @@ import Account_Shop_City from '@salesforce/schema/Account.Shop_City__c';
 import Account_Shop_State from '@salesforce/schema/Account.Shop_State__c';
 import Account_Shop_Postal_Code from '@salesforce/schema/Account.Shop_Postal_Code__c';
 import Account_Shop_Country from '@salesforce/schema/Account.Shop_Country__c';
-//import Account_Legacy_Number from '@salesforce/schema/Account.Legacy_Account_Number__c';
 import Account_Shop_Email_Address from '@salesforce/schema/Account.Shop_email_address__c';
 import Account_Shop_Website from '@salesforce/schema/Account.Website';
-import Account_Legacy_Number from '@salesforce/schema/Account.Legacy_Account_Number__c';
-//import Account_HVC_Inter_Channel from '@salesforce/schema/Account.CHCUSTCLASSIFICATIONID__c';
-//import Account_Status from '@salesforce/schema/Account.Account_Status__c';
-//import Account_LocalClassification1 from '@salesforce/schema/Account.Local_Classification_1__c';
-//import Account_LocalClassification2 from '@salesforce/schema/Account.Local_Segm__c';
+import Account_Legacy_Number from '@salesforce/schema/Account.Seiko_local_customer_nr__c';
 import Account_obj from '@salesforce/schema/Account';
 /**==================== END =============================================== **/
 
@@ -60,6 +49,12 @@ import label_salutation from '@salesforce/label/c.tabAccContactSalutation';
 import label_title from '@salesforce/label/c.tabAccContactTitle';
 import label_email from '@salesforce/label/c.tabAccContactEmail';
 import label_phone from '@salesforce/label/c.tabAccContactPhone';
+import sales from '@salesforce/label/c.Sales_Indicator';
+import deliveries from '@salesforce/label/c.Deliveries_Indicator';
+import returns from '@salesforce/label/c.Returns';
+import contact from '@salesforce/label/c.Contact_Indicator';
+import payment from '@salesforce/label/c.Payment_Indicator';
+import satisfaction from '@salesforce/label/c.Satisfaction_Indicator';
 
 import getRelatedContactAccountRec from '@salesforce/apex/tabAccountAddressLWCController.getContactsRelatedAccount';
 import updateEmailToAll from '@salesforce/apex/tabAccountAddressLWCController.UpdateAccountEmail';
@@ -160,7 +155,7 @@ export default class TabAccountAddress extends NavigationMixin(LightningElement)
                 });
                 this.ContactRecord = data;
             }else if (error){
-                console.log('An error was occurred : ', error);
+                this.showToast('Error '+JSON.stringify(error));
             }
         }
     
@@ -176,7 +171,7 @@ export default class TabAccountAddress extends NavigationMixin(LightningElement)
                     this.contactCount = allContact.length;
                 }
             }else if(error){
-                console.log('XXX An error was occurred ==>'+JSON.stringify(error));
+                this.showToast('Error '+JSON.stringify(error));
             }
         }
     
@@ -197,7 +192,8 @@ export default class TabAccountAddress extends NavigationMixin(LightningElement)
             this.deliveriesFlagMeaning= data.deliveriesFlagMeaning;
 
         }else if(error){
-            console.log('XXX An error was occurred ==>'+JSON.stringify(error));
+            
+            this.showToast('Error '+JSON.stringify(error));
         }
     }
     getIndicatorImage(indicator){
@@ -282,7 +278,7 @@ export default class TabAccountAddress extends NavigationMixin(LightningElement)
     }
     updateRecordView(){
         setTimeout(() => {
-            eval("$A.get('e.force:refreshView').fire();");
+            //eval("$A.get('e.force:refreshView').fire();");
         },1000);
         this.dispatchEvent(new RefreshEvent());
     }
@@ -317,5 +313,6 @@ export default class TabAccountAddress extends NavigationMixin(LightningElement)
     label = {label_Address, 
             label_Contact, label_SpecificEmail, 
             label_demand, label_copyemail, 
-            label_new, label_viewall};
+            label_new, label_viewall,sales,deliveries,returns,contact,payment,satisfaction};
+            
 }

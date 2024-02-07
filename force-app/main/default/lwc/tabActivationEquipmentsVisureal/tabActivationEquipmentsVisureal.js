@@ -5,6 +5,8 @@ import { loadScript } from 'lightning/platformResourceLoader';
 //Custom Labels
 import VisurealPortable from '@salesforce/label/c.AccountActivationVisuRealPortable';
 import VisurealPortableUsage from '@salesforce/label/c.AccountActivationVisuRealPortableUsage';
+import VisurealPortableLastUsage from '@salesforce/label/c.visuReal_Portable_Last_Usage';
+import VisurealPortableLastTraining from '@salesforce/label/c.visuReal_Portable_Last_Training';
 //Apex
 import getLastTrainingDate from '@salesforce/apex/tabActivationEquipmentsController.getLastTrainingDate';
 import getLastUsageDate from '@salesforce/apex/tabActivationEquipmentsController.getLastMediaUsage';
@@ -15,7 +17,7 @@ export default class TabActivationEquipmentsVisureal extends LightningElement {
     portableLastUsageDate;
     portableLastTraningDate;
     customlabel = {
-        VisurealPortable,VisurealPortableUsage
+        VisurealPortable,VisurealPortableUsage,VisurealPortableLastUsage,VisurealPortableLastTraining
     };
     connectedCallback() {
         getLastTrainingDate({accountId : this.receivedId,topic : 'HOYA VisuReal Portable'})

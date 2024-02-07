@@ -6,6 +6,8 @@
             helper.initSales(component, recordId, function(err, result){
                 console.log(result);               
                 component.set('v.sales', result[0]); 
+                console.log(result[0].account.CurrencyIsoCode);
+                component.set('v.currency',result[0].account.CurrencyIsoCode);
                 var obj = JSON.parse(result[1]);
                 var OhabitsArray = new Array(parseInt(obj.ManualOrders),parseInt(obj.HVCsys),parseInt(obj.OtherOrders),parseInt(obj.UnCutlens),parseInt(obj.RemoteEdging),parseInt(obj.Mounting),parseInt(obj.FramesByHvc),parseInt(obj.RealShape),parseInt(obj.StandShape),parseInt(obj.Boxing) );
                 var prodRetArray = new Array(parseInt(obj.ProdRet12),parseInt(obj.ProdRet3),parseInt(obj.CutRet12),parseInt(obj.CutRet3),parseInt(obj.MountRet12),parseInt(obj.MountRet3),parseInt(obj.TotalProdRet12),parseInt(obj.TotalProdRet3));

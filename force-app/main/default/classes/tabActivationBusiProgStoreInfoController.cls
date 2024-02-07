@@ -26,7 +26,7 @@ public class tabActivationBusiProgStoreInfoController {
     @AuraEnabled
     public static List<Store_Related_Pictures__c> getStoredPictures(String receivedId){
         system.debug('>>>>here');
-        List<Store_Related_Pictures__c> picList = [SELECT Id,Name, Date__c,Description__c,CreatedBy.Name,Account__c
+        List<Store_Related_Pictures__c> picList = [SELECT Id,Name,Description__c,CreatedDate,CreatedBy.Name,Account__c
                                     FROM Store_Related_Pictures__c WHERE Account__c=:receivedId ORDER BY CreatedDate DESC ];
         System.debug(' == > '+picList);
         return picList;

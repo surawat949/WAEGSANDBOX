@@ -17,6 +17,13 @@ public class TabStatisticsController_test {
         acc1.Local_Consolidation_Key__c='123';        
         insert acc1;
         
+        Account acc2 = new Account();
+        acc2.Name='sales test account1';
+        acc2.hoya_account_id__c='SO3299999xx';
+        acc2.RecordTypeId='012b00000000P38';
+        acc2.Local_Consolidation_Key__c='1234';        
+        insert acc2;
+        
         Account Childacc = new Account();
         Childacc.Name='sales test child account';
         Childacc.hoya_account_id__c='SO3399998xx';
@@ -279,9 +286,11 @@ public class TabStatisticsController_test {
         TabStatisticsController.getCurrency(acc.Id);
         TabStatisticsController.getConsolidatedAccountsList(acc1.Id,'Net');
         TabStatisticsController.getConsolidatedAccountsList(acc1.Id,'Gross');
+        TabStatisticsController.getConsolidatedAccountsList(acc2.Id,'Net');
         TabStatisticsController.getLensesSales(acc1.Id,true,true);
         TabStatisticsController.getRelatedSalesList(Childacc.Id,'Net');
-         TabStatisticsController.getRelatedSalesList(Childacc.Id,'Gross');
+        TabStatisticsController.getRelatedSalesList(Childacc.Id,'Gross');
+        TabStatisticsController.getRelatedSalesList(acc2.Id,'Gross');
         TabStatisticsController.getNonAdaptationReturns(acc1.Id);
         Test.stopTest();
     }

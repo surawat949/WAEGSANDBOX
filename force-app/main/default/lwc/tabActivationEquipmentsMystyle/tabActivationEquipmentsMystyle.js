@@ -5,6 +5,8 @@ import { loadScript } from 'lightning/platformResourceLoader';
 //Custom Labels
 import myStyle from '@salesforce/label/c.AccountActivationMyStyle';
 import myStyleUsage from '@salesforce/label/c.AccountActivationMyStyleUsage';
+import myStyleLastUsage from '@salesforce/label/c.MyStyle_V_Consultations_Last_Usage';
+import myStyleLastTraining from '@salesforce/label/c.MyStyle_V_Consultations_Last_Training';
 //Apex
 import getLastTrainingDate from '@salesforce/apex/tabActivationEquipmentsController.getLastTrainingDate';
 import getLastUsageDate from '@salesforce/apex/tabActivationEquipmentsController.getLastMediaUsage';
@@ -15,7 +17,7 @@ export default class TabActivationEquipmentsMystyle extends LightningElement {
     lastUsageDate;
     lastTraningDate;
     customlabel = {
-        myStyle,myStyleUsage
+        myStyle,myStyleUsage,myStyleLastUsage,myStyleLastTraining
     };
     connectedCallback() {
         getLastTrainingDate({accountId : this.receivedId,topic : 'HOYA MyStyle V+ Consultations'})

@@ -622,6 +622,8 @@ public class AccountSalesStatisticsController {
     public static List<Object> initSales(Id recordId){
         	List<Object> accountSalesLst;
             AccountSales accountSales = new AccountSales();
+            accountSales.account =  [select ID, Hoya_Account_ID__c,currencyIsoCode,Brand__c, parentId,Shop_country__c
+                                	from account where id=:recordId];
             String userCurrency = UserInfo.getDefaultCurrency();
             String accountCurrency = [select currencyisocode from Account where id=:recordId].currencyIsoCode;
             accountSales.isCurrencySame =false;

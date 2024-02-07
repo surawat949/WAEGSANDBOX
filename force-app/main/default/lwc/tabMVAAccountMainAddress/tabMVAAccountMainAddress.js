@@ -118,17 +118,6 @@ export default class TabMVAAccountMainAddress extends LightningElement {
         return this.Street+'\n\n'+this.City+'\n\n'+this.State+'\n\n'+this.PostalCode+'\n\n'+this.Country;
         //console.log('XXX Get Url Google labe = >'+this.urlGoogleLabel);
     }
-    /*
-    async showPopup() {
-        const recordId = await TabAccountAddressToCreateNewTaskModal.open({
-          size: 'small',
-          receivedId: this.receivedId
-        });
-    
-        if (recordId) {
-          await this.showSuccessToast(this.receivedId);
-        }
-    }*/
 
     handleEdit(){
         this.showEditfield = !this.showEditfield;

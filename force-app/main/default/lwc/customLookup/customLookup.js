@@ -1,7 +1,9 @@
 import { LightningElement,api,wire} from 'lwc';
 import searchLookupData from '@salesforce/apex/tabAccountAddressLWCController.searchLookupData';
-import searchDefaultRecord from '@salesforce/apex/tabAccountAddressLWCController.searchDefaultRecord';
- 
+import searchDefaultRecord from '@salesforce/apex/tabAccountAddressLWCController.searchLookupAccountDefaultRecordData';
+
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+
 export default class CustomLookup extends LightningElement {
     // public properties with initial default values 
     @api label = 'label';
@@ -43,15 +45,12 @@ export default class CustomLookup extends LightningElement {
         this.isSearchLoading = false;
         if (data) {
            
-            console.log('This is data 1 '+JSON.parse(JSON.stringify(data)));
-             this.hasRecords = data.length == 0 ? false : true; 
+            this.hasRecords = data.length == 0 ? false : true; 
              
-             this.lstResult = JSON.parse(JSON.stringify(data));
-             console.log('This is data 2 '+this.lstResult);
-             console.log(this.recordCriteria); 
+            this.lstResult = JSON.parse(JSON.stringify(data));
          }
         else if (error) {
-            console.log('(error---> ' + JSON.stringify(error));
+            this.showToast('Error '+JSON.stringify(error));
          }
     };
         
@@ -107,5 +106,14 @@ export default class CustomLookup extends LightningElement {
                                     }
                         );
         this.dispatchEvent(oEvent);
+    }
+    showToast(title, message, variant, mode){
+        const event = new ShowToastEvent({
+            title : title,
+            message : message,
+            variant : variant,
+            mode : mode
+        });
+        this.dispatchEvent(event);
     }
 }

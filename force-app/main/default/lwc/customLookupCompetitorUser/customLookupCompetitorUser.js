@@ -44,7 +44,6 @@ export default class CustomLookupCompetitorUser extends LightningElement {
         if (data) {
              this.hasRecords = data.length == 0 ? false : true; 
              this.lstResult = JSON.parse(JSON.stringify(data));
-             console.log(this.recordCriteria); 
          }
         else if (error) {
             console.log('(error---> ' + JSON.stringify(error));
@@ -96,7 +95,6 @@ export default class CustomLookupCompetitorUser extends LightningElement {
     }
     // send selected lookup record to parent component using custom event
     lookupUpdateParenthandler(value){
-        console.log(value);
         const oEvent = new CustomEvent('lookupupdate',
                                     {
                                         'detail': {selectedRecord: value}

@@ -1,4 +1,5 @@
 public with sharing class tabActivationBusinessProgramController {
+    //Test class name: tabActivationBusinessProgramCtrlrTest
     public tabActivationBusinessProgramController() {
 
     }
@@ -11,11 +12,7 @@ public with sharing class tabActivationBusinessProgramController {
             if (state) {
                 accList.get(0).Onboarding_date__c = System.today();    
             } else {
-               accList.get(0).Onboarding_date__c = null;
-                if(Test.isRunningTest()){
-                	throw new AuraHandledException('error');	      
-                }
-                   
+               accList.get(0).Onboarding_date__c = null;   
             }
             
             update accList;
@@ -26,11 +23,7 @@ public with sharing class tabActivationBusinessProgramController {
 
     @AuraEnabled
     public static List<Loyalty_Points__c> getRelatedLoyaltyPoints(Id accountId){
-        try {
             List<Loyalty_Points__c> pointsList =  [Select Id, Name, MonthYear__c, Description__c, Points__c,external_key__c, Date_of_transaction__c FROM Loyalty_Points__c Where Account__c = :accountId];
             return pointsList;
-        } catch (Exception e) {
-            throw new AuraHandledException(e.getMessage());
-        }
     }    
 }

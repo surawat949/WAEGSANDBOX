@@ -10,6 +10,7 @@ public class MarketAverageDiscountUpdaterBatch_Test {
         Account acc = new Account(
             Name = 'test Acc',
             Hoya_account_Id__c = 'IT0033TESTACC',
+            Lenses_Net_Sales_Last_12Mo__c = 13000,
             Channel__c = 'Independent'
         );
         insert acc;
@@ -21,7 +22,7 @@ public class MarketAverageDiscountUpdaterBatch_Test {
         Insert sales;
     }
     @isTest
-    static void MarketAverageDiscountUpdate(){
+    static void MarketAverageDiscountUpdate(){       
         Test.startTest();
         String sch = '0 0 * * * ?';
 		system.schedule('Test Check', sch, new MarketAverageDiscountUpdaterBatch());

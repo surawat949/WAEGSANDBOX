@@ -63,6 +63,7 @@ public with sharing class TabMVCVisitsContactNearby_test {
 
     @IsTest
     static void testWholeClass(){
+        Test.StartTest();
         Account acc = [SELECT Id, Name FROM Account WHERE Hoya_Account_ID__c = 'TEST-1234' LIMIT 1];
         Account acc2 = [SELECT Id, Name FROM Account WHERE Hoya_Account_ID__c = 'TEST-4321' LIMIT 1];
         Contact con = [SELECT Id, FirstName, LastName, Name, AccountId, MiyoSmart_Attitude__c, 
@@ -72,7 +73,6 @@ public with sharing class TabMVCVisitsContactNearby_test {
         AccountContactRelation ac = [SELECT Id, ContactId, Preferred_contact_day_time__c FROM 
                                         AccountContactRelation WHERE AccountId=:acc2.Id];
         
-        Test.StartTest();
         TabMVCVisitsContactNearby.gettAllContacts(con.Id, 5, 'Neutral', 'C', 'email', 'Other', 'Other', '');
         TabMVCVisitsContactNearby.gettAllContacts(con.Id, 5, 'Neutral', 'C', 'email', 'Other', 'Other', 'Monday AM');
         TabMVCVisitsContactNearby.gettAllContacts(con.Id, 1, '', '', '', '', '', '');

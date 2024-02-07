@@ -1,6 +1,5 @@
 @isTest
 public class TabMVCVisitsController_Test {
-    
       private static final String CONTACT_OPTHO_RT = Schema.SObjectType.Contact.getRecordTypeInfosByDeveloperName().get('Opthalmologist').getRecordTypeId();
     
     @TestSetup
@@ -80,11 +79,12 @@ public class TabMVCVisitsController_Test {
     
     @IsTest
     static void runTest(){
+        String SeikoRec = Schema.SObjectType.ECP_Training__c.getRecordTypeInfosByDeveloperName().get('SEIKO_Training').getRecordTypeId();
+
         Account acc = new Account();
         acc.Name='sales test account';
         acc.hoya_account_id__c='SO3399999xx';
-        acc.AnnualRevenue = 10000;
-        acc.RecordTypeId='012b00000000P38';        
+        acc.AnnualRevenue = 10000;        
         insert acc;
         
         Contact con = new Contact();
@@ -94,31 +94,30 @@ public class TabMVCVisitsController_Test {
         
         ECP_Training__c training = new ECP_Training__c();
         training.Training_status__c ='completed';
-        training.start__c = System.today()-2;
+        training.start__c = System.today()-2;        
+        training.end__C = System.today()-1;
         training.Account__c = acc.Id;
         training.Type__c = 'In Store';
         training.Training__c = 'MIYOSMART';
+        training.RecordTypeId = SeikoRec;
         Insert training;
         
         ECP_Training_Member__c member = new ECP_Training_Member__c();
         member.Training__c = training.Id;
         member.Contact__c = con.Id;
         Insert member;
-        
-        Test.startTest();
-        TabMVCVisitsController.getInStoreTrainingRelatedList(con.Id);
-        Test.stopTest();
+       
     }
     
     @isTest
     static void visitTest(){
         Test.startTest();
         Contact con=[Select Id,Name,ownerId from Contact LIMIT 1];
-        
+        TabMVCVisitsController.getInStoreTrainingRelatedList(con.Id);
         TabMVCVisitsController.getContactLastVisitCompleted(con.Id);
         TabMVCVisitsController.getNextVisitPlanned(con.Id);
         TabMVCVisitsController.getVisits(con.Id);
-
+		TabMVCVisitsController.getVisitCompleted(con.Id);
         Test.stopTest();
     }
 

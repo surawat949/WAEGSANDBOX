@@ -1,21 +1,19 @@
 <template>
-    
-    <!--{receivedId} + {brand}-->
     <template lwc:if={isHoyaAcc}>
         <lightning-tabset variant="scoped">
-            <lightning-tab label="Installed">
+            <lightning-tab label={custLabel.TabInstalled}>
                 <c-tab-activation-equipments-installed received-id = {receivedId}></c-tab-activation-equipments-installed>
             </lightning-tab>
-            <lightning-tab label="visuReal Portable">
+            <lightning-tab label={custLabel.AccountActivationVisuRealPortable}>
                 <c-tab-activation-equipments-visureal received-id = {receivedId}></c-tab-activation-equipments-visureal>
             </lightning-tab>
-            <lightning-tab label="visuReal MASTER">
+            <lightning-tab label={custLabel.AccountActivationVisuRealMaster}>
                 <c-tab-activation-equipments-visureal-master received-id = {receivedId}></c-tab-activation-equipments-visureal-master>
             </lightning-tab>
-            <lightning-tab label="iDentifier+">
+            <lightning-tab label={custLabel.AccountActivationIdentifier}>
                 <c-tab-activation-equipments-identifier received-id = {receivedId}></c-tab-activation-equipments-identifier>
             </lightning-tab>
-            <lightning-tab label="MyStyle V+">
+            <lightning-tab label={custLabel.TabMyStyleV}>
                 <c-tab-activation-equipments-mystyle received-id = {receivedId}></c-tab-activation-equipments-mystyle>
             </lightning-tab>
         </lightning-tabset>
@@ -23,7 +21,7 @@
     <!--FOR SEIKO-->
     <template lwc:else>
         <lightning-tabset variant="scoped">
-            <lightning-tab label="Installed">
+            <lightning-tab label={custLabel.TabInstalled}>
                 <c-tab-activation-equipments-installed received-id = {receivedId}></c-tab-activation-equipments-installed>                
             </lightning-tab>
             <lightning-tab label="Tracer">
@@ -35,10 +33,10 @@
                     </div>
                 </div> 
             </lightning-tab>
-            <lightning-tab label="SVX Ipad">
+            <lightning-tab label={custLabel.TabSVXIpad}>
                 <c-tab-activation-equipments-svxipad received-id = {receivedId}></c-tab-activation-equipments-svxipad>
             </lightning-tab>
-            <lightning-tab label="SVX eColumn">
+            <lightning-tab label={custLabel.TabSVXeColumn}>
                 <c-tab-activation-equipments-svxe-column received-id = {receivedId}></c-tab-activation-equipments-svxe-column> 
             </lightning-tab>
             <lightning-tab label="SVX Center">
@@ -52,5 +50,4 @@
             </lightning-tab>
         </lightning-tabset>
     </template>
-
 </template>

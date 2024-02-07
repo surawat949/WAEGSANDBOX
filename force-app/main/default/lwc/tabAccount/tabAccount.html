@@ -6,14 +6,14 @@
         <lightning-tab label={custLabel.membershipsTab}>
             <c-tab-account-memberships received-id = {recordId}> </c-tab-account-memberships>
         </lightning-tab>
-        <lightning-tab label="Invoicing">
+        <lightning-tab label={custLabel.invoiceTab}>
             <c-tab-account-invoicing received-id = {recordId}> </c-tab-account-invoicing>
         </lightning-tab>
-        <lightning-tab label="Logistic">
+        <lightning-tab label={custLabel.logisticTab}>
             <c-tab-account-logistic received-id = {recordId}> </c-tab-account-logistic>
         </lightning-tab>
         
-        <lightning-tab label="Contracts">
+        <lightning-tab label={custLabel.contractsTab}>
             <div class="slds-illustration slds-illustration_small" aria-hidden="true">
                 <img src="/projRes/ui-home-private/emptyStates/noTasks.svg" class="slds-illustration__svg" alt=""/>
                 <div class="slds-align_absolute-center" style="height:5rem;color: #009EDB;">
@@ -21,7 +21,7 @@
                 </div>
             </div>
         </lightning-tab>
-        <lightning-tab label="PriceList">
+        <lightning-tab label={custLabel.pricelistTab}>
             <div class="slds-illustration slds-illustration_small" aria-hidden="true">
                 <img src="/projRes/ui-home-private/emptyStates/noTasks.svg" class="slds-illustration__svg" alt=""/>
                 <div class="slds-align_absolute-center" style="height:5rem;color: #009EDB;">
@@ -29,7 +29,7 @@
                 </div>
             </div>
         </lightning-tab>
-        <lightning-tab label="System Information">
+        <lightning-tab label={custLabel.systemTab}>
             <c-tab-account-system received-id = {recordId}> </c-tab-account-system>
         </lightning-tab>
     </lightning-tabset>

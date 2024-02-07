@@ -6,7 +6,7 @@ import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import Account_obj from '@salesforce/schema/Account'; 
 import Seiko_Data from '@salesforce/schema/Seiko_Data__c'; 
 //fields
-import Red_Customer_Id from '@salesforce/schema/Seiko_Data__c.Redhab_customer_id__c';
+/*import Red_Customer_Id from '@salesforce/schema/Seiko_Data__c.Redhab_customer_id__c';
 import Red_Service_Id from '@salesforce/schema/Seiko_Data__c.Redhab_service_id__c';
 import SVS_FB from '@salesforce/schema/Seiko_Data__c.SVS_FB_Page__c';
 import Social_radius from '@salesforce/schema/Seiko_Data__c.SVS_Digital_com_Platform_radius__c';
@@ -15,17 +15,20 @@ import Social_Confirmation from '@salesforce/schema/Seiko_Data__c.SVS_Digital_co
 import Co_Shop_Name from '@salesforce/schema/Seiko_Data__c.Co_branded_Shop_Name__c';
 import Co_Shop_Website from '@salesforce/schema/Seiko_Data__c.Co_branded_Shop_Website__c';
 import Co_Shop_Hashtag from '@salesforce/schema/Seiko_Data__c.Co_branded_Shop_Hashtags__c';
-
-import VAT_Number from '@salesforce/schema/Account.VAT_EUROPEAN_NUMBER__c';
+import VAT_Number from '@salesforce/schema/Account.VAT_EUROPEAN_NUMBER__c';*/
 //Apex
-import getSeikoDataId from '@salesforce/apex/tabActivationPortalController.getSeikoDataId';
+/*import getSeikoDataId from '@salesforce/apex/tabActivationPortalController.getSeikoDataId';
 import getLastTrainingDate from '@salesforce/apex/tabActivationPortalController.getLastTrainingDate';
-import startEnroll from '@salesforce/apex/tabActivationPortalController.startEnroll';
+import startEnroll from '@salesforce/apex/tabActivationPortalController.startEnroll';*/
 import getChart from '@salesforce/apex/tabActivationEquipmentsController.getEquipmentsChart';
 
 //Custom Labels
 import SocialManager from '@salesforce/label/c.AccountSeikoProSocialMediaManagment';
 import TrainingDate from '@salesforce/label/c.AccountActivationSocialManagerTrainingDate';
+import MonthlyPosts from '@salesforce/label/c.Monthly_Posts';
+import MonthlyConsumerViews from '@salesforce/label/c.Monthly_Consumer_Views';
+import UniqueConsumers from '@salesforce/label/c.Unique_Consumers';
+import MonthlyConsumerClicks from '@salesforce/label/c.Monthly_Consumer_Clicks';
 import { RefreshEvent } from 'lightning/refresh';
 export default class TabActivationPortalSocialMedia extends LightningElement {
     @api receivedId;
@@ -37,14 +40,14 @@ export default class TabActivationPortalSocialMedia extends LightningElement {
     consumerData;
     objectApiName=Account_obj;
     seikoObjName=Seiko_Data;
-    seikoFields=[Social_Activation,Social_Confirmation,Social_radius,SVS_FB,Red_Customer_Id,Red_Service_Id,
-        Co_Shop_Name,Co_Shop_Website,Co_Shop_Hashtag];
+    /*seikoFields=[Social_Activation,Social_Confirmation,Social_radius,SVS_FB,Red_Customer_Id,Red_Service_Id,
+        Co_Shop_Name,Co_Shop_Website,Co_Shop_Hashtag];*/
        
-    accountFields=[VAT_Number];
+   // accountFields=[VAT_Number];
     custLabel = {
-        SocialManager,TrainingDate
+        SocialManager,TrainingDate,MonthlyPosts,MonthlyConsumerViews,UniqueConsumers,MonthlyConsumerClicks
     }
-    @wire(getRecord, { recordId: "$receivedId", fields:[VAT_Number] })
+   /* @wire(getRecord, { recordId: "$receivedId", fields:[VAT_Number] })
     record( { error, data }){
         if(data){
             this.accountRec = data;
@@ -92,10 +95,10 @@ export default class TabActivationPortalSocialMedia extends LightningElement {
     updateRecordView(){
         eval("$A.get('e.force:refreshView').fire();");
         this.dispatchEvent(new RefreshEvent());
-    }
+    }*/
     //get Unique Consumers
     //Consumer data should be retrived first ,so added this outside of connected call back
-    @wire(getChart,{recordId : '$receivedId',tool : 'Social Media Manager - Social Media – Monthly Reach',type:'ExactMatch'})
+    @wire(getChart,{recordId : '$receivedId',tool : 'Social Media Manager - Social Media - Monthly Reach',type:'ExactMatch'})
     chartData({error,data}){
         if(data){
             data = JSON.parse(JSON.stringify(data));
@@ -147,7 +150,7 @@ export default class TabActivationPortalSocialMedia extends LightningElement {
     }
     connectedCallback() {
         //get Social media Posts Chart
-        getChart({recordId : this.receivedId,tool : 'Social Media Manager – Number of monthly posts',type:'ExactMatch'})
+        getChart({recordId : this.receivedId,tool : 'Social Media Manager - Number of monthly posts',type:'ExactMatch'})
         .then(response => {
             response = JSON.parse(JSON.stringify(response));
             let val = response;
@@ -164,7 +167,7 @@ export default class TabActivationPortalSocialMedia extends LightningElement {
             this.showToast('Error', 'Error', error.message);
         })
         //get Consumer Views 
-        getChart({recordId : this.receivedId,tool : 'Social Media Manager – Social Media - Monthly Impressions',type:'ExactMatch'})
+        getChart({recordId : this.receivedId,tool : 'Social Media Manager - Social Media - Monthly Impressions',type:'ExactMatch'})
         .then(response => {
             response = JSON.parse(JSON.stringify(response));
             let val = response;
@@ -181,59 +184,7 @@ export default class TabActivationPortalSocialMedia extends LightningElement {
         })
         .catch(error => {
             this.showToast('Error', 'Error', error.message);
-        })
-        //get Unique Consumers
-      /*  getChart({recordId : this.receivedId,tool : 'Social Media Manager - Social Media – Monthly Reach',type:'ExactMatch'})
-        .then(response => {
-            response = JSON.parse(JSON.stringify(response));
-            let val = response;
-            var avgLabelsSet = new Set();
-            var labelset = [];  
-            var dataset = [];
-            var uniqueConsumerMap = new Map();
-            val.forEach(function(key){
-                labelset.push(key.label.substr(-2)+'/'+key.label.substring(0,4));
-                dataset.push(key.qty);
-                uniqueConsumerMap.set(key.label.substr(-2)+'/'+key.label.substring(0,4),key.qty);
-                avgLabelsSet.add(key.label.substr(-2)+'/'+key.label.substring(0,4));
-            });
-            this.getLineChart(labelset,dataset, 'Unique Consumer Views','canvas.chartConsumers');
-            //Avg Consumers
-            var data = this.consumerData;
-            console.log(this.consumerData);
-            var consumerMap = new Map();
-            if(data != undefined){
-                data.forEach(function(key){
-                    consumerMap.set(key.label.substr(-2)+'/'+key.label.substring(0,4),key.qty);                
-                    avgLabelsSet.add(key.label.substr(-2)+'/'+key.label.substring(0,4));
-                });
-            }
-            console.log(consumerMap);
-            var avgConsumerLabelset = [];  
-            var avgConsumerDataset = [];
-            for (const value of avgLabelsSet) {
-                var consumerVal = 0;
-                var uniqueConsumerVal = 0;
-                if(consumerMap.has(value)){
-                    consumerVal = consumerMap.get(value);
-                }
-                if(uniqueConsumerMap.has(value)){
-                    uniqueConsumerVal = uniqueConsumerMap.get(value);
-                }
-                var avgConsumerVal = 0;
-                if(uniqueConsumerVal != 0){
-                    avgConsumerVal = consumerVal/uniqueConsumerVal;
-                }
-                avgConsumerDataset.push(Math.round(avgConsumerVal * 100) / 100 );  
-                avgConsumerLabelset.push(value);
-            }
-            console.log(avgConsumerDataset);
-            this.getLineChart(avgConsumerLabelset,avgConsumerDataset, 'Average Views per Unique Consumer','canvas.chartAvg');
-        })
-        .catch(error => {
-            this.showToast('Error', 'Error', error.message);
-        })
-        */
+        })       
         //get Manager Clicks
         getChart({recordId : this.receivedId,tool : 'Social Media Manager - Social Media - Monthly Clicks',type:'ExactMatch'})
         .then(response => {

@@ -1,7 +1,7 @@
 /*****************************************************************************************************
 * Name            :  MarketAverageDiscountUpdaterBatch
 * Description     :  Batch Class to be used to update the Market Average Discount on Independent Account for Last 12 Months per Country.
-				     This Batch should be every month
+				     This Batch should be run at every month
                      String cronexpression = '0 00 08,20 * * ?';
                      System.schedule('Average Discount Updater Schedule Job', cronexpression, new MarketAverageDiscountUpdaterBatch());					
 * Usage           :  MarketAverageDiscountUpdaterBatch                                                          
@@ -19,6 +19,7 @@ public class MarketAverageDiscountUpdaterBatch implements Database.Batchable<SOb
     }
     public void execute(Database.BatchableContext context, List<sObject> scope) {
         try {
+            System.debug(scope);
             List<Account> accUpdateLst = new List<Account>();
             Map<String,Sales> netAndGrossSalesMap = new Map<String,Sales>();  
             if(scope.size() > 0){
@@ -35,7 +36,6 @@ public class MarketAverageDiscountUpdaterBatch implements Database.Batchable<SOb
                     List<Account> accounts = [SELECT Id,Market_Avg_Disc_Ind_L12M__c,Owner.CompanyName from Account where Owner.CompanyName =: company
                                               AND Channel__c ='Independent'  
                                               AND Lenses_Net_Sales_Last_12Mo__c > 0];
-                    System.debug(company+'--'+accounts.size());
                     for(Account acc:accounts){
                          if(netAndGrossSalesMap.containskey(acc.Owner.CompanyName)){
                             Sales sale =  netAndGrossSalesMap.get(acc.Owner.CompanyName);

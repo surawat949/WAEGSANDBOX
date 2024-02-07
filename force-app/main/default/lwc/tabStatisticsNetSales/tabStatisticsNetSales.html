@@ -21,7 +21,6 @@
                         <label class="slds-form-element__label">{custLabel.Last12MoVsObjective}</label><br/>
                         <div class="slds-form-element__control"><lightning-formatted-number value={Last12MoVsObjective} maximum-fraction-digits ="0"></lightning-formatted-number>%</div> 
                 </div>
-               
             </div>        
             <br/>
         </lightning-record-edit-form>       
@@ -53,7 +52,7 @@
         <tbody>
             <!--Lenses-->
             <tr class="slds-text-title_caps">
-                <td class="fix">{custLabel.Lenses}</td>
+                <td class="fix">{custLabel.Lenses}({CurrencyCode})</td>
                 <template for:each={LensesSalesCFY} for:item="item" for:index="index"> 
                     <td style="text-align:right;" key={item}>
                         <lightning-formatted-number value={item} maximum-fraction-digits="0">
@@ -63,7 +62,7 @@
             </tr>
             <!--Frames-->
             <tr class="slds-text-title_caps">
-                <td class="fix">{custLabel.Frames}</td>
+                <td class="fix">{custLabel.Frames}({CurrencyCode})</td>
                 <template for:each={FramesSalesCFY} for:item="item" for:index="index"> 
                     <td style="text-align:right;" key={item}>
                         <lightning-formatted-number value={item} maximum-fraction-digits="0">
@@ -73,7 +72,7 @@
             </tr>
             <!--ContactLens-->
             <tr class="slds-text-title_caps">
-                <td class="fix">{custLabel.ContactLenses}</td>
+                <td class="fix">{custLabel.ContactLenses}({CurrencyCode})</td>
                 <template for:each={ContactLensesSalesCFY} for:item="item" for:index="index"> 
                     <td style="text-align:right;" key={item}>
                         <lightning-formatted-number value={item} maximum-fraction-digits="0">
@@ -83,7 +82,7 @@
             </tr>
             <!--Instruments-->
             <tr class="slds-text-title_caps">
-                <td class="fix">{custLabel.Instruments}</td>
+                <td class="fix">{custLabel.Instruments}({CurrencyCode})</td>
                 <template for:each={InstrumentsSalesCFY} for:item="item" for:index="index"> 
                     <td style="text-align:right;" key={item}>
                         <lightning-formatted-number value={item} maximum-fraction-digits="0">
@@ -93,7 +92,7 @@
             </tr>                
             <!--Others-->
             <tr class="slds-text-title_caps">
-                <td class="fix">{custLabel.Others}</td>
+                <td class="fix">{custLabel.Others}({CurrencyCode})</td>
                 <template for:each={OthersSalesCFY} for:item="item" for:index="index"> 
                     <td style="text-align:right;" key={item}>
                         <lightning-formatted-number value={item} maximum-fraction-digits="0">
@@ -103,7 +102,7 @@
             </tr>
             <!--Total FY-->
             <tr class="slds-text-title_caps">
-                <td class="fix">{custLabel.TotalFY}</td>
+                <td class="fix">{custLabel.TotalFY}({CurrencyCode})</td>
                 <template for:each={TotalSalesCFY} for:item="item" for:index="index"> 
                     <td style="text-align:right;" key={item}>
                         <lightning-formatted-number value={item} maximum-fraction-digits="0">
@@ -113,7 +112,7 @@
             </tr>
             <!--Total LFY-->
             <tr class="slds-text-title_caps">
-                <td class="fix">{custLabel.TotalLFY}</td>
+                <td class="fix">{custLabel.TotalLFY}({CurrencyCode})</td>
                 <template for:each={TotalSalesLFY} for:item="item" for:index="index"> 
                     <td style="text-align:right;" key={item}>
                         <lightning-formatted-number value={item} maximum-fraction-digits="0">
@@ -138,11 +137,10 @@
                 <td>&nbsp;</td>
                 <td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
                 <td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
-                
             </tr>
             <!--Lenses LFY-->
             <tr class="slds-text-title_caps">
-                <td class="fix">{custLabel.LensesLFY}</td>
+                <td class="fix">{custLabel.LensesLFY}({CurrencyCode})</td>
                 <template for:each={LensesSalesLFY} for:item="item" for:index="index"> 
                     <td style="text-align:right;" key={item}>
                         <lightning-formatted-number value={item} maximum-fraction-digits="0">
@@ -169,7 +167,7 @@
         <table class="slds-table slds-table_bordered slds-table_cell-buffer">
             <thead>
                 <tr>
-                    <th class="fix"><div class="slds-truncate">Volumes (Fiscal Year)</div></th>
+                    <th class="fix"><div class="slds-truncate">{custLabel.Volumes}</div></th>
                     <template for:each={MonthColumns} for:item="column">
                         <th key={column} style="text-align:right;"><div class="slds-truncate">{column}</div></th>
                     </template>
@@ -263,7 +261,6 @@
                     <td>&nbsp;</td>
                     <td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
                     <td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
-                    
                 </tr>
                 <!--Lenses LFY-->
                 <tr class="slds-text-title_caps">

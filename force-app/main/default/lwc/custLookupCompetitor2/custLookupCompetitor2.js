@@ -114,7 +114,7 @@ export default class CustLookupCompetitor2 extends LightningElement {
 
     updateRecordView(){
         setTimeout(() => {
-            eval("$A.get('e.force:refreshView').fire();");
+            //eval("$A.get('e.force:refreshView').fire();");
             this.showLoading = false;
             this.isRender = true;            
         },30000);

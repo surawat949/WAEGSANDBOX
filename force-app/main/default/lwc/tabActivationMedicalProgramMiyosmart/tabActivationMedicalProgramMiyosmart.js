@@ -1,7 +1,6 @@
 import { LightningElement, api, track, wire } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
-import MiyosmartAuthorizedDealers from '@salesforce/label/c.SFDC_V_2_MVA_Activation_Prescriber_MiyosmartAuthorizedDealers';
 import Myo_Smart_AuthorizeDealer__c from '@salesforce/schema/Account.Myo_Smart_AuthorizeDealer__c'; 
 import Myo_Smart_TrainingComplete__c from '@salesforce/schema/Account.Myo_Smart_TrainingComplete__c'; 
 import Myo_Kids_Corner__c from '@salesforce/schema/Account.Myo_Kids_Corner__c'; 
@@ -18,7 +17,8 @@ import IsMiyoSmartTrainingCompleted from '@salesforce/label/c.MiyoSmartTrainingC
 import LastMiyoSmartTrainingDate from '@salesforce/label/c.LastMiyoSmartDate';
 import LabelCancel from '@salesforce/label/c.ButtonCancel';
 import LabelSave from '@salesforce/label/c.Save_Button';
-
+import MiyosmartAuthorizedDealers from '@salesforce/label/c.SFDC_V_2_MVA_Activation_Prescriber_MiyosmartAuthorizedDealers';
+import MiyoSmartPotential from '@salesforce/label/c.Miyosmart_Store_Potential';
 //apex
 import getLastSalesStats from '@salesforce/apex/TabActivationMPMiyosmart.getLastSalesStats';
 import getLastTrainingDate from '@salesforce/apex/TabActivationMPMiyosmart.getLastTrainingDate';
@@ -53,7 +53,7 @@ export default class TabActivationMedicalProgramMiyosmart extends LightningEleme
     MiopiaControl = [Myo_MiopiaControl];
 
     label={
-            MiyosmartAuthorizedDealers,
+            MiyosmartAuthorizedDealers,MiyoSmartPotential,
             IsMiyoSmartTrainingCompleted,LastMiyoSmartTrainingDate,
             LabelCancel, LabelSave
     }
@@ -65,19 +65,14 @@ export default class TabActivationMedicalProgramMiyosmart extends LightningEleme
     }
 
     connectedCallback() {
-        //console.log('child connected call-' + this.receivedId);
         this.getLastSalesStats();
         getLastTrainingDate({accountId : this.receivedId})
         .then(response => {
             response = JSON.parse(JSON.stringify(response)); 
-            console.log('>>>>response',response);
             this.LastTraningDate = response;
-            console.log('>>>>LastTraningDate',this.LastTraningDate);
             if(this.LastTraningDate != null && this.LastTraningDate != undefined && this.LastTraningDate !='') 
                 this.isTrainingComplete = true;
-            else{this.isTrainingComplete = false;}
-                
-                console.log('>>>>isTrainingComplete',this.isTrainingComplete);
+            else{this.isTrainingComplete = false;}                
         })
         .catch(error => {
             this.showToast('Error', 'Error', error.message);
@@ -103,7 +98,6 @@ export default class TabActivationMedicalProgramMiyosmart extends LightningEleme
     handleLookupMainCompetitorChange(event){
         if(event.detail.selectedRecord != undefined){
             this.MainMyopiaControl = event.detail.selectedRecord.Value;
-            //console.log('Main Myopia Control =>'+this.MainMyopiaControl);
         }else{
             this.MainMyopiaControl = undefined;
             
@@ -158,7 +152,6 @@ export default class TabActivationMedicalProgramMiyosmart extends LightningEleme
 
     updateRecordView(){
         setTimeout(() => {
-            eval("$A.get('e.force:refreshView').fire();");
             this.showLoading = false;
             this.isRender = true;            
         },30000);

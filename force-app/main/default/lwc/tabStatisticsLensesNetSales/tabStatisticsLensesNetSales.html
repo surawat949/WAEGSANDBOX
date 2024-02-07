@@ -13,7 +13,7 @@
         <div class="slds-var-p-left_x-small slds-grid slds-gutters">
             <div class="slds-col slds-size_4-of-12"><span><label class="slds-form-element__label">Lenses Sales Last 12Mo</label></span></div>
             <div class="slds-col slds-size_2-of-12"><span>
-                <lightning-formatted-number value={LensesSalesLast12Mo} maximum-fraction-digits="0" format-style='currency' currency-code={currencyCode}>
+                <lightning-formatted-number value={LensesSalesLast12Mo} maximum-fraction-digits="0" format-style='currency' currency-code={CurrencyCode}>
                 </lightning-formatted-number> 
                 </span> 
             </div> 
@@ -27,7 +27,7 @@
         <div class="slds-var-p-left_x-small slds-grid slds-gutters">
             <div class="slds-col slds-size_4-of-12"><span><label class="slds-form-element__label">Lenses Sales LFY</label></span></div>
             <div class="slds-col slds-size_2-of-12"><span>
-                <lightning-formatted-number value={LensesSalesLFY} maximum-fraction-digits="0" format-style='currency' currency-code={currencyCode}>
+                <lightning-formatted-number value={LensesSalesLFY} maximum-fraction-digits="0" format-style='currency' currency-code={CurrencyCode}>
                 </lightning-formatted-number> 
                 </span> 
             </div>         
@@ -64,7 +64,7 @@
         <div class="slds-var-p-left_x-small slds-grid slds-gutters">
             <div class="slds-col slds-size_4-of-12"><span><label class="slds-form-element__label">Lenses Sales CFY</label></span></div>
             <div class="slds-col slds-size_2-of-12"><span>
-                <lightning-formatted-number value={LensesSalesCFY} maximum-fraction-digits="0" format-style='currency' currency-code={currencyCode}>
+                <lightning-formatted-number value={LensesSalesCFY} maximum-fraction-digits="0" format-style='currency' currency-code={CurrencyCode}>
                 </lightning-formatted-number> 
                 </span> 
             </div> 
@@ -78,7 +78,7 @@
         <div class="slds-var-p-left_x-small slds-grid slds-gutters">
             <div class="slds-col slds-size_4-of-12"><span><label class="slds-form-element__label">Lenses Sales LFY YTD</label></span></div>
             <div class="slds-col slds-size_2-of-12"><span>
-                <lightning-formatted-number value={LensesSalesLFYYTD} maximum-fraction-digits="0" format-style='currency' currency-code={currencyCode}>
+                <lightning-formatted-number value={LensesSalesLFYYTD} maximum-fraction-digits="0" format-style='currency' currency-code={CurrencyCode}>
                 </lightning-formatted-number> 
                 </span> 
             </div>         
@@ -107,7 +107,7 @@
         <div class="slds-var-p-left_x-small slds-grid slds-gutters">
             <div class="slds-col slds-size_4-of-12"><span><label class="slds-form-element__label">Lenses Sales Last 3Mo CFY</label></span></div>
             <div class="slds-col slds-size_2-of-12"><span>
-                <lightning-formatted-number value={LensesSales3MoCFY} maximum-fraction-digits="0" format-style='currency' currency-code={currencyCode}>
+                <lightning-formatted-number value={LensesSales3MoCFY} maximum-fraction-digits="0" format-style='currency' currency-code={CurrencyCode}>
                 </lightning-formatted-number> 
                 </span> 
             </div> 
@@ -121,7 +121,7 @@
         <div class="slds-var-p-left_x-small slds-grid slds-gutters">
             <div class="slds-col slds-size_4-of-12"><span><label class="slds-form-element__label">Lenses Sales Last 3Mo LFY</label></span></div>
             <div class="slds-col slds-size_2-of-12"><span>
-                <lightning-formatted-number value={LensesSales3MoLFY} maximum-fraction-digits="0" format-style='currency' currency-code={currencyCode}>
+                <lightning-formatted-number value={LensesSales3MoLFY} maximum-fraction-digits="0" format-style='currency' currency-code={CurrencyCode}>
                 </lightning-formatted-number> 
                 </span> 
             </div>         
@@ -158,7 +158,7 @@
         <div class="slds-var-p-left_x-small slds-grid slds-gutters">
             <div class="slds-col slds-size_4-of-12"><span><label class="slds-form-element__label">Lenses Sales Forecast CFY</label></span></div>
             <div class="slds-col slds-size_2-of-12"><span>
-                <lightning-formatted-number value={LensesSalesForecastCFY} maximum-fraction-digits="0" format-style='currency' currency-code={currencyCode}>
+                <lightning-formatted-number value={LensesSalesForecastCFY} maximum-fraction-digits="0" format-style='currency' currency-code={CurrencyCode}>
                 </lightning-formatted-number> 
                 </span> 
             </div>            
@@ -178,8 +178,6 @@
                 </lightning-formatted-number>% 
                 </span> 
             </div>  
-        </div>   
-       
+        </div>          
     </div>
-
 </template>

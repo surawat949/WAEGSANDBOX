@@ -79,6 +79,10 @@ public class TabActivationAIIndicatorControllerTest {
                                                       Mounting_L3Mo__c,HVC_Systems_L3Mo__c, Lenses_Net_Sales_Last_12Mo__c, Lenses_Gross_Sales_Last_12Mo__c,
                                                     Lenses_Net_Sales_LFY__c,Lenses_Gross_Sales_LFY__c
                                                     From Last_Sales_Statistics__c Where  Account__c =:actId.Id];
+         Last_Sales_Statistics__c lastSalesStatistic1 = [Select Id,Other_Digital_Orders_L3Mo__c,Remote_Edging_L3Mo__c,
+                                                      Mounting_L3Mo__c,HVC_Systems_L3Mo__c, Lenses_Net_Sales_Last_12Mo__c, Lenses_Gross_Sales_Last_12Mo__c,
+                                                    Lenses_Net_Sales_LFY__c,Lenses_Gross_Sales_LFY__c
+                                                    From Last_Sales_Statistics__c Where  Account__c =:actId.Id And name = 'test'];
          
         Test.startTest();
             system.debug('>>>');
@@ -103,6 +107,13 @@ public class TabActivationAIIndicatorControllerTest {
             actId.CHCUSTCLASSIFICATIONID__c = 'Ind';
             update actId;
             TabActivationAIIndicatorController.getAIIndicators(actId.Id);
+            lastSalesStatistic1.Other_Digital_Orders_L3Mo__c=4;
+            update lastSalesStatistic1;
+            TabActivationAIIndicatorController.getAIIndicators(actId.Id);
+            actId.Seiko_Network__c = '';
+            update actId;
+            TabActivationAIIndicatorController.getAIIndicators(actId.Id);
+            
         Test.StopTest();
   } 
    @IsTest
@@ -128,6 +139,24 @@ public class TabActivationAIIndicatorControllerTest {
         insert lastSalesStatisticObj1;
         Test.startTest();
              TabActivationAIIndicatorController.getAIIndicators(acc.Id);
+        lastSalesStatisticObj1.Remote_Edging_L3Mo__c=5;
+        lastSalesStatisticObj1.Mounting_L3Mo__c=5;
+        update lastSalesStatisticObj1;
+        TabActivationAIIndicatorController.getAIIndicators(acc.Id);
+        acc.Lenses_Net_Sales_Last_12Mo__c = 0;
+        update acc;
+        TabActivationAIIndicatorController.getAIIndicators(acc.Id);
+        acc.Seiko_Network__c = 'Seiko Vision Specialist';
+        update acc;
+        TabActivationAIIndicatorController.getAIIndicators(acc.Id);
+         lastSalesStatisticObj1.HVC_Systems_L3Mo__c=12;
+         lastSalesStatisticObj1.Other_Digital_Orders_L3Mo__c=20;
+         update lastSalesStatisticObj1;
+        TabActivationAIIndicatorController.getAIIndicators(acc.Id);
+        
+        
+        
+        
          Test.StopTest();
 
     }

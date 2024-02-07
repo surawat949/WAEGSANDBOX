@@ -30,20 +30,4 @@ public with sharing class TabMVAAccountClinicValidation {
             //System.debug('XXX Get Validation All '+qdList.size()+'=>'+qdList);
             return qdList;
      }
-     /*
-     @AuraEnabled(cacheable=true)
-     public static void DeleteValidation(String recordId){
-        try {
-            List<QIDC__Validation_Request_ims__c> qlList = new List<QIDC__Validation_Request_ims__c>();
-            List<QIDC__Validation_Request_ims__c> qList = [SELECT Id FROM QIDC__Validation_Request_ims__c WHERE Id=:recordId];
-            for(QIDC__Validation_Request_ims__c q : qList){
-                qlList.add(q);
-            }
-            If(qlList.size()>0){delete qlList;}
-        } catch (Exception e) {
-            LogException.log(e);
-            throw new AuraHandledException(e.getMessage());
-        }
-     }
-     */
 }

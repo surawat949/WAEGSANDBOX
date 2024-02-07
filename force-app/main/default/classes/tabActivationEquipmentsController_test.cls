@@ -1,10 +1,12 @@
 @isTest
 public class tabActivationEquipmentsController_test {
   	@IsTest
-    static void runTestCtrl(){         
+    static void runTestCtrl(){
+        Test.StartTest();    
+        String TrainingRecId = Schema.SObjectType.ECP_Training__c.getRecordTypeInfosByDeveloperName().get('HOYA_Training').getRecordTypeId();     
         Account acc = new Account();
         acc.Name='sales test account';
-        acc.hoya_account_id__c='SO3399999xx';
+        acc.hoya_account_id__c='TE-3399999xx';
         acc.RecordTypeId='012b00000000P38';        
         insert acc;
         
@@ -22,6 +24,7 @@ public class tabActivationEquipmentsController_test {
         training.Training__c = 'HoyaiLog orders';     
         training.Type__c = 'In Store';
         training.start__c = System.today()-2;
+        training.RecordTypeId = TrainingRecId;
         insert training;
         
         tabActivationEquipmentsController.getLastTrainingDate(acc.Id,'HoyaiLog orders');
@@ -29,5 +32,6 @@ public class tabActivationEquipmentsController_test {
         tabActivationEquipmentsController.getLastMediaUsage(acc.Id,'eColumn Lens Selection%','LikeMatch');
         tabActivationEquipmentsController.getEquipmentsChart(acc.Id,'HoyaiLog orders','ExactMatch');
         tabActivationEquipmentsController.getEquipmentsChart(acc.Id,'eColumn Lens Selection%','LikeMatch');
+        Test.StopTest();
     }
 }

@@ -1,7 +1,7 @@
 public With Sharing class TabVisitsReportsController {
     
     //Method to get all Visits
-    @AuraEnabled(cacheable=true)
+    @AuraEnabled
     public static List<Visits__c> getReportVisits(String accountId){
         List<Visits__c> visits=[select Id,Name,Start_Date_Time__c, Visit_Type__c, Visit_Reason__c,  Visit_Status__c,Start_Day__c from Visits__c where Account__c=:accountId];
         return visits;

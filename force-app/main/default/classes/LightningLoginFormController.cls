@@ -163,6 +163,8 @@ global class LightningLoginFormController {
             urlsAndLabels.recoveryLabel = mapCommunityLabel.get(language).Label_Forgot_Password__c;
             urlsAndLabels.contactLabel = mapCommunityLabel.get(language).Label_Contact__c;
             urlsAndLabels.helpLabel = mapCommunityLabel.get(language).Label_Help__c;
+            urlsAndLabels.privacyLabel = mapCommunityLabel.get(language).Label_Privacy__c;
+            urlsAndLabels.termsLabel = mapCommunityLabel.get(language).Label_Terms__c;
             urlsAndLabels.rememberLabel = mapCommunityLabel.get(language).Label_Remember_Me__c;
             urlsAndLabels.welcomeLabel = mapCommunityLabel.get(language).Label_Welcome__c;
             urlsAndLabels.descriptionLabel = mapCommunityLabel.get(language).Label_Description__c;
@@ -171,10 +173,11 @@ global class LightningLoginFormController {
             urlsAndLabels.createAccountLabel = mapCommunityLabel.get(language).Label_Create_Account__c;
             urlsAndLabels.helpUrl = helpURL + language + mapCommunityLabel.get(language).Help_URL__c;
             urlsAndLabels.contactUrl = contactURL + language + mapCommunityLabel.get(language).Contact_Us_URL__c;
+            urlsAndLabels.privacyURL = privacyPolicyURL + language + mapCommunityLabel.get(language).Privacy_URL__c;
+            urlsAndLabels.termsURL = termsConditionsURL + language + mapCommunityLabel.get(language).Term_Of_Use_URL__c;
             urlsAndLabels.noAccountUrl = noAccountURL + language + mapCommunityLabel.get(language).No_Account_URL__c;
             urlsAndLabels.recoveryUrl = recoveryUrl + '?lang=' + language;
-                //BP
-            //urlsAndLabels.instanceUrl = mapCommunityLabel.get(language).InstanceUrl__c;
+            
             // SEIKO LABELS
             urlsAndLabels.descriptionSeiko = mapCommunityLabel.get(language).Label_Seiko_Login__c;
         }else{
@@ -185,6 +188,8 @@ global class LightningLoginFormController {
             urlsAndLabels.recoveryLabel = mapCommunityLabel.get('en-us').Label_Forgot_Password__c;
             urlsAndLabels.contactLabel = mapCommunityLabel.get('en-us').Label_Contact__c;
             urlsAndLabels.helpLabel = mapCommunityLabel.get('en-us').Label_Help__c;
+            urlsAndLabels.privacyLabel = mapCommunityLabel.get('en-us').Label_Privacy__c;
+            urlsAndLabels.termsLabel = mapCommunityLabel.get('en-us').Label_Terms__c;
             urlsAndLabels.rememberLabel = mapCommunityLabel.get('en-us').Label_Remember_Me__c;
             urlsAndLabels.welcomeLabel = mapCommunityLabel.get('en-us').Label_Welcome__c;
             urlsAndLabels.descriptionLabel = mapCommunityLabel.get('en-us').Label_Description__c;
@@ -193,10 +198,11 @@ global class LightningLoginFormController {
             urlsAndLabels.createAccountLabel = mapCommunityLabel.get('en-us').Label_Create_Account__c;
             urlsAndLabels.helpUrl = helpURL + language + mapCommunityLabel.get('en-us').Help_URL__c;
             urlsAndLabels.contactUrl = contactURL + language + mapCommunityLabel.get('en-us').Contact_Us_URL__c;
+            urlsAndLabels.privacyURL = privacyPolicyURL + language + mapCommunityLabel.get('en-us').Privacy_URL__c;
+            urlsAndLabels.termsURL = termsConditionsURL + language + mapCommunityLabel.get('en-us').Term_Of_Use_URL__c;
             urlsAndLabels.noAccountUrl = noAccountURL + language + mapCommunityLabel.get('en-us').No_Account_URL__c;
             urlsAndLabels.recoveryUrl = recoveryUrl + '?lang=' + language;
-                //BP
-                //urlsAndLabels.instanceUrl = mapCommunityLabel.get('en-us').InstanceUrl__c;
+            
             // SEIKO LABELS
             urlsAndLabels.descriptionSeiko = mapCommunityLabel.get('en-us').Label_Seiko_Login__c;
         }
@@ -270,6 +276,16 @@ global class LightningLoginFormController {
         public String contactUrl {get;private set;}
         @AuraEnabled
         public String contactLabel {get;private set;}
+        
+        @AuraEnabled
+        public String privacyLabel {get;private set;}
+        @AuraEnabled
+        public String privacyURL {get;private set;}
+        @AuraEnabled
+        public String termsLabel {get;private set;}
+        @AuraEnabled
+        public String termsURL {get;private set;}
+
         @AuraEnabled
         public String rememberLabel {get;private set;}
         @AuraEnabled

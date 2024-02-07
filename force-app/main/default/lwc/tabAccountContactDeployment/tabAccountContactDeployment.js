@@ -13,9 +13,7 @@
  */
 
 import { LightningElement, api, track, wire } from 'lwc';
-//import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import getContactRecordType from '@salesforce/apex/tabAccountAddressLWCController.getContactRecordTypeDescribe';
-//import getContactRecordTypeNotIn from '@salesforce/apex/tabAccountAddressLWCController.getContactRecordTypeDescribeNotIn';
 import getAccTemplate from '@salesforce/apex/tabAccountAddressLWCController.getAccountTemplateForAccountId';
 import getPicklistValuesList from '@salesforce/apex/tabAccountAddressLWCController.getPicklistLanguage';
 import createContact from '@salesforce/apex/tabAccountAddressLWCController.createNewContact';
@@ -32,6 +30,7 @@ import label_ContactCommunication from '@salesforce/label/c.tabContactModalCommu
 import label_ContactPortal from '@salesforce/label/c.tabContactModalPortal';
 import label_ContactMr from '@salesforce/label/c.tabLabelMr';
 import label_ContactMrs from '@salesforce/label/c.tabLabelMrs';
+import label_ContactMiss from '@salesforce/label/c.tabLabelMiss';
 import label_ContactDr from '@salesforce/label/c.tabLabelDr';
 import label_ContactProf from '@salesforce/label/c.tabLabelProf';
 import label_message1 from '@salesforce/label/c.tabContactModalMessage1';
@@ -64,13 +63,9 @@ import label_accTemplatePlace from '@salesforce/label/c.tabContactModalAcctempla
 import label_language from '@salesforce/label/c.tabContactModalLanguage';
 import label_languagePlace from '@salesforce/label/c.tabContactModalLanguagePlace';
 import label_sendEmailImm from '@salesforce/label/c.tabContactModalSendEmailImm';
+import label_NoAccountTemplate from '@salesforce/label/c.tabContactModalNoAccountTemplate';
 
-//import getContactRecordId from '@salesforce/apex/tabAccountAddressLWCController.getContactId';
-//import CONTACT_SALUTATION from '@salesforce/schema/Contact.Salutation';
-//import CONTACT_FIRSTNAME from '@salesforce/schema/Contact.FirstName';
-//import CONTACT_LASTNAME from '@salesforce/schema/Contact.LastName';
-//import CONTACT_TITLE from '@salesforce/schema/Contact.Title';
-//import CONTACT_OBJECT from '@salesforce/schema/Contact';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 import LightningModal from 'lightning/modal';
 
@@ -97,8 +92,9 @@ export default class TabAccountContactDeployment extends LightningModal {
     mobilephone;
     email;
     SendInvitationPortal = false;
-    //SystemInvitationEmail = false;
     SendImmDiately = false;
+    IsAccountTemplate = true;
+    IsDisabled = true;
 
     labelContactName = label_ContactName;
     labelContactProfile = label_ContactProfile;
@@ -108,6 +104,7 @@ export default class TabAccountContactDeployment extends LightningModal {
     labelMrs = label_ContactMrs;
     labelDr = label_ContactDr;
     labelProf = label_ContactProf;
+    labelMiss = label_ContactMiss;
     labelMessage1 = label_message1;
     labelStep1 = label_step1;
     labelOthSalut = label_othSalut;
@@ -138,6 +135,7 @@ export default class TabAccountContactDeployment extends LightningModal {
     labelLanguage = label_language;
     labelLanguagePlace = label_languagePlace;
     labelSendEmailImm = label_sendEmailImm;
+    labelNoAccountTemplate = label_NoAccountTemplate;
 
     @track currentStep = '1';
     @track ContactRTRecordList;
@@ -164,36 +162,37 @@ export default class TabAccountContactDeployment extends LightningModal {
     @wire(ShopOwnerRecordType) wireShopOwnerRecord({data, error}){
         if(data){
             this.ShopOwnerRecType = data;
-            console.log('XXX Get Shop Owner Record Type'+JSON.stringify(this.ShopOwnerRecType));
+            
         }else if(error){
-            console.log('XXX Get Shop Owner Record Type ERROR =>'+JSON.stringify(error));
+            
+            this.showToast('Error '+JSON.stringify(error));
         }
     }
 
     @wire(EmployeeRecordType) wireEmployeeRecord({data, error}){
         if(data){
             this.EmployeeRecType = data;
-            console.log('XXX Get Employee Record Type '+JSON.stringify(this.EmployeeRecType));
+            
         }else if(error){
-            console.log('XXX Get Employee Record Type ERROR => '+JSON.stringify(error));
+            this.showToast('Error '+JSON.stringify(error));
         }
     }
 
     @wire(OpthalRecordType) wireOpthalRecord({data, error}){
         if(data){
             this.OpthalRecType = data;
-            console.log('XXX Get Opthalmologist Record Type '+JSON.stringify(this.OpthalRecType));
+            
         }else if(error){
-            console.log('XXX Get Opthalmologist Record Type ERROR => '+JSON.stringify(error));
+            this.showToast('Error '+JSON.stringify(error));
         }
     }
 
     @wire(getContactRecordType) wireContactRecordType({data, error}){
         if(data){
             this.ContactRTRecordList=data;
-            console.log('XXX Contact Record Type Data == > '+this.ContactRTRecordList);
+            
         }else if(error){
-            console.log('XXX An error was occurred');
+            this.showToast('Error '+JSON.stringify(error));
         }
     }
 
@@ -203,10 +202,10 @@ export default class TabAccountContactDeployment extends LightningModal {
                 this.items5 = [...this.items5, {value: data[m].values, label: data[m].label}];
             }
             this.errors5 = undefined;
-            console.log('XXX Get Education List Rest =>'+JSON.stringify(this.items5));
+            
         }else if(error){
             this.errors5 = error;
-            console.log('XXX An error was occurred =>'+JSON.stringify(this.errors5));
+            this.showToast('Error '+JSON.stringify(this.errors5));
         }
     }
 
@@ -216,10 +215,10 @@ export default class TabAccountContactDeployment extends LightningModal {
                 this.items4 = [...this.items4, {value: data[l].values, label: data[l].label}];
             }
             this.errors4 = undefined;
-            console.log('XXX Get Education List =>'+JSON.stringify(this.items4));
+            
         }else if(error){
             this.errors4 = error;
-            console.log('XXX An error was occurred =>'+JSON.stringify(this.errors4));
+            this.showToast('Error '+JSON.stringify(this.errors4));
         }
     }
 
@@ -231,34 +230,32 @@ export default class TabAccountContactDeployment extends LightningModal {
             this.errors3 = undefined;
         }else if(error){
             this.errors3 = error;
-            console.log('XXX An error was occurred '+JSON.stringify(this.errors3));
+            this.showToast('Error '+JSON.stringify(this.errors3));
         }
     }
     @wire(getAccTemplate, {recordId:'$receivedId'}) wireAccTemplateAccId({data, error})
         {
             if(data){
-                for(j=0;j<data.length;j++){
-                    this.items2 = [...this.items2, {value: data[j].Id, label: data[j].Name}];
+                if(data.length > 0){
+                    for(j=0;j<data.length;j++){
+                        this.items2 = [...this.items2, {value: data[j].Id, label: data[j].Name}];
+                    }
+                    this.errors2 = undefined;
+                    this.IsAccountTemplate = false;
+                    this.IsDisabled = false;
+                }else{
+                    this.IsAccountTemplate = true;
+                    this.IsDisabled = true;
+                    this.errors2 = undefined;
                 }
-                this.errors2 = undefined;
+                
             }else if(error){
                 this.errors2 = error;
-                console.log('XXX An error was occurred '+JSON.stringify(this.errors2));
+                
+                this.showToast('Error '+JSON.stringify(this.errors2));
             }
         }
-    /*
-    @wire(getContactRecordTypeNotIn) wireContactRecordTypeNotIn({data, error}){
-        if(data){
-            for(i=0;i<data.length;i++){
-                this.items = [...this.items, {value: data[i].Id, label: data[i].Name}];
-            }
-            this.errors = undefined;
-        }else if(error){
-            this.errors = error;
-            console.log('XXX An error was occurred');
-        }
-    }
-    */
+    
     @wire(getOtherRecType) wireContactOtherRecType({data, error}){
         if(data){
             for(i=0;i<data.length;i++){
@@ -267,9 +264,28 @@ export default class TabAccountContactDeployment extends LightningModal {
             this.errors = undefined;
         }else if(error){
             this.errors = error;
-            console.log('XXX An error was occurred');
+            this.showToast('Error'+JSON.stringify(error));
         }
     }
+
+    /*
+    @wire(getAccountTemplate, {recordId : '$receivedId'}) wireAccountTemplate({data, error}){
+        if(data){
+            if(data.length > 0){
+                this.IsAccountTemplate = false;
+                this.IsDisabled = false;
+            }else if(data.length == 0){
+                this.IsAccountTemplate = true;
+                this.IsDisabled = true;
+            }else{
+                this.IsAccountTemplate = true;
+                this.IsDisabled = true;
+                
+            }
+        }else if(error){
+            this.showToast('Error',JSON.parse(JSON.stringify(error.message)),'Error', 'Error');
+        }
+    }*/
 
     get statusOptions(){
         return this.items;
@@ -289,10 +305,7 @@ export default class TabAccountContactDeployment extends LightningModal {
    
     get options(){
         return [
-            { label : 'Ms.', value : 'Ms.'},
-            { label : 'Herr', value : 'Herr'},
-            { label : 'Frau', value : 'Frau'},
-            { label : 'Prefer not to disclose', value : 'Prefer not to disclose'}
+            { label : 'Ms.', value : 'Ms.'}
         ];
     }
 
@@ -377,41 +390,45 @@ export default class TabAccountContactDeployment extends LightningModal {
         this.salut_value = 'Mr.';
         this.value=null;
         this.template.querySelector('lightning-combobox[data-my-id=OtherSalutation]').value=null;
-        console.log('Salutation value '+JSON.stringify(this.salut_value));
 
     }
     handleClickCheck2(event){
         this.salut_value = 'Mrs.';
         this.value=null;
         this.template.querySelector('lightning-combobox[data-my-id=OtherSalutation]').value=null;
-        console.log('Salutation value '+JSON.stringify(this.salut_value));
+        
     }
     handleClickCheck3(event){
         this.salut_value = 'Dr.';
         this.value=null;
         this.template.querySelector('lightning-combobox[data-my-id=OtherSalutation]').value=null;
-        console.log('Salutation value '+JSON.stringify(this.salut_value));
+        
     }
     handleClickCheck4(event){
         this.salut_value = 'Prof.';
         this.value=null;
         this.template.querySelector('lightning-combobox[data-my-id=OtherSalutation]').value=null;
-        console.log('Salutation value '+JSON.stringify(this.salut_value));
+        
+    }
+    handleClikCheck5(event){
+        this.salut_value = 'Miss';
+        this.value=null;
+        this.template.querySelector('lightning-combobox[data-my-id=OtherSalutation]').value=null;
     }
     handleEduClick1(event){
         this.education = 'Optician';
         this.template.querySelector('lightning-combobox[data-my-id=OthEducation]').value=null;
-        console.log('Education '+JSON.stringify(this.education));
+        
     }
     handleEduClick2(event){
         this.education = 'Optometris';
         this.template.querySelector('lightning-combobox[data-my-id=OthEducation]').value=null;
-        console.log('Education '+JSON.stringify(this.education));
+        
     }
     handleEduClick3(event){
         this.education = 'Opthalmologist'
         this.template.querySelector('lightning-combobox[data-my-id=OthEducation]').value=null;
-        console.log('Education '+JSON.stringify(this.education));
+        
     }
     handleDropDownListChange(event){
         this.template.querySelector('lightning-input[data-my-id=mr]').checked=false;
@@ -425,13 +442,9 @@ export default class TabAccountContactDeployment extends LightningModal {
         this.template.querySelector('lightning-input[data-my-id=prof]').checked=null;
 
         this.salut_value=event.target.value;
-        console.log('Salutation value '+JSON.stringify(this.salut_value));
+        
     }
     handleOptEducationChange(event){
-        /*
-        this.template.querySelector('lightning-input[data-my-id=optician]').checked = false;
-        this.template.querySelector('lightning-input[data-my-id=optometris]').checked = false;
-        this.template.querySelector('lightning-input[data-my-id=opthalmologist').checked = false;*/
         let selectRadio = this.template.querySelectorAll('lightning-input[data-my-id=Edulist]');
         selectRadio.forEach(row=>{
             if(row.type=='radio'){
@@ -439,7 +452,7 @@ export default class TabAccountContactDeployment extends LightningModal {
             }
         });
         this.education = event.target.value;
-        console.log('Education '+JSON.stringify(this.education));
+        
 
     }
     handleOptOthEducationClick(){
@@ -449,14 +462,14 @@ export default class TabAccountContactDeployment extends LightningModal {
         this.education = event.target.value;
         this.template.querySelector('lightning-combobox[data-my-id=OthEducation]').value = null;
         this.template.querySelector('div.stepEducation').classList.add('slds-hide');
-        console.log('Education Value '+JSON.stringify(this.education));
+        
     }
     handleClickRcordType(event){
         this.RecordTypeValue = event.target.value;
         this.RecordTypeLabel = event.target.label;
         this.template.querySelector('lightning-combobox[data-my-id=comborectype]').value = null;
         this.template.querySelector('div.OtherRecType').classList.add('slds-hide');
-        console.log('Record type id == >'+JSON.stringify(this.RecordTypeValue)+' label is =>'+JSON.stringify(this.RecordTypeLabel));
+        
 
         if(this.RecordTypeLabel=='Shop Owner'){
             this.template.querySelector('[data-my-id="stepPortal"]').classList.remove('slds-hide');
@@ -467,11 +480,7 @@ export default class TabAccountContactDeployment extends LightningModal {
             this.template.querySelector('[data-my-id="laststep"]').classList.add('slds-hide');
             this.template.querySelector('[data-my-id="Commu"]').classList.remove('slds-hide');
         }
-        /*
-        let recType = this.template.querySelectorAll('lightning-input[data-key="recordtypeid"]');
-        recType.forEach(currentItem=>{
-            console.log(currentItem.label);
-        });*/
+        
     }
     handleOtherRecordType(){
         this.template.querySelector('div.OtherRecType').classList.remove('slds-hide');
@@ -487,10 +496,9 @@ export default class TabAccountContactDeployment extends LightningModal {
             if(currentItem.type==='radio'){
                 currentItem.checked = false;
             }
-            //console.log(currentItem.type);
-            //console.log(currentItem.checked);
+            
         });
-        console.log('Record type id == >'+JSON.stringify(this.RecordTypeValue)+' label is =>'+JSON.stringify(event.target.label));
+        
     }
     handleLanguageChange(event){
         this.languagepick = event.target.value;
@@ -499,7 +507,7 @@ export default class TabAccountContactDeployment extends LightningModal {
         if((AccTemplate!=null) && (LanguageP!=null)){
             this.template.querySelector('div.SendEmail').classList.remove('slds-hide');
         }
-        console.log('XXX Get data from langauge pick == > '+JSON.stringify(this.languagepick));
+        
     }
     handleAccTemplate(event){
         this.AccountTemplate = event.target.value;
@@ -508,31 +516,31 @@ export default class TabAccountContactDeployment extends LightningModal {
         if((AccTemplate!=null) && (languagePick!=null)){
             this.template.querySelector('div.SendEmail').classList.remove('slds-hide');
         }
-        console.log('XXX Account template = > '+JSON.stringify(this.AccountTemplate));
+        
     }
     handleFirstNameChange(event){
         this.firstname = event.target.value;
-        console.log('XXX First name == > '+JSON.stringify(this.firstname));
+        
     }
     handleLastNameChange(event){
         this.lastname = event.target.value;
-        console.log('XXX Last Name == > '+JSON.stringify(this.lastname));
+        
     }
     handleTitleChange(event){
         this.title = event.target.value;
-        console.log('XXX Title == > '+JSON.stringify(this.title));
+        
     }
     handlePhoneChange(event){
         this.phone = event.target.value;
-        console.log('XXX Phoe == > '+JSON.stringify(this.phone));
+        
     }
     handleMobileChange(event){
         this.mobilephone = event.target.value;
-        console.log('XXX Mobile phone == > '+JSON.stringify(this.mobilephone));
+        
     }
     handleEmailChange(event){
         this.email = event.target.value;
-        console.log('Email =>'+JSON.stringify(this.email));
+        
     }
     handleSendInvitePortal(event){
         if(this.template.querySelector('lightning-input[data-my-id=SendInvitePortal]').checked==true){
@@ -540,7 +548,7 @@ export default class TabAccountContactDeployment extends LightningModal {
         }else{
             this.SendInvitationImmediately = false;
         }
-        console.log('Send email invitation immediately check = > '+JSON.stringify(this.SendInvitationImmediately));
+        
     }
     handleSendInviteEmail(){
         if(this.template.querySelector('lightning-input[data-my-id=SendInviteImm]').checked==true){
@@ -548,7 +556,7 @@ export default class TabAccountContactDeployment extends LightningModal {
         }else{
             this.SendImmDiately = false;
         }
-        console.log('Checked system invitation => '+JSON.stringify(this.SendImmDiately));
+        
     }
     handleCreatNewContact(){
         //this.isLoading = true;
@@ -574,7 +582,6 @@ export default class TabAccountContactDeployment extends LightningModal {
                 mobile : this.mobilephone,
                 email : this.email,
                 accTemplate : this.AccountTemplate,
-                //SystemInvitationEmail : this.SystemInvitationEmail,
                 SendInvitationPortal : this.SendInvitationPortal,
                 SendImmDiately : this.SendImmDiately
             }).then(result=>{
@@ -589,17 +596,27 @@ export default class TabAccountContactDeployment extends LightningModal {
         }
     }
     closePopup() {
-        //this.ButtonDisalbed();
+        
         window.location.reload();
         this.close();
     }
     updateRecordView(){
         setTimeout(() => {
-            eval("$A.get('e.force:refreshView').fire();");
+            //eval("$A.get('e.force:refreshView').fire();");
         },1000);
     }
 
     ButtonDisalbed(){
         this.disabledButton = true;
+    }
+
+    showToast(title, message, variant, mode){
+        const event = new ShowToastEvent({
+            title : title,
+            message : message,
+            variant : variant,
+            mode : mode
+        });
+        this.dispatchEvent(event);
     }
 }

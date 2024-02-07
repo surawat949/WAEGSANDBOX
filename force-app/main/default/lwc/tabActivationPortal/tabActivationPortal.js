@@ -1,5 +1,21 @@
 import { LightningElement, api } from 'lwc';
 
+import TabRegistration from '@salesforce/label/c.TabRegistration';
+import TabSocialMediaM from '@salesforce/label/c.TabSocialMediaM';
+import TabXtranet from '@salesforce/label/c.TabXtranet';
+import TabLoyaltyProgram from '@salesforce/label/c.TabLoyaltyProgram';
+import TabAcademy from '@salesforce/label/c.TabAcademy';
+
+import Hoya_iLog from '@salesforce/label/c.Hoya_iLog';
+import Store_Finder from '@salesforce/label/c.Store_Finder';
+import Hoyanet from '@salesforce/label/c.Hoyanet';
+
+
+//Hoya_iLog
+//Store_Finder
+//Hoyanet
+
+
 export default class TabActivationPortal extends LightningElement {
     @api receivedId; 
     @api seikoData;
@@ -24,10 +40,17 @@ export default class TabActivationPortal extends LightningElement {
         // passed parameters are not yet received here
     }
     connectedCallback() {
-        console.log('child connected call-' + this.receivedId);
-        console.log('in con callback-1' + this._brand);
-        console.log('in con callback-2' + this.isHoyaAcc);
         
     }
 
+    custLabel = {
+        TabRegistration,
+        TabSocialMediaM,
+        TabXtranet,
+        TabLoyaltyProgram,
+        TabAcademy,
+        Hoya_iLog,
+        Store_Finder,
+        Hoyanet
+    }
 }

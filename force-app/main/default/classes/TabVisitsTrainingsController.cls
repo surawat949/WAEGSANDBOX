@@ -1,7 +1,7 @@
 public With Sharing class TabVisitsTrainingsController {
     
     //Method to get all Training Records
-    @AuraEnabled(cacheable=true)
+    @AuraEnabled
     public static List<ECP_Training__c> getTrainingRecords(String accountId){
         List<ECP_Training__c> trainings=[Select Id,Name,Account__c,start__c,Training__c,Training_status__c from ECP_Training__c where Account__c=:accountId order by Name DESC];
         return trainings;

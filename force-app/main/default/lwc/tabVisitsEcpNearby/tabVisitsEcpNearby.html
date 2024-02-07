@@ -1,5 +1,4 @@
 <template>
-    <!--<p> {receivedId}</p>-->
     <div if:true={isLoading}>
         <lightning-spinner alternative-text="Loading..." variant="brand" class="slds-is-fixed"></lightning-spinner>
     </div>
@@ -21,15 +20,6 @@
                 <c-custom-lookup-visit-ecp-nearby icon-name="standard:picklist_choice" s-object-api-name="account" label="Main Lens Supplier"
                     placeholder="Search" id="form-search-competitor" name="form-search-compeitor" data-my-id="form-search-competitor" onlookupupdate={handleSearchCompetitorChange}>
                 </c-custom-lookup-visit-ecp-nearby>
-                <!--<lightning-combobox
-                    id="Competitor"
-                    data-my-id="Competitor"
-                    name="Competitor"
-                    value={CompetitorVal}
-                    options={optCompetitor}
-                    label={custlbl.lblMainCompetitor}
-                    onchange={handleKeyChange}
-                ></lightning-combobox>-->
             </div>
         </div>
         <div class="slds-grid slds-gutters slds-m-left_small slds-m-right_small">

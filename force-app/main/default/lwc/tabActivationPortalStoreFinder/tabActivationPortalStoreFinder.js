@@ -1,5 +1,7 @@
 import { LightningElement, api,wire } from 'lwc';
 import ACCOUNT_OBJ from '@salesforce/schema/Account';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+
 import { getRecord, getFieldValue } from 'lightning/uiRecordApi';
 import OPTICIAN_FINDER_OPTION from '@salesforce/schema/Account.Optician_finder_optin__c';
 import OPTICIAN_FINDER from '@salesforce/schema/Account.Optician_Finder__c';
@@ -19,6 +21,8 @@ import Last_3_Months_Total_Sales from '@salesforce/label/c.Last_3_Months_Total_S
 import Customer_Preference from '@salesforce/label/c.Customer_Preference';
 import Seiko_Dealer_Locator_Last_Training from '@salesforce/label/c.Seiko_Dealer_Locator_Last_Training';
 import Eligible_for_Optician_Finder from '@salesforce/label/c.Eligible_for_Optician_Finder';
+import HelpText from '@salesforce/label/c.HelpText';
+
 
 export default class TabActivationPortalStoreFinder extends LightningElement {
     @api receivedId;
@@ -28,7 +32,7 @@ export default class TabActivationPortalStoreFinder extends LightningElement {
     isShowVisiableMsg=false;
     lastSale;
     CustLabel={
-        Store_Finder,Channel,Forced_Store_Finder,SAP_Chain_Code,Channel_Master_Setup,Last_3_Months_Total_Sales,Customer_Preference,Seiko_Dealer_Locator_Last_Training,Eligible_for_Optician_Finder
+        HelpText,Store_Finder,Channel,Forced_Store_Finder,SAP_Chain_Code,Channel_Master_Setup,Last_3_Months_Total_Sales,Customer_Preference,Seiko_Dealer_Locator_Last_Training,Eligible_for_Optician_Finder
     };
     @wire(getRecord,{ recordId: '$receivedId', fields: [OPTICIAN_FINDER_OPTION,OPTICIAN_FINDER,CHANNEL,CHAINCODE,OPTICIAN_FINDER_CHANNEL] })
     record( { error, data }){
@@ -41,12 +45,18 @@ export default class TabActivationPortalStoreFinder extends LightningElement {
                 this.isShowVisiableMsg=false;    
             }
         }
+        else if (error) {
+            this.showToast('Error1', 'Error', error);
+
+        }
     }
     @wire(getLastTotalMonthSale,{accountId: '$receivedId'})
         getLastTotalMonthSale( { error, data }){
         if(data){
             this.lastSale=data;
-            console.log('>>>lastSale',this.lastSale);
+        }
+        else if (error) {
+            this.showToast('Error2', 'Error', error);
         }
     }
     get ChannelVal(){  
@@ -72,12 +82,20 @@ export default class TabActivationPortalStoreFinder extends LightningElement {
         .then(response => {
             response = JSON.parse(JSON.stringify(response)); 
             this.LastTraningDate = response;
-            console.log('>>>>LastTraningDate',this.LastTraningDate);
-        })
+                    })
         .catch(error => {
-            this.showToast('Error', 'Error', error.message);
+            this.showToast('Error', 'Error', error);
         })
     }    
+    showToast(title, variant, message) {
+        this.dispatchEvent(
+            new ShowToastEvent({
+                title: title,
+                message: message,
+                variant: variant,
+            }),
+        );
+    }  
 
 
 }

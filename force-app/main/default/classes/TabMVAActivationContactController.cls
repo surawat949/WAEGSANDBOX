@@ -1,14 +1,5 @@
 public with sharing class TabMVAActivationContactController {
 
-    /*
-    @AuraEnabled(cacheable=true)
-    public static List<Contact> getContactsRelatedAccount(String receivedId){
-        List<Contact> conList = [SELECT Id, Name, Contact_Record_Type__c, Salutation, Title, Email, Phone 
-                                    FROM Contact WHERE AccountId=:receivedId ORDER BY Name ASC LIMIT 5];
-        System.debug('Get Contacts Related to Account == > '+conList);
-        return conList;
-    }
-    */
     private static final string CONTACT_OPTHO_RT = Schema.SObjectType.Contact.getRecordTypeInfosByDeveloperName().get('Opthalmologist').getRecordTypeId();
     
     @AuraEnabled(cacheable=true)
@@ -21,12 +12,12 @@ public with sharing class TabMVAActivationContactController {
             accountIdSet.add(recordId);
             finalSetId.addAll(getRecursiveAccountList(accountIdSet));
 
-            List<AccountContactRelation> relationList = [select Id, AccountId, ContactId, Contact.Name, Account.Name, 
+            List<AccountContactRelation> relationList = [select Id,CreatedById,CreatedBy.Name, AccountId, ContactId, Contact.Name, Account.Name, 
                                                     Account.ShippingCity, Account.ShippingState, Account.ShippingStreet,
                                                     Account.Phone, Preferred_place_for_visit__c,
                                                     Contact_Role__c from AccountContactRelation 
                                                     where AccountId IN: finalSetId and Contact.recordTypeId =:CONTACT_OPTHO_RT
-                                                    and IsActive=true order by contact.name asc];
+                                                    and IsActive=true order by contact.LastName asc];
             for(AccountContactRelation eachCon : relationList){
                 ContactDetail c = new ContactDetail();
                 c.ContactId = eachCon.ContactId;
@@ -34,7 +25,8 @@ public with sharing class TabMVAActivationContactController {
                 c.AccountId = eachCon.AccountId;
                 c.AccountName = eachCon.Account.Name;
                 c.Street = eachCon.Account.ShippingStreet;
-
+                c.OwnerName = eachCon.CreatedBy.Name; 
+                c.CreatedById = eachCon.CreatedById;  
                 if(eachCon.Preferred_place_for_visit__c){
                     c.PreferedPlace = 'V';
                 }else{
@@ -48,10 +40,10 @@ public with sharing class TabMVAActivationContactController {
                 conDetails.add(c);
 
             }
-            System.debug('XXx Get Account/Contact Relationship = >'+conDetails.size()+' record(s) ==>'+conDetails);
+            //System.debug('XXx Get Account/Contact Relationship = >'+conDetails.size()+' record(s) ==>'+conDetails);
             return conDetails;
         } catch (Exception e) {
-            LogException.log(e);
+            //LogException.log(e);
             throw new AuraHandledException(e.getMessage());
         }
     }
@@ -74,7 +66,9 @@ public with sharing class TabMVAActivationContactController {
         @AuraEnabled public string ContactId{get;set;}
         @AuraEnabled public string ContactName{get;set;}
         @AuraEnabled public string AccountId{get;set;}
+          @AuraEnabled public string CreatedById{get;set;}
         @AuraEnabled public string AccountName{get;set;}
+         @AuraEnabled public string OwnerName{get;set;}
         @AuraEnabled public string Street{get;set;}
         @AuraEnabled public string City{get;set;}
         @AuraEnabled public string Phone{get;set;}

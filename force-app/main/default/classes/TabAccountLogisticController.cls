@@ -49,10 +49,10 @@ public with sharing class TabAccountLogisticController {
 
                 dataList.add(wraperCls);
             }
-            System.debug('XXX'+dataList);
+            
             return dataList;
         } catch (Exception e) {
-            LogException.log(e);
+            
             throw new AuraHandledException(e.getMessage());
         }
     }

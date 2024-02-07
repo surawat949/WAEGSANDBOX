@@ -7,6 +7,8 @@ import { refreshApex } from '@salesforce/apex';
 import searchFirstCompetitorDefault from '@salesforce/apex/TabVisitsEcpNearby.searchFirstCompetitorDefault';
 import searchFirstCompetitor from '@salesforce/apex/TabVisitsEcpNearby.searchFirstCompetitor';
 
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+
 export default class CustomLookupVisitEcpNearby extends LightningElement {
     // public properties with initial default values 
     @api label = 'label';
@@ -52,7 +54,7 @@ export default class CustomLookupVisitEcpNearby extends LightningElement {
              //console.log(this.recordCriteria); 
          }
         else if (error) {
-            console.log('(error---> ' + JSON.stringify(error));
+            this.showToast('Error=>'+JSON.stringify(error));
          }
     };
         
@@ -116,11 +118,21 @@ export default class CustomLookupVisitEcpNearby extends LightningElement {
 
     updateRecordView(){
         setTimeout(() => {
-            eval("$A.get('e.force:refreshView').fire();");
+            //eval("$A.get('e.force:refreshView').fire();");
             this.showLoading = false;
             this.isRender = true;            
         },30000);
         refreshApex(this.searchFirstCompetitorDefault);
         this.dispatchEvent(new RefreshEvent());
+    }
+
+    showToast(title, variant, message) {
+        this.dispatchEvent(
+            new ShowToastEvent({
+                    title: title,
+                    message: message,
+                    variant: variant,
+                }),
+        );
     }
 }

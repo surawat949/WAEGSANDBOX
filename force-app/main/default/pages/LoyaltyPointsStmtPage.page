@@ -18,7 +18,7 @@
         <div style="position:absolute; color:White; font-size:166%; padding-left:62.5em; padding-top:20em;font-family:Arial Unicode MS;"> 
             <span>{!$label.Account_number} : </span>{!accountNumber}<br></br>
             <span>{!$label.shop_name} : </span>{!accountName}<br></br>
-            <span>{!$label.address} : </span> {!street}<br></br>
+            <span>{!$label.Address} : </span> {!street}<br></br>
             <span>{!$label.city} : </span>{!city}<br></br>
         </div> 
 

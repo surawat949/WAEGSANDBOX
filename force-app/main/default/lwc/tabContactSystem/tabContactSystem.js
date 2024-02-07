@@ -23,7 +23,6 @@ export default class TabContactSystem extends LightningElement {
     custLabel = {   
         system_information,createdBy,lastModifiedBy,contactOwner
     }
-    //fields = [CreatedBy,CreatedDate,LastModifiedBy,LastModifiedDate,HoyaAccId,Owner,brand,OwnerCompany];
     createdBy = [CreatedBy];
     createdDate = [CreatedDate];
     lastModifiedBy = [LastModifiedBy];

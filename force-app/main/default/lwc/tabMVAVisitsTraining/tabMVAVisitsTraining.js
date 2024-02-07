@@ -26,6 +26,8 @@ import getEcplstTraining from '@salesforce/apex/TabMVAVisitsCertificateControlle
 import getAttendeeList from '@salesforce/apex/TabMVAVisitsCertificateController.getAttendee';
 import getAttendeeNums from '@salesforce/apex/TabMVAVisitsCertificateController.getAttendeeNumber';
 import processCertificate from '@salesforce/apex/TabMVAVisitsCertificateController.generateCertificate';
+import { subscribe, unsubscribe, onError } from 'lightning/empApi';
+
 
 export default class TabMVAVisitsTraining extends NavigationMixin(LightningElement){
     @api receivedId;
@@ -55,7 +57,7 @@ export default class TabMVAVisitsTraining extends NavigationMixin(LightningEleme
     @track showAttendee = false;
     @track showMissingError = false;
 
-    inStoreTrainingLst;
+    @track inStoreTrainingLst;
     isDataExist;
     recCount = 0;
     showTrainingCertificate = false;
@@ -63,6 +65,8 @@ export default class TabMVAVisitsTraining extends NavigationMixin(LightningEleme
     attendeeId;
     selectedCertificationId;
     attendeeNumber = 0;
+    subscription = {};
+    CHANNEL_NAME = '/event/Refresh_Related_list_Training__e';
 
     startNewInStoreTraining(event){
         this.navigateToNewPage('ECP_Training__c');
@@ -114,10 +118,36 @@ export default class TabMVAVisitsTraining extends NavigationMixin(LightningEleme
 
     connectedCallback(){
         this.isLoading = true;
+        this.ECPTraining();
+        this.getInStoreTraining();
+        subscribe(this.CHANNEL_NAME, -1, this.refreshList).then(response => {
+            this.subscription = response;
+            console.log('RefreshList is called 99');
+          });
+          onError(error => {
+              console.error('Server Error--->'+error);
+          });
+      }
+    refreshList = ()=> {
+        this.getInStoreTraining();
+        console.log('>>>>here');
+    } 
+        
+    showToast(title, variant, message) {
+        this.dispatchEvent(
+            new ShowToastEvent({
+                title: title,
+                message: message,
+                variant: variant,
+            }),
+        );
+    }
+    getInStoreTraining(){
         getInStoreTrainingRelatedList({accountId : this.receivedId})
-        .then(response => {
-            response = JSON.parse(JSON.stringify(response)); 
-            response.forEach(res=>{              
+        .then(result => {
+            console.log('>>>');
+            result = JSON.parse(JSON.stringify(result)); 
+            result.forEach(res=>{              
                 res.TrainingLink = '/' + res.Id;
                 if(res.hasOwnProperty('Assigned_to__c'))
                     res.AssignedLink = '/' + res.Assigned_to__c; 
@@ -128,9 +158,10 @@ export default class TabMVAVisitsTraining extends NavigationMixin(LightningEleme
                 else
                     res.AssignedUser = '';
             });                
-            let trainingLst = response;
+            let trainingLst = result;
+            console.log('>>>test',trainingLst);
             this.inStoreTrainingLst = (trainingLst.length <= 5) ? [...trainingLst] : [...trainingLst].splice(0,5);
-            
+            console.log('>>>>',this.inStoreTrainingLst);
             if(trainingLst.length>5){
                 this.recCount='5+';
             }
@@ -146,8 +177,6 @@ export default class TabMVAVisitsTraining extends NavigationMixin(LightningEleme
             this.showToast('Error', 'Error', error.message);
             this.isLoading = false;
         });
-
-        this.ECPTraining();
     }
     showToast(title, variant, message) {
         this.dispatchEvent(
@@ -157,8 +186,8 @@ export default class TabMVAVisitsTraining extends NavigationMixin(LightningEleme
                 variant: variant,
             }),
         );
-    }
 
+    }
     ECPTraining(){
         getEcplstTraining({accountId : this.receivedId})
         .then(response=>{
@@ -313,4 +342,8 @@ export default class TabMVAVisitsTraining extends NavigationMixin(LightningEleme
         this.showMissingError = false;
         this.selectAttendeeOption = [];
     }
+    disconnectedCallback() {
+        unsubscribe(this.subscription, () => {
+        });   
+    } 
 }

@@ -4,7 +4,6 @@ import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 //apex import class start here
 import getAccountMapFetch from '@salesforce/apex/TabVisitsEcpNearby.getAccountsMap';
-//import getCompetitorPicklist from '@salesforce/apex/TabVisitsEcpNearby.getCompetitorPicklistVal';
 import getSeikoNetworkPicklist from '@salesforce/apex/TabVisitsEcpNearby.getSVSNetworkPicklistVal';
 //End
 

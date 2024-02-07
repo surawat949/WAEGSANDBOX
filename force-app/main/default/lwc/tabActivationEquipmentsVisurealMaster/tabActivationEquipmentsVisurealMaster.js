@@ -3,6 +3,7 @@ import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 //Custom Labels
 import VisurealMaster from '@salesforce/label/c.AccountActivationVisuRealMaster';
 import VisurealMasterUsage from '@salesforce/label/c.AccountActivationVisuRealMasterUsage';
+import VisuMLastTraining from '@salesforce/label/c.VisuReal_Master_Last_Training';
 //Apex
 import getLastTrainingDate from '@salesforce/apex/tabActivationEquipmentsController.getLastTrainingDate';
 //import getLastUsageDate from '@salesforce/apex/tabActivationEquipmentsController.getLastMediaUsage';
@@ -12,7 +13,7 @@ export default class TabActivationEquipmentsVisurealMaster extends LightningElem
     masterLastUsageDate;
     masterLastTraningDate;
     customlabel = {
-        VisurealMaster,VisurealMasterUsage
+        VisurealMaster,VisurealMasterUsage,VisuMLastTraining
     };
     connectedCallback() {
           //Visureal Master

@@ -14,7 +14,6 @@
                         <lightning-button variant="brand-outline" label="Request New Competitor" onclick={newTaskOpenModal}></lightning-button>
                     </p>
                 </td>
-                <!--<td><p align="right">competitor : {FirstCompetitorSOW}</p></td>-->
             </tr>            
         </table><br>
         <div class="slds-grid">
@@ -110,14 +109,14 @@
         <template lwc:if={isRender}>
             <lightning-layout>
                 <lightning-layout-item flexibility="auto" padding="around-small">
-                    <lightning-record-form
+                    <lightning-record-view-form
                         record-id={lastSalesId}
                         object-api-name={LastSalesObjectName}
-                        fields={Last_Net_Sales}
+                        fields={Laskt_Net_Sales}
                         mode="readonly"  
                         columns="3"               
                         >
-                    </lightning-record-form>
+                    </lightning-record-view-form>
                 </lightning-layout-item>
             </lightning-layout><br>
         </template>
@@ -305,7 +304,7 @@
                                         label="Status"
                                         value={value}
                                         placeholder="Select Status"
-                                        options={options}
+                                        options={StatusOptions}
                                         required="true"
                                         id="FormInput6"
                                         data-my-id="FormInput6"

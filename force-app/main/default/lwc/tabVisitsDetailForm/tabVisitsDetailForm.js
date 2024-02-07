@@ -10,22 +10,15 @@ import Related_Contact from '@salesforce/schema/Visits__c.Contact__c';
 import Duration_Minutes from '@salesforce/schema/Visits__c.Duration_Minutes__c';
 import Is_All_Day_Event from '@salesforce/schema/Visits__c.Is_All_Day_Event__c';
 import Coaching_Visit from '@salesforce/schema/Visits__c.Coaching_Visit__c';
-import Contract_Attachment from '@salesforce/schema/Visits__c.Contract_Attachment_Required__c';
-import private__c from '@salesforce/schema/Visits__c.Private__c';
-import showTimeAs from '@salesforce/schema/Visits__c.Show_time_as__c';
 import Visit_Notes from '@salesforce/schema/Visits__c.Visit_Notes__c';
 import Visit_Reason from '@salesforce/schema/Visits__c.Visit_Reason__c';
 import Call_To_Action from '@salesforce/schema/Visits__c.Call_To_Action__c';
 import Visit_Status from '@salesforce/schema/Visits__c.Visit_Status__c';
 import Actions_executed from '@salesforce/schema/Visits__c.Actions_executed__c';
 import Call_To_Action_Notes from '@salesforce/schema/Visits__c.Call_To_Action_Notes__c';
-import Visit_Preparation_Notes from '@salesforce/schema/Visits__c.Visit_Preparation_Notes__c';
-import Next_Visit_Objective from '@salesforce/schema/Visits__c.Next_Visit_Objective__c';
 import Expected_Incremental_Sales from '@salesforce/label/c.Expected_Incremental_Sales';
 import Monthly_Incremental from '@salesforce/label/c.Monthly_Incremental';
-
-
-
+import Visit_Objective_followUp from '@salesforce/schema/Visits__c.Visit_Objective_follow_up_notes__c';
 import getIdentifiedBusinesssOpp from '@salesforce/apex/tabVisitDetailFormController.getBusinessOpportunityRelatedAccount';
 import createBusinessOpportunity from '@salesforce/apex/TabVisitsCampOppController.createBusinessOpportunity';
 
@@ -39,8 +32,8 @@ import priority from '@salesforce/label/c.priority';
 import Project_Description from '@salesforce/label/c.Project_Description';
 
 import label_category1 from '@salesforce/label/c.category';
-import label_status from '@salesforce/label/c.Status';
-import Name from '@salesforce/label/c.Name';
+import label_status from '@salesforce/label/c.SFDC_V_2_MVAActivation_Status';
+import Name from '@salesforce/label/c.SFDC_V2_MVA_Activation_Name';
 import description from '@salesforce/label/c.Description';
 import Next_StepsForm from '@salesforce/label/c.Next_Steps';
 import Priority_Level from '@salesforce/label/c.Priority_Level';
@@ -53,10 +46,7 @@ import label_Close from '@salesforce/label/c.tabLabelClose';
 import Next_Steps from '@salesforce/label/c.Next_Steps';
 import IdentifiedBusinessOpp from '@salesforce/label/c.IdentifiedBusinessOpp';
 //refresh the table
-import { encodeDefaultFieldValues } from 'lightning/pageReferenceUtils';
 import { subscribe, unsubscribe, onError } from 'lightning/empApi';
-import {refreshApex} from '@salesforce/apex';
-import SystemModstamp from '@salesforce/schema/Account.SystemModstamp';
 
 
 
@@ -88,10 +78,10 @@ export default class TabVisitsDetailForm extends LightningElement {
     monthlyInc;
     errors = '';
     objectApiName = Visits_Obj;
-    fields=   [Visit_Type,Assigned_To,Account,Start_Date_Time,End_Date_Time,Related_Contact,Duration_Minutes,Is_All_Day_Event,showTimeAs,Coaching_Visit,private__c,Contract_Attachment];
-    fields1 = [Visit_Preparation_Notes];
-    fields2 = [Visit_Reason,Call_To_Action,Visit_Status];
-    fields3 = [Call_To_Action_Notes,Next_Visit_Objective];
+    fields=   [Visit_Type,Assigned_To,Account,Start_Date_Time,End_Date_Time,Related_Contact,Duration_Minutes,Is_All_Day_Event,Coaching_Visit];
+    fields1 = [Visit_Reason,Visit_Objective_followUp];
+    //fields2 = [Visit_Reason,Call_To_Action,Visit_Status];
+    fields3 = [Call_To_Action,Call_To_Action_Notes,Visit_Status];
     fields4 = [Actions_executed];
     fields5 = [Visit_Notes];
 
@@ -118,8 +108,18 @@ export default class TabVisitsDetailForm extends LightningElement {
     record({ error, data }) {
         if (data) {
             this.accountId = data.fields.Account__c.value;
-            console.log('>>>this.accountId',this.accountId);
         }
+        else if(error){
+            this.showToast('Error', 'Error',error);
+        }
+    }
+    showToast(title,message,variant) {
+        const event = new ShowToastEvent({
+            title: title,
+            message: message,
+            variant: variant
+        });
+        this.dispatchEvent(event);
     }
     @track columns = [
         {
@@ -141,12 +141,6 @@ export default class TabVisitsDetailForm extends LightningElement {
             fieldName: 'Project_Name__c',
              type: 'text',
             sortable: true 
-        },
-        {
-            label: this.label.label_category,
-            fieldName: 'Project_Category__c',
-             type: 'text',
-            sortable: true
         },
         {
             label: this.label.yearly_incremental_sales,
@@ -189,23 +183,17 @@ export default class TabVisitsDetailForm extends LightningElement {
         getIdentifiedBusinesssOpp({VisitId: this.recordId})
         .then(result => {
             if(result){
-                console.log("data11:"+result);
                 result = JSON.parse(JSON.stringify(result));
-                console.log("data111:"+result);
                 result.forEach(res=>{
                     res.nameLink = '/' + res.Id;
                 });
-                //this.handleOppCount(result);
                 this.OppRecord = result;
                 this.isDataTableRefresh=true;
             }
-           
         })    
         .catch(error => {
             this.OppRecord = undefined;
-            console.log('>>'+error.message);
-           // this.showToast("Error", "Error while getting the Opportunity Details : "+error.message, 
-           // "error");
+            this.showToast('Error', 'Error',error);
         });
     }
     handleOppCount(data){
@@ -261,11 +249,6 @@ export default class TabVisitsDetailForm extends LightningElement {
        
     }
 
-    refreshList = ()=> {
-        console.log('>>>here');
-        this.isLoading = true;
-        this.getRelatedRecords();
-    }
     disconnectedCallback() {
         unsubscribe(this.subscription, () => {
         });
@@ -287,7 +270,6 @@ export default class TabVisitsDetailForm extends LightningElement {
                 monthlyInc : this.monthlyInc,
                 status : this.status
             }).then(result=>{
-                console.log('>>result',result);
                 this.showSpinner = false;
                 this.closePopup();
                 this.getRelatedRecords();
@@ -300,7 +282,7 @@ export default class TabVisitsDetailForm extends LightningElement {
                 this.monthlyInc='';
             }).catch(error=>{
                 this.showSpinner = false;
-                this.errors = 'Error Creating Identified Opportunity' + error.message ;
+                this.showToast('Error', 'Error',error);
             });
         }
     }

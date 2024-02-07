@@ -24,7 +24,8 @@ public class tabShowPadControllerTest {
         c1.Title = 'test-data';
         c1.Email = 'xxx@gmail.com';
         c1.Phone = '123456789';
-        c1.ShowpadForSF__Showpad_Last_Activity_Date__c  = DateTime.newInstance(2023,07,07);
+        DateTime sixMonthsAgo = currentDate.addMonths(-6).addDays(2);
+        c1.ShowpadForSF__Showpad_Last_Activity_Date__c  = sixMonthsAgo;
         c1.ShowpadForSF__Showpad_Last_View_Date__c = currentDate.addMonths(-3);
         insert c1;  
       }

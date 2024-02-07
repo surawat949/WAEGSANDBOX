@@ -218,6 +218,7 @@ public class TabActivationAIIndicatorController {
                 }
 				// digital flag	
 				system.debug('>>>DataOrdersFlag');
+                system.debug('>>>>'+statsList[0].HVC_Systems_L3Mo__c+'>>>>statsList[0].Other_Digital_Orders_L3Mo__c'+statsList[0].Other_Digital_Orders_L3Mo__c);
 				 if(currAcc.Lenses_Net_Sales_Last_12Mo__c>0){
 					 if(statsList[0].HVC_Systems_L3Mo__c + statsList[0].Other_Digital_Orders_L3Mo__c>0){
 						 if(statsList[0].HVC_Systems_L3Mo__c + statsList[0].Other_Digital_Orders_L3Mo__c>50){

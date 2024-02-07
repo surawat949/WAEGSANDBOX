@@ -41,8 +41,7 @@ public with sharing class TrainingCertificateController {
     public static String generateCertificate(String trainingId, String attendeeId, String brand) {
         String returnMsg = 'Success';
         try {
-            System.debug('### trainingId, AttendeeId' +trainingId +',' + attendeeId);
-            System.debug('### get certificate for account brand '+brand);
+            
 
             Boolean isIndividual = false;
             Id mergeFieldContact;
@@ -101,10 +100,7 @@ public with sharing class TrainingCertificateController {
                         break;
                     }
                     emailAddresses.add(eachCon.Account.Owner.Email);
-                    /*
-                    if (eachCon.recordType.Name == 'Shop Owner') {
-                        emailAddresses.add(eachCon.Email);
-                    }*/
+                    
                 }
             } else {
                 //certificate for Individual attendee
@@ -119,7 +115,6 @@ public with sharing class TrainingCertificateController {
                 emailAddresses.add(memberLIst[0].contact__r.Account.Owner.Email);
             }
 
-            System.debug('### Preparing page');
             //if seiko brand
             if(brand == 'SEIKO'){
                 PageReference pdfPage = Page.TrainingCertificatePage;
@@ -153,7 +148,7 @@ public with sharing class TrainingCertificateController {
                 pdfPage.getParameters().put('trainingTopicsRow2', trainingTopicsRow2);
                 pdfPage.getParameters().put('attendeesList', String.join(attendeesList, ';'));
                 pdfPage.getParameters().put('attendeesList2', String.join(attendeesList2, ';'));
-                System.debug('### Seiko Page ready');
+                
 
                 returnMsg = sendEmail(pdfPage, emailAddresses, ccAddresses, trainingDetails.Name, mergeFieldContact, isIndividual, brand);
             }else{
@@ -188,11 +183,11 @@ public with sharing class TrainingCertificateController {
                 pdfPageHoya.getParameters().put('trainingTopicsRow2', trainingTopicsRow2);
                 pdfPageHoya.getParameters().put('attendeesList', String.join(attendeesList, ';'));
                 pdfPageHoya.getParameters().put('attendeesList2', String.join(attendeesList2, ';'));
-                System.debug('### Hoya Page ready');
+                
                 returnMsg = sendEmail(pdfPageHoya, emailAddresses, ccAddresses, trainingDetails.Name, mergeFieldContact, isIndividual, brand);
             }
         } catch (Exception ex) {
-            System.debug('### Exception' + ex + '##' + ex.getStackTraceString());
+            
             throw new AuraHandledException(ex.getMessage());
         }
         return returnMsg;
@@ -201,8 +196,6 @@ public with sharing class TrainingCertificateController {
     public static String sendEmail(PageReference pdfPage, List<String> emailAddresses, List<String> ccAddresses, String  trainingCode, Id conId, Boolean isIndividual, String brand) {
         String returnMsg = 'Success';
         try {
-            System.debug('### Email Address' + emailAddresses);
-            System.debug('### Sending for email Acc.Brand '+brand);
 
             if(brand == 'SEIKO'){
             //Seiko Vision
@@ -218,7 +211,7 @@ public with sharing class TrainingCertificateController {
 
                 Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
                 List<OrgWideEmailAddress> orgWideEmail = [SELECT Id, Address, DisplayName, IsAllowAllProfiles, Purpose FROM OrgWideEmailAddress WHERE Address = 'do_not_reply@seikovision.com'];
-                System.debug('### owa' + orgWideEmail);
+                
                 mail.setOrgWideEmailAddressId(orgWideEmail[0].Id);
                 mail.setUseSignature(false);
                 mail.setToAddresses(emailAddresses);
@@ -229,7 +222,7 @@ public with sharing class TrainingCertificateController {
                 } else {
                     emailTemplate =[Select Id, Subject, Description, HtmlValue, DeveloperName, Body from EmailTemplate where DeveloperName ='Seiko_Training_Certificate_All_attendees'];
                 }
-                System.debug('### template ' + emailTemplate);
+                
                 if (!emailTemplate.isEmpty()) {
                     mail.setTemplateID(emailTemplate[0].Id);    
                 } else {
@@ -240,7 +233,7 @@ public with sharing class TrainingCertificateController {
                 mail.setTreatTargetObjectAsRecipient(false); // dont send mail to above Id
                 mail.setFileAttachments(new Messaging.EmailFileAttachment[] { attach }); 
                 Messaging.sendEmail(new Messaging.SingleEmailMessage[] { mail });
-                System.debug('### Seiko Mail Sent - OK ' + returnMsg);
+                
             }else{
                 //for the other brand - Hoya and other brand
                 Messaging.EmailFileAttachment attach = new Messaging.EmailFileAttachment();
@@ -255,7 +248,7 @@ public with sharing class TrainingCertificateController {
 
                 Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
                 List<OrgWideEmailAddress> orgWideEmail = [SELECT Id, Address, DisplayName, IsAllowAllProfiles, Purpose FROM OrgWideEmailAddress WHERE Address = 'salesforce@hoya.eu'];
-                System.debug('### owa' + orgWideEmail);
+                
                 mail.setOrgWideEmailAddressId(orgWideEmail[0].Id);
                 mail.setUseSignature(false);
                 mail.setToAddresses(emailAddresses);
@@ -266,7 +259,7 @@ public with sharing class TrainingCertificateController {
                 } else {
                     emailTemplate =[Select Id, Subject, Description, HtmlValue, DeveloperName, Body from EmailTemplate where DeveloperName ='Hoya_Training_Certificate_All_attendees'];
                 }
-                System.debug('### template ' + emailTemplate);
+                
                 if (!emailTemplate.isEmpty()) {
                     mail.setTemplateID(emailTemplate[0].Id);    
                 } else {
@@ -277,11 +270,11 @@ public with sharing class TrainingCertificateController {
                 mail.setTreatTargetObjectAsRecipient(false); // dont send mail to above Id
                 mail.setFileAttachments(new Messaging.EmailFileAttachment[] { attach }); 
                 Messaging.sendEmail(new Messaging.SingleEmailMessage[] { mail });
-                System.debug('### Hoya Mail Sent - OK ' + returnMsg);
+                
             }
            
         } catch (Exception ex) {
-            System.debug('### Exception' + ex + '##' + ex.getStackTraceString());
+            
             throw new AuraHandledException(ex.getMessage());
         }
         return returnMsg;
@@ -300,7 +293,7 @@ public with sharing class TrainingCertificateController {
             }
             
         } catch (Exception e) {
-            System.debug('### Exception' + e + '##' + e.getStackTraceString());
+            
             throw new AuraHandledException(e.getMessage());
         }
         return lstTrainings;
@@ -313,7 +306,7 @@ public with sharing class TrainingCertificateController {
             List<ECP_Training_Member__c> memberList = [select Id, contact__c,contact__r.RecordType.Name,contact__r.Name, name, training__c from ECP_Training_Member__c where training__c=:trId];
             return memberList;
         } catch (Exception e) {
-            System.debug('### Exception' + e + '##' + e.getStackTraceString());
+            
             throw new AuraHandledException(e.getMessage());
         }
     }

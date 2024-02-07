@@ -52,9 +52,7 @@ public class LoyaltyPointsStmtController {
                         return 'exceeded'; // records more than enough for a single page
                     }
                     emailAddresses.add(UserInfo.getUserEmail());
-                    System.debug('>>emailAddresses'+emailAddresses);
-                    System.debug('This is startDate===' + startDate);
-                    System.debug('This is endadate===' + endDate);
+                    
                     PageReference pdfPage = Page.LoyaltyPointsStmtPage;
                     //set parameters for vf page here
                     pdfPage.getParameters().put('accountName', account.Name);
@@ -86,9 +84,6 @@ public class LoyaltyPointsStmtController {
                         return 'exceeded';     //if return more than 38 records
                     }
                     emailAddresses.add(UserInfo.getUserEmail());
-                    System.debug('Email Adress =>'+emailAddresses);
-                    System.debug('Start date =>'+startDate);
-                    System.debug('End date =>'+enddate);
 
                     PageReference pdfPageHoya = Page.LoyaltyPointsStmPage_Hoya;
                     pdfPageHoya.getParameters().put('accountName', account.Name);
@@ -115,7 +110,7 @@ public class LoyaltyPointsStmtController {
                 }
             }
         } catch (Exception ex) {
-            System.debug('### Exception' + ex + '##' + ex.getStackTraceString());
+            
             throw new AuraHandledException(ex.getMessage());
         }
         return returnMsg;
@@ -125,7 +120,7 @@ public class LoyaltyPointsStmtController {
         String returnMsg = 'Success';
         System.debug('### Start Send the email with account brand '+brand);
         try {
-            System.debug('### Email Address' + emailAddresses);
+            
             Messaging.EmailFileAttachment attach = new Messaging.EmailFileAttachment();
             attach.setContentType('application/pdf');
             attach.setFileName('Loyalty Points statement.pdf');
@@ -139,8 +134,7 @@ public class LoyaltyPointsStmtController {
             Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
             List<OrgWideEmailAddress> orgWideEmail = [SELECT Id, Address, DisplayName, IsAllowAllProfiles, Purpose FROM OrgWideEmailAddress WHERE Address = 'do_not_reply@seikovision.com'];
             List<OrgWideEmailAddress> HoyaOrgWideEmail = [SELECT Id, Address, DisplayName, IsAllowAllProfiles, Purpose FROM OrgWideEmailAddress WHERE Address = 'salesforce@hoya.eu'];
-            System.debug('### owa' + orgWideEmail);
-            System.debug('### Hoya Owa '+HoyaOrgWideEmail);
+            
 
             if(brand == 'SEIKO'){
                 mail.setOrgWideEmailAddressId(orgWideEmail[0].Id);
@@ -153,10 +147,10 @@ public class LoyaltyPointsStmtController {
             List<EmailTemplate> HoyaEmailTemplate;
 
             emailTemplate = [Select Id, Subject, Description, HtmlValue, DeveloperName,Body from EmailTemplate where DeveloperName ='Seiko_Loyalty_Points_Statement'];
-            System.debug('### template ' + emailTemplate);
+            
 
             HoyaEmailTemplate = [SELECT Id, Subject, Description, HtmlValue, DeveloperName, Body FROM EmailTemplate WHERE DeveloperName = 'Hoya_Loyalty_Points_Statement'];
-            System.debug('### Hoya Email Template '+HoyaEmailTemplate);
+            
 
             if (!emailTemplate.isEmpty()) {
                 if(brand=='SEIKO'){
@@ -172,10 +166,10 @@ public class LoyaltyPointsStmtController {
             mail.setTreatTargetObjectAsRecipient(false); // dont send mail to above Id
             mail.setFileAttachments(new Messaging.EmailFileAttachment[] { attach }); 
             Messaging.sendEmail(new Messaging.SingleEmailMessage[] { mail });
-            System.debug('### Mail Sent - OK ' + returnMsg);
+            
 
         } catch (Exception ex) {
-            System.debug('### Exception' + ex + '##' + ex.getStackTraceString());
+            
             throw new AuraHandledException(ex.getMessage());
         }
         return returnMsg;

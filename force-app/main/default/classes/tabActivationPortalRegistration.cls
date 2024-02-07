@@ -40,7 +40,23 @@ public class tabActivationPortalRegistration {
          }
         return wrapperList;
     }
-       class ContactWrapperClass{
+
+    @AuraEnabled(cacheable=true)
+    public static List<Account_Template__c> getAccountTemplateIdFromAccount(String receivedId){
+        try {
+            List<Account_Template__c> accTemplate = [SELECT Id, Account__c, Name FROM Account_Template__c WHERE Account__c=:receivedId LIMIT 1];
+            if(!accTemplate.isEmpty()){
+                //System.debug('Account Template => '+accTemplate);
+                return accTemplate;
+            }else{
+                return null;
+            }
+        } catch (Exception e) {
+            throw new AuraHandledException(e.getMessage());
+        }
+    }
+
+    class ContactWrapperClass{
         @AuraEnabled
         public date lastLogin;
         @AuraEnabled public string name{get;set;}

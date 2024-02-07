@@ -11,6 +11,8 @@ import RelatedVolumesYTD from '@salesforce/label/c.AccountRelatedVolumesYTD';
 import RelatedVariation from '@salesforce/label/c.AccountRealtedVariation';
 import AccountLensesOnly from '@salesforce/label/c.AccountLensesOnly';
 import Save from '@salesforce/label/c.Save_Button';
+import LocalKeyNet from '@salesforce/label/c.Local_Key_Consolidation_Net';
+import LocalKeyGross from '@salesforce/label/c.Local_Key_Consolidation_Gross';
 //Object
 import Account_obj from '@salesforce/schema/Account';
 //Fields
@@ -31,7 +33,7 @@ export default class TabStatisticsLocalConsolidationSales extends LightningEleme
     GrossColumns = [GrossSalesCFY,GrossSalesLFYYTD,RelatedVariation,VolumeCFY,RelatedVolumesYTD,RelatedVariation];
 
     custLabel = {
-        AccountLensesOnly,Save
+        AccountLensesOnly,Save,LocalKeyNet,LocalKeyGross
     }
     @wire(getConsolidatedAccountsList,{recordId: "$receivedId",type:"$type"})
     getConsolidatedAccs(result){     
@@ -72,7 +74,6 @@ export default class TabStatisticsLocalConsolidationSales extends LightningEleme
         );
     }
     doRefresh(event) {
-        console.log('refresh');
         return refreshApex(this.wiredResults);
     }
 }

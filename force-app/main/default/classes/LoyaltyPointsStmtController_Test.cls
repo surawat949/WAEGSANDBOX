@@ -35,8 +35,9 @@ public class LoyaltyPointsStmtController_Test {
         emailList.add('test2@hoya.com');
 
         Test.StartTest();
-        LoyaltyPointsStmtController.generateCertificate(acc.Id, System.today(), System.today(), emailList, 'Hoya');
-        LoyaltyPointsStmtController.generateCertificate(acc.Id, System.today(), System.today(), emailList, 'Seiko');
+        
+        LoyaltyPointsStmtController.generateCertificate(acc.Id, System.today(), System.today(), emailList, 'HOYA');
+        LoyaltyPointsStmtController.generateCertificate(acc.Id, System.today(), System.today(), emailList, 'SEIKO');
         LoyaltyPointsStmtController LoyaltyPage = new LoyaltyPointsStmtController();
         Test.StopTest();
 

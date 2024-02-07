@@ -1,8 +1,17 @@
 import { LightningElement ,api,wire} from 'lwc';
 //apex
 import getIndicators from '@salesforce/apex/tabAIIndicatorsController.getAIIndicators';
+//custom labels
+import strategicValue from '@salesforce/label/c.Strategic_Value';
+import competitors from '@salesforce/label/c.Competitors';
+import sales from '@salesforce/label/c.Sales_Indicator';
+import commitments from '@salesforce/label/c.Commitments_Indicator';
+import returns from '@salesforce/label/c.Returns';
+import deliveries from '@salesforce/label/c.Deliveries_Indicator';
+
 //Static Resources
 import AI_Indicators from '@salesforce/resourceUrl/SFDC_V2_AI_Indicators';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 export default class TabStatisticsIndicators extends LightningElement {
     @api receivedId;
     salesIndicator;
@@ -17,12 +26,13 @@ export default class TabStatisticsIndicators extends LightningElement {
     competitorFlagMeaning;
     strategicValFlagMeaning;
     commitmentsFlagMeaning;
-
+    custLabel ={
+        strategicValue,competitors,sales,commitments,returns,deliveries
+    }
     
     @wire(getIndicators, {receivedId: '$receivedId',tabName:'Statistics'}) 
      getIndicators ({error, data}) {
         if(data){
-            console.log(data);
             // Set the variable value here based on apex response.
             this.salesIndicator = AI_Indicators + '/'+this.getIndicatorImage(data.salesFlag);
             this.competitorIndicator = AI_Indicators + '/'+this.getIndicatorImage(data.competitorFlag);
@@ -37,7 +47,7 @@ export default class TabStatisticsIndicators extends LightningElement {
             this.competitorFlagMeaning= data.competitorFlagMeaning;
             this.strategicValFlagMeaning = data.strategicValFlagMeaning;
         }else if(error){
-            console.log('XXX An error was occurred ==>'+JSON.stringify(error));
+            this.showToast('Error', 'Error', JSON.stringify(error));
         }
     }
     getIndicatorImage(indicator){
@@ -54,5 +64,14 @@ export default class TabStatisticsIndicators extends LightningElement {
         else if(indicator == 'GREENALERT')
             return 'GreenLightAlert.png';
 
+    }
+    showToast(title, variant, message) {
+        this.dispatchEvent(
+            new ShowToastEvent({
+                title: title,
+                message: message,
+                variant: variant,
+            }),
+        );
     }
 }

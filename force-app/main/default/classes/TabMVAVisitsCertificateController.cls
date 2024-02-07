@@ -55,7 +55,6 @@ public with sharing class TabMVAVisitsCertificateController {
         String returnMsg = 'Success';
 
         try {
-            System.debug('### trainingId, AttendeeId' +trainingId +',' + attendeeId);
             
             Boolean isIndividual = false;
             Id mergeFieldContact;
@@ -90,7 +89,7 @@ public with sharing class TabMVAVisitsCertificateController {
             
             if (attendeeId == null) {
                 // certificate for All attendees
-                System.debug('### All attendees');
+                
                 memberList = [select contact__c, name, training__c from ECP_Training_Member__c where training__c=:trId];
                 if (memberList.isEmpty()) {
                     //No attendee found
@@ -121,7 +120,7 @@ public with sharing class TabMVAVisitsCertificateController {
                 }
             } else {
                 //certificate for Individual attendee
-                System.debug('### Individual Attendee');
+                
                 isIndividual = true;
                 Id attId = Id.valueOf(attendeeId);
                 memberList = [select Id, contact__c,contact__r.Name,contact__r.email, name, training__c, contact__r.Account.Owner.Email from ECP_Training_Member__c where Id=:attId];
@@ -130,8 +129,6 @@ public with sharing class TabMVAVisitsCertificateController {
                 attendeesList.add(memberList[0].contact__r.Name);
                 emailAddresses.add(memberList[0].contact__r.Account.Owner.Email);
             }
-
-            System.debug('### Preparing page');
             
             PageReference pdfPage = Page.HoyaMVACertificatePage;
             pdfPage.getParameters().put('deliveredTo', trainingDetails.Account__r.Clinic_Name__c);
@@ -164,12 +161,10 @@ public with sharing class TabMVAVisitsCertificateController {
             pdfPage.getParameters().put('trainingTopicsRow2', trainingTopicsRow2);
             pdfPage.getParameters().put('attendeesList', String.join(attendeesList, ';'));
             pdfPage.getParameters().put('attendeesList2', String.join(attendeesList2, ';'));
-            System.debug('### Hoya Education Page ready');
 
             returnMsg = sendEmail(pdfPage, emailAddresses, ccAddresses, trainingDetails.Name, mergeFieldContact, isIndividual);
             
         } catch (Exception ex) {
-            System.debug('### Exception' + ex + '##' + ex.getStackTraceString());
             throw new AuraHandledException(ex.getMessage());
         }
         return returnMsg;
@@ -178,7 +173,6 @@ public with sharing class TabMVAVisitsCertificateController {
     public static String sendEmail(PageReference pdfPage, List<String> emailAddresses, List<String> ccAddresses, String  trainingCode, Id conId, Boolean isIndividual) {
         String returnMsg = 'Success';
         try {
-            System.debug('### Email Address' + emailAddresses);
 
             Messaging.EmailFileAttachment attach = new Messaging.EmailFileAttachment();
             attach.setContentType('application/pdf');
@@ -192,7 +186,7 @@ public with sharing class TabMVAVisitsCertificateController {
 
             Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
             List<OrgWideEmailAddress> orgWideEmail = [SELECT Id, Address, DisplayName, IsAllowAllProfiles, Purpose FROM OrgWideEmailAddress WHERE Address = 'salesforce@hoya.eu'];
-            System.debug('### owa' + orgWideEmail);
+            
             mail.setOrgWideEmailAddressId(orgWideEmail[0].Id);
             mail.setUseSignature(false);
             mail.setToAddresses(emailAddresses);
@@ -203,7 +197,7 @@ public with sharing class TabMVAVisitsCertificateController {
             } else {
                 emailTemplate =[Select Id, Subject, Description, HtmlValue, DeveloperName,Body from EmailTemplate where DeveloperName ='Hoya_Training_Certificate_MVA'];
             }
-            System.debug('### template ' + emailTemplate);
+            
             if (!emailTemplate.isEmpty()) {
                 mail.setTemplateID(emailTemplate[0].Id);    
             } else {
@@ -214,11 +208,10 @@ public with sharing class TabMVAVisitsCertificateController {
             mail.setTreatTargetObjectAsRecipient(false); // dont send mail to above Id
             mail.setFileAttachments(new Messaging.EmailFileAttachment[] { attach }); 
             Messaging.sendEmail(new Messaging.SingleEmailMessage[] { mail });
-            System.debug('### Hoya Education Mail Sent - OK ' + returnMsg);
             
            
         } catch (Exception ex) {
-            System.debug('### Exception' + ex + '##' + ex.getStackTraceString());
+            
             throw new AuraHandledException(ex.getMessage());
         }
         return returnMsg;
@@ -240,7 +233,6 @@ public with sharing class TabMVAVisitsCertificateController {
                 
             }
         } catch (Exception e) {
-            System.debug('### Exception' + e + '##' + e.getStackTraceString());
             throw new AuraHandledException(e.getMessage());
         }
         return lstEcpTraining;
@@ -256,7 +248,7 @@ public with sharing class TabMVAVisitsCertificateController {
                                                         WHERE Training__c=:trainId];
             return attendees;
         } catch (Exception e) {
-            System.debug('### Exception Error '+e+'## '+e.getStackTraceString());
+            
             throw new AuraHandledException(e.getMessage());
         }
     }
@@ -272,7 +264,7 @@ public with sharing class TabMVAVisitsCertificateController {
             return a;
             
         } catch (Exception e) {
-            System.debug('### Exception Error '+e+'## '+e.getStackTraceString());
+            
             throw new AuraHandledException(e.getMessage());
         }
     }

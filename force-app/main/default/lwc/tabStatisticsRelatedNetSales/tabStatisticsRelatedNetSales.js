@@ -21,7 +21,6 @@ export default class TabStatisticsRelatedNetSales extends LightningElement {
     isTypeNet =true;
     relatedSales;
     CurrencyCode;
-    isDataExists = false;
     isLoading = true;
     custLabel = {
         ParentGrossSales,ParentNetSales,AccountLensesOnly
@@ -43,9 +42,7 @@ export default class TabStatisticsRelatedNetSales extends LightningElement {
     getRelatedSales(result){        
         if(result.data){
           this.relatedSales = JSON.parse(JSON.stringify(result.data));
-          console.log(this.relatedSales);
           if(this.relatedSales.length > 0)
-             this.isDataExists =true;
              this.relatedSales.forEach(res=>{
                 if(res.AccountId != null) {  
                     res.accountLink = '/' + res.AccountId;
@@ -55,11 +52,8 @@ export default class TabStatisticsRelatedNetSales extends LightningElement {
                     res.HoyaAccountId= 'Total';  
                     res.accountLink = '#';
                 }      
-                console.log(res.accountLink );
-
             });
             this.error = undefined;
-            console.log(result.data);
         }
         else if(result.error){
             this.showToast('Error', 'Error', result.error);

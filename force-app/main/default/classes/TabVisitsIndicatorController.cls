@@ -1,11 +1,11 @@
 public class TabVisitsIndicatorController {
     @AuraEnabled(cacheable=true)
     public static IndicatorWrapper getAIIndicators(Id receivedId) {
-       Account currAcc  = [Select Id,Account_Status__c,Potential__c,Lenses_Net_Sales_LFY__c,Segmentation_Box__c,
-                          Total_Visits_Planned__c,Visits_performed__c,Digital_Visits_Performed__c,Language__c,
-                           Lenses_Net_Sales_Last_12Mo__c,Last_Visit_date__c,TACTICOM_SOF__c,
-                          Strategic_Value_Gross_Sales__c,Strategic_Value_Net_Sales__c,Hoya_Account_ID__c,Owner.CompanyName
-                          From Account WHERE id =: receivedId limit 1];
+        Account currAcc  = [Select Id,Account_Status__c,Potential__c,Lenses_Net_Sales_LFY__c,Segmentation_Box__c,
+                            Total_Visits_Planned__c,Visits_performed__c,Digital_Visits_Performed__c,Language__c,
+                            Lenses_Net_Sales_Last_12Mo__c,Last_Visit_date__c,TACTICOM_SOF__c,
+                            Strategic_Value_Gross_Sales__c,Strategic_Value_Net_Sales__c,Hoya_Account_ID__c,Owner.CompanyName
+                            From Account WHERE id =: receivedId limit 1];
         List<Last_Sales_Statistics__c> statsList = [Select Id, Lenses_Net_Sales_Last_12Mo__c, Lenses_Gross_Sales_Last_12Mo__c,
                                                     Lenses_Net_Sales_LFY__c,Lenses_Gross_Sales_LFY__c
                                                     From Last_Sales_Statistics__c Where  Account__c = :receivedId];
@@ -14,7 +14,7 @@ public class TabVisitsIndicatorController {
                                                                       WHERE Account_Name__c=:receivedId
                                                                      ];
         List<Contact> listContact = [SELECT ID,AccountId,ShowpadForSF__Showpad_Last_Activity_Date__c,
-                                    ShowpadForSF__Showpad_Last_View_Date__c FROM Contact WHERE AccountId=: receivedId];
+                                     ShowpadForSF__Showpad_Last_View_Date__c FROM Contact WHERE AccountId=: receivedId];
         List<Identified_Business_Opportunity__c> lstBusiOpp = [SELECT Id, Account__c, Project_Status__c 
                                                                FROM Identified_Business_Opportunity__c 
                                                                WHERE Account__c = :receivedId AND Project_Status__c IN('Not Started','In progress','Posponed') ];
@@ -22,27 +22,36 @@ public class TabVisitsIndicatorController {
         List<Visits__c> listOfVisit = [SELECT ID,Visit_Type__c,Visit_Status__c FROM Visits__c 
                                        WHERE Account__c = :receivedId AND Visit_Type__c ='Visit'];
         IndicatorWrapper wrapper = new IndicatorWrapper();
+        String userLanguage = UserInfo.getLanguage();
         if(currAcc !=null){
             if(currAcc.Account_Status__c == 'Closed'){
-            	wrapper.flagTotalVisits='GREY';  
+                wrapper.flagTotalVisits='GREY';
+                wrapper.flagTotalVisitsHelpText = System.Label.get('', 'VISITS_01', userLanguage);
                 wrapper.strategicValueIndicator='GREY';
+               // wrapper.strategicValueIndicatorHelpText = System.Label.get('', 'TacticomVisits01', userLanguage);
                 wrapper.busiOppIndicator='GREY';
+                //wrapper.busiOppIndicatorHelpText = System.Label.get('', 'TacticomVisits01', userLanguage);
                 wrapper.campaignsIndicator='GREY';
+                //wrapper.campaignsIndicatorHelpText = System.Label.get('', 'TacticomCampaign01', userLanguage);
                 wrapper.showpadIndicator='GREY';
+                //wrapper.showpadIndicatorHelpText = System.Label.get('', 'TacticomVisits01', userLanguage);
                 wrapper.lifeCycleFlag='GREY';
+                //wrapper.lifeCycleFlagHelpText  = System.Label.get('', 'TacticomVisits01', userLanguage);
                 if(currAcc.TACTICOM_SOF__c == '' || currAcc.TACTICOM_SOF__c == null){
-                        wrapper.tacticomFlag = 'GREY';
+                    wrapper.tacticomFlag = 'GREY';
+                    wrapper.tacticomFlagHelpText = System.Label.get('', 'Tacticom_01', userLanguage);
                 }
                 else{
-                 	   wrapper.tacticomFlag = 'GREYALERT';   
+                    wrapper.tacticomFlag = 'GREYALERT';
+                    wrapper.tacticomFlagHelpText = System.Label.get('', 'Tacticom_02', userLanguage);
                 }
-
+                
                 
             }
             else{
                 //total visit flag                
                 system.debug('>>>>');
-                 wrapper.tacticomFlag = 'GREY';
+                wrapper.tacticomFlag = 'GREY';
                 wrapper.lifeCycleFlag='GREY';
                 if(currAcc.Total_Visits_Planned__c>0){
                     system.debug('>>>>1');
@@ -52,52 +61,59 @@ public class TabVisitsIndicatorController {
                         
                         if(Math.abs(currAcc.Total_Visits_Planned__c - (currAcc.Visits_performed__c+currAcc.Digital_Visits_Performed__c))<=1){
                             wrapper.flagTotalVisits='GREEN';
+                            wrapper.flagTotalVisitsHelpText = System.Label.get('', 'VISITS_02', userLanguage);
                             system.debug('>>>>3');
                         }   
                         else if(Math.abs(currAcc.Total_Visits_Planned__c - (currAcc.Visits_performed__c+currAcc.Digital_Visits_Performed__c))<=2){
                             system.debug('>>>>4');
-                            wrapper.flagTotalVisits='GREENALERT';    
+                            wrapper.flagTotalVisits='GREENALERT';  
+                            wrapper.flagTotalVisitsHelpText = System.Label.get('', 'VISITS_03', userLanguage);
                         }
                         else if(Math.abs(currAcc.Total_Visits_Planned__c - (currAcc.Visits_performed__c+currAcc.Digital_Visits_Performed__c))<=3){
                             system.debug('>>>>5');
                             wrapper.flagTotalVisits='RED';
+                            wrapper.flagTotalVisitsHelpText = System.Label.get('', 'VISITS_04', userLanguage);
                         }
                         else{
                             system.debug('>>>>6');
                             wrapper.flagTotalVisits='REDALERT';  
+                            wrapper.flagTotalVisitsHelpText = System.Label.get('', 'VISITS_05', userLanguage);
                         }
                     }
                     else{
                         system.debug('>>>>7');
                         wrapper.flagTotalVisits='REDALERT';
+                        wrapper.flagTotalVisitsHelpText = System.Label.get('', 'VISITS_06', userLanguage);
                     }
                 }
                 else if(currAcc.Visits_performed__c + currAcc.Digital_Visits_Performed__c >0){
-                    wrapper.flagTotalVisits='RED';        
+                    wrapper.flagTotalVisits='RED';    
+                    wrapper.flagTotalVisitsHelpText = System.Label.get('', 'VISITS_07', userLanguage);
                 }
                 else{
                     wrapper.flagTotalVisits='GREEN';      
+                    wrapper.flagTotalVisitsHelpText = System.Label.get('', 'VISITS_08', userLanguage);
                 }
-             // StrategicValueIndicator 
+                // StrategicValueIndicator 
                 if(statsList.size()>0){
                     system.debug('>>>currAcc'+currAcc.Hoya_Account_ID__c);
                     if(statsList[0].Lenses_Net_Sales_Last_12Mo__c>0 || statsList[0].Lenses_Net_Sales_LFY__c>0){
                         if(currAcc.Hoya_Account_ID__c.startsWith('SO4900') || currAcc.Hoya_Account_ID__c.startsWith('SO4990') || 
-                            currAcc.Owner.CompanyName == 'HODG'){
+                           currAcc.Owner.CompanyName == 'HODG'){
                                system.debug('>>>'+currAcc.Strategic_Value_Gross_Sales__c);
-                            if(currAcc.Strategic_Value_Gross_Sales__c == 0 || currAcc.Strategic_Value_Gross_Sales__c==null){
-                               system.debug('>>>1');
-                               wrapper.strategicValueIndicator='RED'; 
-                            }
-                            else if(currAcc.Strategic_Value_Gross_Sales__c<statsList[0].Lenses_Gross_Sales_LFY__c){
-                                wrapper.strategicValueIndicator='REDALERT';    
-                            }
-                            else if(currAcc.Strategic_Value_Gross_Sales__c<statsList[0].Lenses_Gross_Sales_Last_12Mo__c){
-                                wrapper.strategicValueIndicator='REDALERT';     
-                            }
-                            else{ wrapper.strategicValueIndicator='GREEN'; }
-                           
-                        }
+                               if(currAcc.Strategic_Value_Gross_Sales__c == 0 || currAcc.Strategic_Value_Gross_Sales__c==null){
+                                   system.debug('>>>1');
+                                   wrapper.strategicValueIndicator='RED'; 
+                               }
+                               else if(currAcc.Strategic_Value_Gross_Sales__c<statsList[0].Lenses_Gross_Sales_LFY__c){
+                                   wrapper.strategicValueIndicator='REDALERT';    
+                               }
+                               else if(currAcc.Strategic_Value_Gross_Sales__c<statsList[0].Lenses_Gross_Sales_Last_12Mo__c){
+                                   wrapper.strategicValueIndicator='REDALERT';     
+                               }
+                               else{ wrapper.strategicValueIndicator='GREEN'; }
+                               
+                           }
                         
                         else if(currAcc.Strategic_Value_Net_Sales__c==0 || currAcc.Strategic_Value_Net_Sales__c==null){
                             wrapper.strategicValueIndicator='RED';      
@@ -109,22 +125,22 @@ public class TabVisitsIndicatorController {
                             wrapper.strategicValueIndicator='REDALERT';     
                         }
                         else{
-                           wrapper.strategicValueIndicator='GREEN';  
+                            wrapper.strategicValueIndicator='GREEN';  
                         }
                     }
                     else{
                         system.debug('>>testclass'+currAcc.Hoya_Account_ID__c);
-                         if(currAcc.Hoya_Account_ID__c.startsWith('SO4900') || currAcc.Hoya_Account_ID__c.startsWith('SO4990') || 
-                            currAcc.Owner.CompanyName == 'HODG'){
-                                if(currAcc.Strategic_Value_Gross_Sales__c == 0 || currAcc.Strategic_Value_Gross_Sales__c ==null){
-                                	wrapper.strategicValueIndicator='REDALERT';      
-                                }
-                                else{
+                        if(currAcc.Hoya_Account_ID__c.startsWith('SO4900') || currAcc.Hoya_Account_ID__c.startsWith('SO4990') || 
+                           currAcc.Owner.CompanyName == 'HODG'){
+                               if(currAcc.Strategic_Value_Gross_Sales__c == 0 || currAcc.Strategic_Value_Gross_Sales__c ==null){
+                                   wrapper.strategicValueIndicator='REDALERT';      
+                               }
+                               else{
                                    wrapper.strategicValueIndicator='GREEN';   
-                                }
-                         }
+                               }
+                           }
                         else if(currAcc.Strategic_Value_Net_Sales__c == 0 || currAcc.Strategic_Value_Net_Sales__c ==null){
-                         	wrapper.strategicValueIndicator='REDALERT';     
+                            wrapper.strategicValueIndicator='REDALERT';     
                         }
                         else{
                             wrapper.strategicValueIndicator='GREEN';  
@@ -137,22 +153,22 @@ public class TabVisitsIndicatorController {
                 //business Opportunities flag
                 system.debug('>>>>'+currAcc.Segmentation_Box__c);
                 if(lstBusiOpp.size()>0){
-                 	wrapper.busiOppIndicator='GREEN';   
+                    wrapper.busiOppIndicator='GREEN';   
                 }
                 else if(currAcc.Segmentation_Box__c=='A1' || currAcc.Segmentation_Box__c=='A2'||
-                    currAcc.Segmentation_Box__c=='B1' ||  currAcc.Segmentation_Box__c=='B2' || 
-                    currAcc.Segmentation_Box__c=='C1' || currAcc.Segmentation_Box__c=='C2'){
-                       system.debug('>>>>111');
-                    wrapper.busiOppIndicator='RED';    
-                }
+                        currAcc.Segmentation_Box__c=='B1' ||  currAcc.Segmentation_Box__c=='B2' || 
+                        currAcc.Segmentation_Box__c=='C1' || currAcc.Segmentation_Box__c=='C2'){
+                            system.debug('>>>>111');
+                            wrapper.busiOppIndicator='RED';    
+                        }
                 else if(currAcc.Visits_performed__c>0){
                     if(currAcc.Visits_performed__c>2){
-                      wrapper.busiOppIndicator='REDALERT';     
+                        wrapper.busiOppIndicator='REDALERT';     
                     }
                     else{
-                       wrapper.busiOppIndicator='RED';        
+                        wrapper.busiOppIndicator='RED';        
                     }
-                     
+                    
                 }
                 else if(currAcc.Total_Visits_Planned__c>0){
                     wrapper.busiOppIndicator='GREYALERT'; 
@@ -168,131 +184,162 @@ public class TabVisitsIndicatorController {
                         if(accountCampaingMember.campaign_active__c == true && 
                            accountCampaingMember.Campaign_Presented__c ==false ){
                                system.debug('>>>>>');
-                               system.debug('>>>>>2'+System.today().daysBetween(accountCampaingMember.Campaign_End_Date_t__c));
-                                system.debug('>>>>>1'+accountCampaingMember.Campaign_End_Date_t__c.daysBetween(System.today()));
-                            if(accountCampaingMember.Campaign_End_Date_t__c>=System.Today()){
-                                system.debug('>>>>>'+accountCampaingMember.Campaign_End_Date_t__c);
-                                system.debug('>>>>>'+accountCampaingMember.Campaign_End_Date_t__c.daysBetween(System.today()));
-                                if(System.today().daysBetween(accountCampaingMember.Campaign_End_Date_t__c)<=15){
-                                    wrapper.campaignsIndicator='REDALERT';
-                                }  	   
-                                else{
-                                    wrapper.campaignsIndicator='RED';    
-                                }
-                            }
-                            else{
-                                wrapper.campaignsIndicator='GREYALERT';  
-                            }
-                        }    
+                               //system.debug('>>>>>2'+System.today().daysBetween(accountCampaingMember.Campaign_End_Date_t__c));
+                               //system.debug('>>>>>1'+accountCampaingMember.Campaign_End_Date_t__c.daysBetween(System.today()));
+                               if(accountCampaingMember.Campaign_End_Date_t__c>=System.Today()){
+                                   system.debug('>>>>>'+accountCampaingMember.Campaign_End_Date_t__c);
+                                   system.debug('>>>>>'+accountCampaingMember.Campaign_End_Date_t__c.daysBetween(System.today()));
+                                   if(System.today().daysBetween(accountCampaingMember.Campaign_End_Date_t__c)<=15){
+                                       wrapper.campaignsIndicator='REDALERT';
+                                   }  	   
+                                   else{
+                                       wrapper.campaignsIndicator='RED';    
+                                   }
+                               }
+                               else{
+                                   wrapper.campaignsIndicator='GREYALERT';  
+                               }
+                           }    
                         else if(accountCampaingMember.campaign_active__c == false && 
-                            accountCampaingMember.Campaign_Presented__c ==false &&
-                            accountCampaingMember.Campaign_End_Date_t__c<system.Today()){
-                            system.debug('>>>>1'+accountCampaingMember.Campaign_End_Date_t__c.monthsBetween(system.today()));
-
-                                if(accountCampaingMember.Campaign_End_Date_t__c.monthsBetween(system.today())<=3){
-                                    wrapper.campaignsIndicator='GREENALERT';     
+                                accountCampaingMember.Campaign_Presented__c ==false &&
+                                accountCampaingMember.Campaign_End_Date_t__c<system.Today()){
+                                    system.debug('>>>>1'+accountCampaingMember.Campaign_End_Date_t__c.monthsBetween(system.today()));
+                                    
+                                    if(accountCampaingMember.Campaign_End_Date_t__c.monthsBetween(system.today())<=3){
+                                        wrapper.campaignsIndicator='GREENALERT';     
+                                    }
+                                    else{
+                                        wrapper.campaignsIndicator='GREEN';    
+                                    }
                                 }
-                                else{
-                                    wrapper.campaignsIndicator='GREEN';    
-                                }
-                         }
-                         else{
-                          	wrapper.campaignsIndicator='GREEN';   
+                        else{
+                            wrapper.campaignsIndicator='GREEN';   
                         }
                     }
                 } 
                 else{
-                        wrapper.campaignsIndicator='GREEN';   
+                    wrapper.campaignsIndicator='GREEN';   
                 }
                 //Campaigns flag start ends
                 //tacticom flag start
-                String tacticomFlag = tecticomIndicators(receivedId,currAcc.Segmentation_Box__c,currAcc.TACTICOM_SOF__c);
+                Map<String,String> tacticomFlag = tecticomIndicators(receivedId,currAcc.Segmentation_Box__c,currAcc.TACTICOM_SOF__c,userLanguage);
                 system.debug('>>>tacticomFlag'+tacticomFlag);
-                wrapper.tacticomFlag = tacticomFlag; 
+                wrapper.tacticomFlag = tacticomFlag.get('flagColor');
+                wrapper.tacticomFlagHelpText = tacticomFlag.get('tacticomFlagHelpText');
             }
         }
         system.debug('>>>>wrapper'+wrapper);
         return wrapper;
-}   
-     public class IndicatorWrapper {
+    }   
+    public class IndicatorWrapper {
         @AuraEnabled public String flagTotalVisits{get;set;}
+        @AuraEnabled public String flagTotalVisitsHelpText{get;set;}
+        
         @AuraEnabled public String strategicValueIndicator{get;set;}
+       // @AuraEnabled public String strategicValueIndicatorHelpText{get;set;}
+        
         @AuraEnabled public String busiOppIndicator{get;set;}
+        //@AuraEnabled public String busiOppIndicatorHelpText{get;set;}
+        
         @AuraEnabled public String campaignsIndicator{get;set;}
+       // @AuraEnabled public String campaignsIndicatorHelpText{get;set;}
+        
         @AuraEnabled public String showpadIndicator{get;set;}
+       // @AuraEnabled public String showpadIndicatorHelpText{get;set;}
+        
         @AuraEnabled public String tacticomFlag{get;set;}
+        @AuraEnabled public String tacticomFlagHelpText{get;set;}
+        
         @AuraEnabled public String lifeCycleFlag{get;set;} 
+       // @AuraEnabled public String lifeCycleFlagHelpText{get;set;} 
     }
-    public static String tecticomIndicators(Id receivedId,String Segment,String subArea) {
+    public static Map<String,String> tecticomIndicators(Id receivedId,String Segment,String subArea,String userLanguage) {
         list<Visits__c> listOfVisit60days = [SELECT ID,Visit_Type__c,Visit_Status__c FROM Visits__c 
-                                            WHERE Account__c =:receivedId AND Visit_Type__c ='Visit' AND Visit_Status__c ='Planned' AND  Start_Time__c >today AND Start_Time__c <= NEXT_N_DAYS:60 limit 1];
-                                              
+                                             WHERE Account__c =:receivedId AND Visit_Type__c ='Visit' AND Visit_Status__c ='Planned' AND  Start_Time__c >today AND Start_Time__c <= NEXT_N_DAYS:60 limit 1];
+        
         list<Visits__c> listOfVisit90days = [SELECT ID,Visit_Type__c,Visit_Status__c,Start_Time__c FROM Visits__c 
-                                            WHERE Account__c =:receivedId AND Visit_Type__c ='Visit' AND Visit_Status__c ='Complete' AND  Start_Time__c <today AND Start_Time__c >= LAST_N_DAYS:90 limit 1];
+                                             WHERE Account__c =:receivedId AND Visit_Type__c ='Visit' AND Visit_Status__c ='Complete' AND  Start_Time__c <today AND Start_Time__c >= LAST_N_DAYS:90 limit 1];
         
         list<Visits__c> listOfVisit180days =[SELECT ID,Visit_Type__c,Visit_Status__c,Start_Time__c FROM Visits__c 
-                                            WHERE Account__c =:receivedId AND Visit_Type__c ='Visit' AND Visit_Status__c ='Complete' AND  Start_Time__c <today AND Start_Time__c >= LAST_N_DAYS:180 limit 1];
+                                             WHERE Account__c =:receivedId AND Visit_Type__c ='Visit' AND Visit_Status__c ='Complete' AND  Start_Time__c <today AND Start_Time__c >= LAST_N_DAYS:180 limit 1];
         string tecticomFlag;
+        String tacticomFlagHelpText;
+        Map<String,String> tacticomFlagMap= new Map<String,String>();
         system.debug('>>>1'+listOfVisit180days+ '>>>2'+listOfVisit90days +'>>>3'+listOfVisit60days);
         system.debug('>>subArea'+subArea);
         if(subArea != '' && subArea != null && subArea != 'None'){
             if(listOfVisit180days.size()>0){
                 if(listOfVisit90days.size()>0){
                     system.debug('>>>1');
-                    tecticomFlag='GREEN';   
+                    tecticomFlag='GREEN'; 
+                    tacticomFlagHelpText = System.Label.get('', 'Tacticom_03', userLanguage);
                 }
                 else if(listOfVisit60days.size()>0){
                     system.debug('>>>2');
                     tecticomFlag='GREEN';
+                    tacticomFlagHelpText = System.Label.get('', 'Tacticom_04', userLanguage);
                 }
                 else{
                     system.debug('>>>3');
                     tecticomFlag='GREENALERT'; 
+                    tacticomFlagHelpText = System.Label.get('', 'Tacticom_05', userLanguage);
                 }
             }else if(listOfVisit60days.size()>0){
                 system.debug('>>>2');
                 tecticomFlag='GREEN';
+                tacticomFlagHelpText = System.Label.get('', 'Tacticom_06', userLanguage);
             }
             else{
                 system.debug('>>>3');
-                tecticomFlag='RED'; 
+                tecticomFlag='RED';
+                tacticomFlagHelpText = System.Label.get('', 'Tacticom_07', userLanguage);
             }
         }  
         else if(listOfVisit90days.size()>0){
             system.debug('>>>4');
             if(listOfVisit60days.size()>0){
                 system.debug('>>>5');
-             	tecticomFlag = 'RED';    
+                tecticomFlag = 'RED';   
+                tacticomFlagHelpText = System.Label.get('', 'Tacticom_08', userLanguage);
             }else if(Segment=='A1' || Segment=='A2'||
-                Segment=='B1' ||  Segment=='B2' || 
-                Segment=='C1' || Segment=='C2'){
-                    system.debug('>>>6');
-                tecticomFlag = 'REDALERT';                   
-            } 
+                     Segment=='B1' ||  Segment=='B2' || 
+                     Segment=='C1' || Segment=='C2'){
+                         system.debug('>>>6');
+                         tecticomFlag = 'REDALERT'; 
+                         tacticomFlagHelpText = System.Label.get('', 'Tacticom_09', userLanguage);
+                     } 
             else{
-             	tecticomFlag = 'GREENALERT';   
+                tecticomFlag = 'GREENALERT';  
+                tacticomFlagHelpText = System.Label.get('', 'Tacticom_10', userLanguage);
             }
         }
         else if(listOfVisit180days.size()>0){
             if(listOfVisit60days.size()>0){
-            	tecticomFlag = 'RED';     
+                tecticomFlag = 'RED';   
+                tacticomFlagHelpText = System.Label.get('', 'Tacticom_11', userLanguage);
             }
             else if(Segment=='A1' || Segment=='A2'||
-                Segment=='B1' ||  Segment=='B2' || 
-                Segment=='C1' || Segment=='C2'){
-                tecticomFlag = 'REDALERT';                   
-            } 
+                    Segment=='B1' ||  Segment=='B2' || 
+                    Segment=='C1' || Segment=='C2'){
+                        tecticomFlag = 'REDALERT';   
+                        tacticomFlagHelpText = System.Label.get('', 'Tacticom_12', userLanguage);
+                    } 
             else{
                 system.debug('>>>7');
-             	tecticomFlag = 'GREEN';   
+                tecticomFlag = 'GREEN';   
+                tacticomFlagHelpText = System.Label.get('', 'Tacticom_13', userLanguage);
             }
         }
         else if(listOfVisit60days.size()>0){
             tecticomFlag = 'RED';    
+            tacticomFlagHelpText = System.Label.get('', 'Tacticom_14', userLanguage);
         }
         else{
-         	tecticomFlag = 'GREEN';    
+            tecticomFlag = 'GREEN';  
+            tacticomFlagHelpText = System.Label.get('', 'Tacticom_15', userLanguage);
         }
-        return tecticomFlag;
+        tacticomFlagMap.put('flagColor',tecticomFlag);
+        tacticomFlagMap.put('tacticomFlagHelpText',tacticomFlagHelpText);
+        return tacticomFlagMap;
     }
 }

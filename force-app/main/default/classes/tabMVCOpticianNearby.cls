@@ -90,7 +90,7 @@ public with sharing class tabMVCOpticianNearby {
                                                                 Account.Brand__c, Account.Segmentation_box__c  FROM AccountContactRelation 
                                                                 WHERE ContactId=:recordId AND Account.RecordType.DeveloperName='Clinic' AND IsActive=true];
 
-            System.debug(' 1 workingPlacesList----------- '+workingPlacesList);
+            //System.debug(' 1 workingPlacesList----------- '+workingPlacesList);
             List<ContactNearby> dataList = new List<ContactNearby>();
             for (AccountContactRelation eachRelation : workingPlacesList) {
                 ContactNearby wrapper = new ContactNearby();
@@ -143,7 +143,7 @@ public with sharing class tabMVCOpticianNearby {
                 uniqueIds.add(eachRelation.Accountid);
                 dataList.add(wrapper);
             }
-            System.debug(' 2 dataList----------- '+dataList);
+            //System.debug(' 2 dataList----------- '+dataList);
 
             if(VisionAll!=null && VisionAll!='' && VisionAll!='No Filter'){
                 VisionAll = ' AND Visionary_Alliance__c LIKE \'%'+VisionAll+'%\' ';
@@ -245,7 +245,7 @@ public with sharing class tabMVCOpticianNearby {
             }
             
             dataList.addAll(tempList);
-            System.debug(' 3 dataList----------- '+dataList);
+            //System.debug(' 3 dataList----------- '+dataList);
             return dataList;
 
 

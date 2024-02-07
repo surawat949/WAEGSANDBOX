@@ -1,5 +1,5 @@
 //This class is used for Address and Statistics indicators
-public with sharing class tabAIIndicatorsController {
+public without sharing class tabAIIndicatorsController {
 	public class IndicatorWrapper {
         @AuraEnabled public String salesFlag{get;set;}
         @AuraEnabled public String salesFlagMeaning{get;set;}
@@ -76,7 +76,6 @@ public with sharing class tabAIIndicatorsController {
             wrapper.salesFlagMeaning = System.Label.get('', 'Sales01', userLanguage);
         }
         else{//If Account status is not closed
-            System.debug(tabName);
             if(tabName == 'Address'){
                 //Satisfaction Flag
                 if(currAcc.Net_Promoter_Score__c > 0 && currAcc.Net_Promoter_Score__c != null){
@@ -108,14 +107,12 @@ public with sharing class tabAIIndicatorsController {
                 //Payment Flag
                 if (!statsList.isEmpty() && statsList[0].Lenses_Net_Sales_Last_12Mo__c > 0 ){
                     if(currAcc.Payment_issue__c){
-                        system.debug('>>>>here3');
                         if(currAcc.Account_Status__c == 'Blocked'){
                             wrapper.paymentsFlag = 'REDALERT';
                             
                             wrapper.paymentsFlagMeaning = System.Label.get('', 'Payment03', userLanguage);}
                         else{
                             wrapper.paymentsFlag = 'RED';
-                            system.debug('>>>>here2');
                             wrapper.paymentsFlagMeaning = System.Label.get('', 'Payment_04', userLanguage);}
                     }else{
                         if(currAcc.Account_Status__c == 'Blocked'){
@@ -136,7 +133,6 @@ public with sharing class tabAIIndicatorsController {
                             wrapper.paymentsFlagMeaning = System.Label.get('', 'Payment07', userLanguage);}
                         else{
                             wrapper.paymentsFlag = 'RED';
-                            system.debug('>>>>here1');
                             wrapper.paymentsFlagMeaning = System.Label.get('', 'Payment08', userLanguage);}
                     }
                     else{
@@ -157,7 +153,6 @@ public with sharing class tabAIIndicatorsController {
             	//commitments flag
                 if(!statsList.isEmpty() && statsList[0].Lenses_Net_Sales_Last_12Mo__c > 0){
                      if(currAcc.Seiko_objective_ECP_agr__c == null || currAcc.Seiko_objective_ECP_agr__c == 0){
-                          System.debug(currAcc.Visionary_Alliance__c);
                          if(currAcc.Seiko_Network__c == 'Seiko Vision Specialist'){
                              wrapper.CommitmentsFlag = 'REDALERT';
                              wrapper.CommitmentsFlagMeaning = System.Label.get('', 'Commitment02', userLanguage);}
@@ -197,10 +192,10 @@ public with sharing class tabAIIndicatorsController {
                 }
                 else{
                     if(currAcc.Seiko_objective_ECP_agr__c == null || currAcc.Seiko_objective_ECP_agr__c == 0){
-                        wrapper.commitmentsFlag = 'GREEN';
+                        wrapper.commitmentsFlag = 'GREY';
                         wrapper.CommitmentsFlagMeaning = System.Label.get('', 'Commitment10', userLanguage);
                     }else{
-                         wrapper.commitmentsFlag = 'REDALERT';
+                         wrapper.commitmentsFlag = 'GREYALERT';
                         wrapper.CommitmentsFlagMeaning = System.Label.get('', 'Commitment11', userLanguage);
                     }
                 }
@@ -391,11 +386,11 @@ public with sharing class tabAIIndicatorsController {
                 }
                 else{
                     if(!statsList.isEmpty() && statsList[0].Total_Returns_L12Mo__c > 0){
-                        wrapper.returnsFlag = 'GREENALERT';  
+                        wrapper.returnsFlag = 'GREYALERT';  
                         wrapper.returnsFlagMeaning = System.Label.get('', 'Returns07', userLanguage);
                     }
                     else{
-                        wrapper.returnsFlag = 'GREEN'; 
+                        wrapper.returnsFlag = 'GREY'; 
                         wrapper.returnsFlagMeaning = System.Label.get('', 'Returns08', userLanguage);                      
                     }
                 }
@@ -404,7 +399,9 @@ public with sharing class tabAIIndicatorsController {
                 if(!statsList.isEmpty() && statsList[0].Lenses_Shipment_RX_Average_Delay_3Mo__c != null && statsList[0].Lenses_Shipment_RX_Average_Delay_3Mo__c > 0){
                     double formulaValue = ((statsList[0].Uncut_Lenses_L3Mo__c/100) * 4)+((statsList[0].Remote_Edging_L3Mo__c/100) * 5)+((statsList[0].Mounting_L3Mo__c/100) * 6);
                     if(statsList[0].Lenses_Shipment_RX_Average_Delay_3Mo__c >= formulaValue ){
-                        double value = statsList[0].Lenses_Shipment_RX_Average_Delay_3Mo__c/formulaValue;
+                        double value = 0;
+                        if(formulaValue != null && formulaValue != 0)
+                           value = statsList[0].Lenses_Shipment_RX_Average_Delay_3Mo__c/formulaValue;
                         if(value >= 1.3){
                             wrapper.deliveriesFlag = 'REDALERT';
                             
@@ -465,7 +462,6 @@ public with sharing class tabAIIndicatorsController {
                 }
             }
         }//If account status is not closed
-        System.debug(wrapper);    
         return wrapper;
     }
 	public static ContactWrapper methodForContactFlag(Id accId, Decimal lensesNetSalesLast12Mo){
@@ -498,7 +494,6 @@ public with sharing class tabAIIndicatorsController {
                         break;
                     }
                     else{
-                        system.debug('Contacts 02');
                         tempWrapper.contactFlag = 'GREEN'; 
                         tempWrapper.contactMeaning = 'Contact02'; 
                         contactFlag = 'GREEN'; 
@@ -509,14 +504,12 @@ public with sharing class tabAIIndicatorsController {
                 for (Contact conObj : listOfContact) {
                     If (listOfFirstAndLastName.contains(conObj.FirstName) || listOfFirstAndLastName.contains(conObj.LastName) ||
                         conObj.FirstName == conObj.LastName || (conObj.Salutation == '' || conObj.Salutation == null || conObj.LastName == null || conObj.FirstName == null) || conObj.Contact_Record_Type__c =='') {
-                        system.debug('Contacts 03');
                         tempWrapper.contactFlag = 'REDALERT'; 
                         tempWrapper.contactMeaning = 'Contact03';
                         contactFlag = 'REDALERT'; 
                             break;
                     }
                     else{
-                        system.debug('Contacts 04');
                         tempWrapper.contactFlag = 'GREENALERT';
                         tempWrapper.contactMeaning = 'Contact04';  
                         contactFlag = 'GREENALERT'; 
@@ -526,13 +519,11 @@ public with sharing class tabAIIndicatorsController {
         }
         else{
             if(lensesNetSalesLast12Mo>0){
-                system.debug('Contacts 06');
                 tempWrapper.contactFlag = 'REDALERT'; 
                 tempWrapper.contactMeaning = 'Contact06';      
             	contactFlag = 'REDALERT';       
             } 
             else{
-                system.debug('Contacts 07');
                 tempWrapper.contactFlag = 'RED';  
                 tempWrapper.contactMeaning = 'Contact07';
                 contactFlag = 'RED';  

@@ -5,7 +5,7 @@
         <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
         <aura:attribute name="accountFields" type="String[]" default="['Potential__c', 'AnnualRevenue', 'Share_of_Wallet__c','First_Competitor_global_name__c', 'First_Competitor_local_name__c', 'First_Competitor_SOW__c', 'Second_Competitor_global_name__c', 'Second_Competitor_Local_Name__c', 'Second_Competitor_SOW__c']"/>
         <aura:attribute name="accountFieldsSeiko" type="String[]" default="['Potential__c','First_Competitor_global_name__c', 'First_Competitor_local_name__c', 'First_Competitor_SOW__c', 'Second_Competitor_global_name__c', 'Second_Competitor_Local_Name__c', 'Second_Competitor_SOW__c']"/>
-    
+    	<aura:attribute name="currency" type="String"/>
         <aura:attribute name="account" type="Account"/>
         <aura:attribute name="sales" type="Object" />
         <aura:attribute name="recordId" type="String" />
@@ -1490,7 +1490,7 @@
 
 <div class="slds-grid slds-gutters">
     <div class="slds-col slds-size_4-of-12"><span><label class="slds-form-element__label">Lenses Sales Last 12Mo</label></span></div>
-    <div class="slds-col slds-size_2-of-12"><span><lightning:formattedNumber style="currency" currencyCode="{!v.sales.account.CurrencyIsoCode}" value="{!v.sales.lensesAnnualSales}" maximumFractionDigits="0"/></span></div>
+    <div class="slds-col slds-size_2-of-12"><span><lightning:formattedNumber  value="{!v.sales.lensesAnnualSales}" maximumFractionDigits="0" style="currency" currencyCode="{!v.sales.account.CurrencyIsoCode}"/></span></div>
  
     <div class="slds-col slds-size_4-of-12"><span>Lenses Qty Last 12Mo</span></div>
     <div class="slds-col slds-size_2-of-12"><span><lightning:formattedNumber value="{!v.sales.lensesAnnualQty}" maximumFractionDigits="0"/></span></div>

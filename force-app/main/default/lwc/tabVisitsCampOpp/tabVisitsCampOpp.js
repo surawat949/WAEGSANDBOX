@@ -77,6 +77,7 @@ export default class TabVisitsCampOpp extends NavigationMixin(LightningElement) 
     isModalOpen = false; //for opportunity popup
 
     subscription = {};
+    CHANNEL_NAMEAC = '/event/Refresh_Related_List_AC__e';
     CHANNEL_NAME = '/event/RefreshOpportunity__e';
    
     label={
@@ -228,16 +229,24 @@ export default class TabVisitsCampOpp extends NavigationMixin(LightningElement) 
     connectedCallback() {
         this.isLoading = true;
         this.getRelatedRecords();
+        this.getCampaignMembership();
         subscribe(this.CHANNEL_NAME, -1, this.refreshList).then(response => {
             this.subscription = response;
         });
         onError(error => {
+        });
+        subscribe(this.CHANNEL_NAMEAC, -1, this.refreshListACM).then(response => {
+            this.subscription = response;
         });
     }
 
     refreshList = ()=> {
         this.isLoading = true;
         this.getRelatedRecords();
+    }
+    refreshListACM = ()=> {
+        this.isLoading = true;
+        this.getCampaignMembership();
     }
 
     navigateOppCreatePage(event){
@@ -307,31 +316,35 @@ export default class TabVisitsCampOpp extends NavigationMixin(LightningElement) 
             }).then(url => {
                 window.open(url, '_blank');
             });
-        }
+    }
+    getCampaignMembership() {
+        getCampaignMembership({accountId: this.receivedId})
+        .then(result => {
+            console.log('>>>>',result);
+            if(result){
+                result = JSON.parse(JSON.stringify(result));
+                result.forEach(res=>{
+                    res.nameLink = '/' + res.Id;
+                });
 
-    @wire(getCampaignMembership,{accountId:'$receivedId'})campaigns({error,data}){
-        if(data && data.length>0){
-            data = JSON.parse(JSON.stringify(data));
-            data.forEach(res=>{
-                res.nameLink = '/' + res.Id;
-            });
+                let allVCampaigns=result;
+                console.log('>>>allVCampaigns',allVCampaigns);
+                this.campaigns = (allVCampaigns.length <= 5) ? [...allVCampaigns] : [...allVCampaigns].splice(0,5);
+                console.log('>>>this.campaigns',this.campaigns);
+                this.displayCampaignViewAllButton = true;
 
-            let allVCampaigns=data;
-            this.campaigns = (allVCampaigns.length <= 5) ? [...allVCampaigns] : [...allVCampaigns].splice(0,5);
-            this.displayCampaignViewAllButton = true;
-
-            if(data.length > 5){
-                this.campaignCount='5+';
+                if(result.length > 5){
+                    this.campaignCount='5+';
+                }
+                else{
+                    this.campaignCount=allVCampaigns.length;
+                }
             }
-            else{
-                this.campaignCount=allVCampaigns.length;
-            }
-        }
-        else if(error){
-            this.showToast("Error", "Error while getting the Campaign Details : "+error.message, 
+        }).catch(error => {
+            this.showToast("Error", "Error while getting the Opportunity Details : "+error, 
             "error");
-        }
-      }
+        });
+    }
 
       showCampaignPage(){
         this.navigateToNewCampaignPage('Account_Campaing_Member__c');
@@ -445,7 +458,14 @@ export default class TabVisitsCampOpp extends NavigationMixin(LightningElement) 
     }
   
     closePopup() {
-      this.isModalOpen = false;       
+      this.isModalOpen = false; 
+      this.projectName='';
+      this.description='';
+      this.category='';
+      this.nextSteps='';
+      this.status='';
+      this.level='';
+      this.monthlyInc='';      
       
     }
 

@@ -11,8 +11,7 @@
             </tr>
         </table><br>       
         <div class="slds-scrollable_x" style="width:100%">
-            <template lwc:if ={isDataExists}>
-                <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+            <table class="slds-table slds-table_bordered slds-table_cell-buffer">
                 <thead>
                     <tr>
                         <th class="fixColumn"><div class="slds-truncate">{custLabel.AccountLensesOnly}</div></th>
@@ -49,16 +48,7 @@
                         </tr>
                     </template>
                 </tbody>
-                </table>
-            </template>
-            <template lwc:else>
-                <div class="slds-illustration slds-illustration_small" aria-hidden="true">
-                    <img src="/img/chatter/OpenRoad.svg" class="slds-illustration__svg" alt=""/>
-                    <div class="slds-align_absolute-center" style="height:5rem;color: #009EDB;">
-                        <b>No Data Available at the moment</b>
-                    </div>
-                </div>
-            </template>
+            </table>          
         </div>
     </div>
 

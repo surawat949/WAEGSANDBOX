@@ -7,14 +7,14 @@
     <!--Customer Satisfaction Indicator Section-->
     <div class="slds-box slds-grid slds-m-left_small">
         <div class="slds-col slds-size_1-of-6">
-            Contact
+            {label.contact}
             <br>
             <div>
                 <img style="height: 40px; width: 40px;" src={contactIndicator} title={contactMeaning}>
             </div>
         </div>
         <div class="slds-col slds-size_1-of-6">
-            Sales
+            {label.sales}
             <br>
             <div>
                 <img style="height: 40px; width: 40px;" src={salesIndicator} title={salesFlagMeaning}>
@@ -22,22 +22,22 @@
         </div>
        
         <div class="slds-col slds-size_1-of-6">
-            Deliveries
+            {label.deliveries}
             <br>
             <img style="height: 40px; width: 40px;" src={deliveryIndicator} title={deliveriesFlagMeaning}>
         </div>
         <div class="slds-col slds-size_1-of-6">
-            Returns
+            {label.returns}
             <br>
             <img style="height: 40px; width: 40px;" src={returnsIndicator} title={returnsFlagMeaning}>
         </div>
         <div class="slds-col slds-size_1-of-6">
-            Payment
+            {label.payment}
             <br>
             <img style="height: 40px; width: 40px;" src={paymentsIndicator} title={paymentsFlagMeaning}>
         </div>
         <div class="slds-col slds-size_1-of-6">
-            Satisfaction
+            {label.satisfaction}
             <br>
             <img style="height: 40px; width: 40px;" src={satisfactionIndicator} title={satisfactionFlagMeaning}>
         </div>
@@ -63,16 +63,18 @@
                     object-api-name={objectApiName}
                     fields={field1}
                     mode="view"
-                    columns="3"
+                    columns="2"
                     onsuccess={handleSuccess}
                 ></lightning-record-form>
             </div>
-            <div class="slds-col slds-size_1-of-3 slds-border_bottom slds-m-right_small">
-                <lightning-record-view-form
+            <div class="slds-col slds-size_1-of-3 slds-m-right_small">
+                <lightning-record-form
                     record-id={receivedId}
-                    object-api-name="Account">
-                    <lightning-output-field field-name="Account_Status__c"></lightning-output-field>
-                </lightning-record-view-form>
+                    object-api-name="Account"
+                    fields="Account_Status__c"
+                    mode="readonly"
+                    columns="1">
+                </lightning-record-form>
             </div>
         </div>
         <div class="slds-grid slds-m-left_small slds-m-right_small">
@@ -82,16 +84,18 @@
                     object-api-name={objectApiName}
                     fields={field2}
                     mode="view"
-                    columns="3"
+                    columns="2"
                     onsuccess={handleSuccess}
                 ></lightning-record-form>
             </div>
-            <div class="slds-col slds-size_1-of-3 slds-border_bottom slds-m-right_small">
-                <lightning-record-view-form
+            <div class="slds-col slds-size_1-of-3 slds-m-right_small">
+                <lightning-record-form
                     record-id={receivedId}
-                    object-api-name="Account">
-                    <lightning-output-field field-name="Brand__c"></lightning-output-field>
-                </lightning-record-view-form>
+                    object-api-name="Account"
+                    fields="Brand__c"
+                    mode="readonly"
+                    columns="1">
+                </lightning-record-form>
             </div>
         </div>
         <div class="slds-grid slds-m-left_small slds-m-right_small">
@@ -101,16 +105,18 @@
                     object-api-name={objectApiName}
                     fields={field3}
                     mode="view"
-                    columns="3"
+                    columns="2"
                     onsuccess={handleSuccess}
                 ></lightning-record-form>
             </div>
-            <div class="slds-col slds-size_1-of-3 slds-border_bottom slds-m-right_small">
-                <lightning-record-view-form
+            <div class="slds-col slds-size_1-of-3 slds-m-right_small">
+                <lightning-record-form
                     record-id={receivedId}
-                    object-api-name="Account">
-                    <lightning-output-field field-name="CHCUSTCLASSIFICATIONID__c"></lightning-output-field>
-                </lightning-record-view-form>
+                    object-api-name="Account"
+                    fields="CHCUSTCLASSIFICATIONID__c"
+                    mode="readonly"
+                    columns="1">
+                </lightning-record-form>
             </div>
         </div>
         <div class="slds-grid slds-m-left_small slds-m-right_small">
@@ -120,16 +126,18 @@
                     object-api-name={objectApiName}
                     fields={field4}
                     mode="view"
-                    columns="3"
+                    columns="2"
                     onsuccess={handleSuccess}
                 ></lightning-record-form>
             </div>
-            <div class="slds-col slds-size_1-of-3 slds-border_bottom slds-m-right_small">
-                <lightning-record-view-form
+            <div class="slds-col slds-size_1-of-3 slds-m-right_small">
+                <lightning-record-form
                     record-id={receivedId}
-                    object-api-name="Account">
-                    <lightning-output-field field-name="Channel__c"></lightning-output-field>
-                </lightning-record-view-form>
+                    object-api-name="Account"
+                    fields="Channel__c"
+                    mode="readonly"
+                    columns="1">
+                </lightning-record-form>
             </div>
         </div>
         <div class="slds-grid slds-m-left_small slds-m-right_small">
@@ -139,17 +147,18 @@
                     object-api-name={objectApiName}
                     fields={field5}
                     mode="view"
-                    columns="3"
+                    columns="2"
                     onsuccess={handleSuccess}
                 ></lightning-record-form>
             </div>
-            <div class="slds-col slds-size_1-of-3 slds-border_bottom slds-m-right_small">
-                <lightning-record-view-form
+            <div class="slds-col slds-size_1-of-3 slds-m-right_small">
+                <lightning-record-form
                     record-id={receivedId}
                     object-api-name="Account"
-                >
-                    <lightning-output-field field-name="Local_Classification_1__c"></lightning-output-field>
-                </lightning-record-view-form>
+                    fields="Pre_Boarding_Status__c"
+                    mode="readonly"
+                    columns="1">
+                </lightning-record-form>
             </div>
         </div>
         <div class="slds-grid slds-m-left_small slds-m-right_small">
@@ -159,17 +168,18 @@
                     object-api-name={objectApiName}
                     fields={field6}
                     mode="view"
-                    columns="3"
+                    columns="2"
                     onsuccess={handleSuccess}
                 ></lightning-record-form>
             </div>
-            <div class="slds-col slds-size_1-of-3 slds-border_bottom slds-m-right_small">
-                <lightning-record-view-form
+            <div class="slds-col slds-size_1-of-3 slds-m-right_small">
+                <lightning-record-form
                     record-id={receivedId}
                     object-api-name="Account"
-                >
-                    <lightning-output-field field-name="Local_Segm__c"></lightning-output-field>
-                </lightning-record-view-form>
+                    fields="Local_Segm__c"
+                    mode="readonly"
+                    columns="1">
+                </lightning-record-form>
             </div>
         </div>
         <br>

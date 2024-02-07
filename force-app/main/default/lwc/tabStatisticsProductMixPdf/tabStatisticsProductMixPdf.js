@@ -1,6 +1,11 @@
 import { LightningElement, api,wire } from 'lwc';
 import {getRecord, getFieldValue} from 'lightning/uiRecordApi';
 import ACCOUNT_HOYAID from '@salesforce/schema/Account.Hoya_Account_ID__c';
+import Calendar_Year_Product_Mix from '@salesforce/label/c.Calendar_Year_Product_Mix';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+
+
+
 const FIELDS = [
     ACCOUNT_HOYAID
 ];  
@@ -14,23 +19,26 @@ export default class TabStatisticsProductMixPdf extends LightningElement {
         super();
         // passed parameters are not yet received here
     }
-    
+    label = {Calendar_Year_Product_Mix}
     
     @wire(getRecord, { recordId: '$receivedId', fields: [ACCOUNT_HOYAID] })
     record({ error, data }) {
         if (data) {
             this.accHoyaId = data.fields.Hoya_Account_ID__c.value;
-            console.log('>>>>this.accHoyaId1',this.accHoyaId);
             this.statPdf = 'http://ec2-34-252-248-24.eu-west-1.compute.amazonaws.com/SfdcSynchroWeb/DocumentWebService?entity=seikostat&id='+this.receivedId+'&name='+this.accHoyaId+'.pdf';
             this.statConsoPdf ='http://ec2-34-252-248-24.eu-west-1.compute.amazonaws.com/SfdcSynchroWeb/DocumentWebService?entity=seikostat&id='+this.receivedId+'&name='+this.accHoyaId+'conso.pdf';
         }
+        else if(error){
+            this.showToast('Error', 'Error',error);
+        }
     }
-    connectedCallback() {
-        console.log('child connected call-' + this.receivedId);
-        console.log('>>>>this.accHoyaId2',this.accHoyaId);
-        //this.statPdf = 'http://ec2-34-252-248-24.eu-west-1.compute.amazonaws.com/SfdcSynchroWeb/DocumentWebService?entity=seikostat&id='+this.receivedId+'&name='+this.accHoyaId+'.pdf';
-        //this.statConsoPdf ='http://ec2-34-252-248-24.eu-west-1.compute.amazonaws.com/SfdcSynchroWeb/DocumentWebService?entity=seikostat&id='+this.receivedId+'&name='+this.accHoyaId+'conso.pdf';
-
+    showToast(title, variant, message) {
+        this.dispatchEvent(
+            new ShowToastEvent({
+                title: title,
+                message: message,
+                variant: variant,
+            }),
+        );
     }
-   
 }

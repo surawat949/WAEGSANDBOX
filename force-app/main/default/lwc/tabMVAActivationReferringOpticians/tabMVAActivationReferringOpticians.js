@@ -9,7 +9,7 @@ import Opticians from '@salesforce/label/c.Opticians';
 import Street from '@salesforce/label/c.Street';
 import Postal_Code from '@salesforce/label/c.Postal_Code';
 import City from '@salesforce/label/c.city';
-import Seiko_Network from '@salesforce/label/c.Seiko_Network';
+import HVC_Loyalty_Program from '@salesforce/label/c.HVC_Loyalty_Program';
 
 const columns = [
     {label: Eye_Doctor, fieldName: 'ContactId', type: 'url', typeAttributes: {label:{fieldName: 'ContactName'}, target:'_top'}, sortable: "true"},
@@ -18,7 +18,7 @@ const columns = [
     {label: Street, fieldName: 'Street', type: 'text', sortable: "true"},
     {label: Postal_Code, fieldName: 'PostalCode', type: 'text', sortable: "true"},
     {label: City, fieldName: 'City', type: 'text', sortable: "true"},
-    {label: Seiko_Network, fieldName: 'SeikoNetwork', type: 'text', sortable: "true"},
+    {label: HVC_Loyalty_Program, fieldName: 'SeikoNetwork', type: 'text', sortable: "true"},
 
 ];
 export default class TabMVAActivationReferringOpticians extends LightningElement {
@@ -32,7 +32,7 @@ export default class TabMVAActivationReferringOpticians extends LightningElement
 
     lables={
         Referring_Opticians, Eye_Doctor, Street, Opticians, Brand, Postal_Code,
-        City, Seiko_Network
+        City, HVC_Loyalty_Program
     }
 
     @wire(getAccConRelatedByAccId, {receivedId: '$receivedId'})

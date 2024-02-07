@@ -13,16 +13,17 @@
  * 
  */
 import { LightningElement, api, track, wire } from 'lwc';
+import { getPicklistValuesByRecordType } from 'lightning/uiObjectInfoApi';
 
 //apex class import start here
 import AccList from '@salesforce/apex/TabAccountMemberParentId.getAccountNameId';
 import wireCreateTask from '@salesforce/apex/TabAccountMemberParentId.CreateTask';
 import NumChildAccount from '@salesforce/apex/TabAccountMemberParentId.getNumberOfAllAccount';
+import SFDC_V2_StandardTask from '@salesforce/apex/Utility.getTaskSFDCStandardTask';
 //end
 
 //fields import start here
 import Acc_ParentId from '@salesforce/schema/Account.ParentId';
-//import Acc_NumAcc from '@salesforce/schema/Account.Account_Counter__c';
 import AccObj from '@salesforce/schema/Account';
 import Acc_PrimaryBuyingGrp from '@salesforce/schema/Account.Primary_Buying_Group__c';
 import Acc_BuyingGrpName from '@salesforce/schema/Account.Buying_Group_Name__c';
@@ -38,21 +39,16 @@ import lblParent from '@salesforce/label/c.SFDC_V_2_AccountMembership_ParentAcco
 import lblrelatedTo from '@salesforce/label/c.tabTaskModalRelatedTo';
 import lblAccContact from '@salesforce/label/c.tabTaskModalAccContact';
 import lblsearchContact from '@salesforce/label/c.tabLabelSearchContact';
-import lblSubject from '@salesforce/label/c.tabTaskModalSubject';
-import lblComment from '@salesforce/label/c.tabTaskModalComment';
-import lblSubjectDefault from '@salesforce/label/c.SFDC_V_2_DefaultSubjectVal';
-import lblDefault1 from '@salesforce/label/c.SFDC_V_2_DefaultComment1';
-import lblDefault2 from '@salesforce/label/c.SFDC_V_2_DefaultComment2';
-import lblDefault3 from '@salesforce/label/c.SFDC_V_2_DefaultComment3';
-import lblDefault4 from '@salesforce/label/c.SFDC_V_2_DefaultComment4';
-import lblassignedTo from '@salesforce/label/c.tabTaskModalAssignedTo';
+import lblSubject from '@salesforce/label/c.Subject';
+import lblComment from '@salesforce/label/c.Comment';
+import lblassignedTo from '@salesforce/label/c.AssignTo';
 import lblSearchUsr from '@salesforce/label/c.tabLabelSearchUser';
 import lblDuedate from '@salesforce/label/c.tabTaskModalDueDate';
 import lblCopyTo from '@salesforce/label/c.tabTaskModalCopyTo';
 import lblStatus from '@salesforce/label/c.tabTaskModalStatus';
-import lblSave from '@salesforce/label/c.Save_Button';
-import lblClose from '@salesforce/label/c.CloseButton';
-import lblNext from '@salesforce/label/c.NextButton';
+import lblSave from '@salesforce/label/c.tabLabelSave';
+import lblClose from '@salesforce/label/c.tabLabelClose';
+import lblNext from '@salesforce/label/c.tabLabelNext';
 import lblBack from '@salesforce/label/c.BackButton';
 import lblAddParent from '@salesforce/label/c.SFDC_V_2_AccountMembership_AddParent';
 import lblCreateTask from '@salesforce/label/c.SFDC_V_2_AccountMembershipCreateTask';
@@ -82,9 +78,9 @@ export default class TabAccountMemberships extends LightningElement {
     @track isLoading = false;
     @track isModalOpen = false;
     @track currentStep = '1';
-    @track defaultSubjectValue = lblSubjectDefault;
+    @track defaultSubjectValue = 'Request To Change Parent Account Value';
     @track defaultComment;
-    @track value='Nicht begonnen';
+    @track value='New';
 
     Subject = this.defaultSubjectValue;
     Status = this.value;
@@ -109,12 +105,35 @@ export default class TabAccountMemberships extends LightningElement {
     buyingGrpFields = [Acc_PrimaryBuyingGrp, Acc_BuyingGrpName];
     byuingGrpFields2 = [Acc_HVC_InterCode, Acc_Membership];   
 
+    @track StatusOptions;
+    TaskStatusRecordTypeId;
+
     constructor() {
         super();
         // passed parameters are not yet received here
     }
     connectedCallback() {
         //console.log('child connected call-' + this.receivedId);
+    }
+
+    @wire(SFDC_V2_StandardTask)
+    standard_sfdcv2_task({data,error}){
+        if(data){
+            data = JSON.parse(JSON.stringify(data));
+            this.TaskStatusRecordTypeId = data;
+        }else if(error){
+            this.showToast('Error', JSON.stringify(error.message), 'error');
+        }
+    }
+
+    @wire(getPicklistValuesByRecordType, {objectApiName : 'Task', recordTypeId: '$TaskStatusRecordTypeId'})
+    STATUS_PICKLIST_VALUE({data,error}){
+        if(data){
+            this.StatusOptions = data.picklistFieldValues.Status.values;
+            //console.log(data);
+        }else if(error){
+            this.showToast('Error', JSON.stringify(error.message), 'error');
+        }
     }
 
     @wire(NumChildAccount, {recordId : '$receivedId'})
@@ -134,7 +153,7 @@ export default class TabAccountMemberships extends LightningElement {
         if(data){
             this.record = data[0];
             this.errors1 = undefined;
-            //console.log('XXX Get Account Data =>'+JSON.stringify(this.record));
+            
         }else if(error){
             this.record = undefined;
             this.errors1 = error;
@@ -151,14 +170,6 @@ export default class TabAccountMemberships extends LightningElement {
 
     get NumberOfChild(){
         return this.NumChild?.childAccount;
-    }
-
-    get options(){
-        return [
-            { label : 'Not Started', value : 'Nicht begonnen'},
-            { label : 'On Going', value : 'In Progress'},
-            { label : 'Completed', value : 'Completed'}
-        ];
     }
 
     Account_Obj = AccObj;
@@ -184,17 +195,17 @@ export default class TabAccountMemberships extends LightningElement {
 
     copyToCH(event){
         this.CopyTo = event.target.value;
-        //console.log('XXX Select Copy To == > '+event.target.value);
+        
     }
 
     duedateCH(event){
-        //console.log('XXX Due date =>'+event.target.value);
+        
         this.duedate = event.target.value;
     }
 
     contactCH(event){
         this.ContactName = event.target.value;
-        //console.log('XXX Selected Contact Id == > '+event.target.value);
+        
     }
 
     whatIdCH(event){
@@ -204,7 +215,7 @@ export default class TabAccountMemberships extends LightningElement {
     statusCH(event){
         this.Status = event.target.value;
         this.Status = event.detail.value;
-        //console.log('XXX Selected Value == > '+event.detail.value);
+        
     }
 
     descriptionCH(event){
@@ -244,9 +255,9 @@ export default class TabAccountMemberships extends LightningElement {
             JSON.stringify(event.detail.selectedRecord));
             this.hoya_account_id = event.detail.selectedRecord.Hoya_Account_ID__c;
             this.acc_name = event.detail.selectedRecord.Name;
-            this.defaultComment = lblDefault1+' '+this.myHoyaAccountId+' ('+this.myAccName+') '
-                    +lblDefault2+'\n'+lblDefault3+' '+this.acc_name + '\n'
-                    +lblDefault4+' '+this.hoya_account_id;
+            this.defaultComment = 'Please change/add Parent Account field value for '+this.myHoyaAccountId+' ('+this.myAccName+') '
+                    +'to following detail : '+'\n'+'New Parent Account Name : '+this.acc_name + '\n'
+                    +'New Parent Account to Hoya Account ID : '+this.hoya_account_id;
             this.Description = this.defaultComment;
             this.whatid = this.receivedId;
             this.template.querySelector('lightning-input[data-my-id=form-input-1]').value=event.detail.selectedRecord.Hoya_Account_ID__c;
@@ -262,7 +273,7 @@ export default class TabAccountMemberships extends LightningElement {
 
     handleLookupSelectionOwnerId(event){
         if(event.detail.selectedRecord != undefined){
-            //console.log('Select contactid value on parent component is '+JSON.stringify(event.detail.selectedRecord.Id));
+            
             this.OwnerId = event.detail.selectedRecord.Id;
             this.template.querySelector('lightning-input[data-my-id=form-input-8]').value=event.detail.selectedRecord.Id;
         }
@@ -270,7 +281,7 @@ export default class TabAccountMemberships extends LightningElement {
 
     handleLookupSelectionCopiedTo(event){
         if(event.detail.selectedRecord != undefined){
-            //console.log('Select copied to id value on parent component is '+JSON.stringify(event.detail.selectedRecord));
+           
             this.CopyTo = event.detail.selectedRecord.Id;
             this.template.querySelector('lightning-input[data-my-id=form-input-10]').value=event.detail.selectedRecord.Id;
         }
@@ -278,7 +289,7 @@ export default class TabAccountMemberships extends LightningElement {
 
     handleLookupSelectionAccounContact(event){
         if(event.detail.selectedRecord != undefined){
-            //console.log('Select Account Contact id value on parent component is '+JSON.stringify(event.detail.selectedRecord.Id));
+            
             this.ContactName = event.detail.selectedRecord.Id;
             this.template.querySelector('lightning-input[data-my-id=form-input-11]').value=event.detail.selectedRecord.Id;
         }
@@ -342,7 +353,7 @@ export default class TabAccountMemberships extends LightningElement {
 
     updateRecordView(){
         setTimeout(() => {
-            eval("$A.get('e.force:refreshView').fire();");
+            //eval("$A.get('e.force:refreshView').fire();");
         },1000);
         this.dispatchEvent(new RefreshEvent());
     }
@@ -355,7 +366,6 @@ export default class TabAccountMemberships extends LightningElement {
         lblAccContact,
         lblSubject,
         lblComment,
-        lblSubjectDefault,
         lblassignedTo,
         lblSearchUsr,
         lblDuedate,

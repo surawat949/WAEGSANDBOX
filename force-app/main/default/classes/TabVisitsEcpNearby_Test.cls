@@ -24,13 +24,13 @@ public with sharing class TabVisitsEcpNearby_Test {
         insert a1;
 
         Account a2 = new Account();
-        a1.Hoya_Account_ID__c = 'T002';
+        a2.Hoya_Account_ID__c = 'T002';
         a2.Name = 'Test ECP Nearby 2';
         a2.ShippingLatitude = 52.078663;
         a2.ShippingLongitude = 4.288788;
         a2.ShippingCity = 'Hague';
         a2.ShippingCountry = 'Netherlands';
-        a1.RecordTypeId = IndRecId;
+        a2.RecordTypeId = IndRecId;
         insert a2;
 
 
@@ -39,17 +39,16 @@ public with sharing class TabVisitsEcpNearby_Test {
 
     @IsTest
     static void TestMultipleClass1(){
-        Account a1 = [SELECT Id, Hoya_Account_ID__c, Seiko_Network__c, First_Competitor_local_name__c FROM Account WHERE Hoya_Account_ID__c='T001' LIMIT 1];
-
         Test.StartTest();
+        Account a1 = [SELECT Id, Hoya_Account_ID__c, Seiko_Network__c, First_Competitor_local_name__c FROM Account WHERE Hoya_Account_ID__c='T001' LIMIT 1];
         TabVisitsEcpNearby.getAccountsMap(a1.Id, 5, '', 0, 500, '', '');
         TabVisitsEcpNearby.getCompetitorPicklistVal();
         TabVisitsEcpNearby.getSVSNetworkPicklistVal();
         TabVisitsEcpNearby.searchFirstCompetitorDefault(a1.Id, 'Account');
         TabVisitsEcpNearby.searchFirstCompetitor('Test', 'Account');
-        Test.StopTest();
 
         System.assert(true);
+        Test.StopTest();
 
         try{
             TabVisitsEcpNearby.getAccountsMap(null, null, null, null, null, null, null);
@@ -62,5 +61,6 @@ public with sharing class TabVisitsEcpNearby_Test {
         }catch(Exception e){
             System.assertEquals(e.getMessage(), e.getMessage());
         }
+        
     }
 }

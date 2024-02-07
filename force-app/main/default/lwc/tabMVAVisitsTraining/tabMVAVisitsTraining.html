@@ -14,6 +14,7 @@
         </table><br>
         <template if:true={isDataExist}>
           <template if:true={inStoreTrainingLst}>
+            {inStoreTrainingLst}
             <lightning-datatable data={inStoreTrainingLst} columns={columns} key-field="Id" hide-checkbox-column="true" show-row-number-column="true"></lightning-datatable>
             <br>
             <p align="center"><lightning-button label={custLabel.ViewAll} variant="brand-outline" onclick={navigateToRelatedList}></lightning-button></p><br>

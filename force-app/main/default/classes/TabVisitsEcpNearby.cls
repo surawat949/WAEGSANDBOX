@@ -4,7 +4,7 @@ public with sharing class TabVisitsEcpNearby {
     public static List<Account> getAccountsMap(String recordId, Double distance, String SegmentationBox, Double PotentialMin, Double PotentialMax, String FirstLocalCampetitor, String svsnetwork){
         try {
 
-            System.debug('First local competitor '+FirstLocalCampetitor);
+            
             List<Account> result = new List<Account>();
             if(PotentialMin == null){PotentialMin=0;}
             if(PotentialMax == null){PotentialMax=999999999;}
@@ -12,22 +12,22 @@ public with sharing class TabVisitsEcpNearby {
             List<Id> getRecId = new List<Id>();
 
             String RecChainRT = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('Chain').getRecordTypeId();
-            System.debug('Account Chain RecordType is =>'+RecChainRT);
+            
 
             String RecIndRT = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('Independents').getRecordTypeId();
-            System.debug('Account Independent RecordType is => '+RecIndRT);
+            
 
             String RecChainSeikoRT = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('Chain_Seiko').getRecordTypeId();
-            System.debug('Account Chain Seiko RecordType is => '+RecChainSeikoRT);
+            
 
-            String RecIndSeikoRT = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('Seiko_Independent').getRecordTypeId();
-            System.debug('Account Independent Seiko RecordType is =>'+RecIndSeikoRT);
+            String RecIndSeikoRT = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('Independent_Seiko').getRecordTypeId();
+            
 
             getRecId.add(RecChainRT);
             getRecId.add(RecIndRT);
             getRecId.add(RecChainSeikoRT);
             getRecId.add(RecIndSeikoRT);
-            System.debug('List for Record Type => '+getRecId);
+           
 
             String critSegmentation = '';
             String critFstCompetitor = '';
@@ -64,17 +64,15 @@ public with sharing class TabVisitsEcpNearby {
                             +'AND Potential__c>='+PotentialMin.longValue()+' AND Potential__c<='+PotentialMax.longValue()+' AND '
                             +'DISTANCE(ShippingAddress, GEOLOCATION('+latitude+', '+longitude+'), \'km\')<'+distance +
                             critSegmentation + critFstCompetitor + critSvsNetwork + ' AND Hoya_Account_ID__c != \''+accId+'\' ORDER BY Name ASC LIMIT 500';
-            System.debug('SOQL => '+soql);
+            
 
             List<Account> aList = database.query(soql);
             result.addAll(aList);
 
-            System.debug('Found Account Nearby => '+result.size()+' | There is the list => '+result);
-
             return result;
             
         } catch (Exception e) {
-            LogException.log(e);
+            
             throw new AuraHandledException(e.getMessage());
         }
     }
@@ -92,10 +90,10 @@ public with sharing class TabVisitsEcpNearby {
                 dataset.add(new optionSet(pListLabelName, pListValue));
 
             }
-            //System.debug('XXX Get Picklist value, Clinic Type =>'+dataset);
+            
             return dataset;
         } catch (Exception e) {
-            LogException.log(e);
+            
             throw new AuraHandledException(e.getMessage());
         }
     }
@@ -116,7 +114,7 @@ public with sharing class TabVisitsEcpNearby {
             //System.debug('XXX Get Picklist value, Clinic Type =>'+dataset);
             return dataset;
         } catch (Exception e) {
-            LogException.log(e);
+            
             throw new AuraHandledException(e.getMessage());
         }
     }

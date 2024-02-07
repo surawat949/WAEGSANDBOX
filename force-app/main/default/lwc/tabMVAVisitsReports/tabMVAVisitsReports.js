@@ -3,13 +3,13 @@ import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 import visits from '@salesforce/label/c.visits';
 import contact from '@salesforce/label/c.Contact';
-import visitType  from '@salesforce/label/c.Visit_Type';
+import visitType  from '@salesforce/label/c.VisitType';
 import visit_Objective from '@salesforce/label/c.Visit_Objective';
 import visit_ID from '@salesforce/label/c.Visit_ID';
 import date from '@salesforce/label/c.date';
 import { NavigationMixin } from 'lightning/navigation';
 import Last_Visit_Date from '@salesforce/label/c.Last_Visit_Date';
-import Total_Visits_Achieved from '@salesforce/label/c.Total_Visits_Achieved';
+import Total_Visits_Achieved from '@salesforce/label/c.Total_Visits_Achived';
 import Office_Visits_Frequency from '@salesforce/label/c.Office_Visits_Frequency';
 import Digital_Visits_Frequency from '@salesforce/label/c.Digital_Visits_Frequency';
 import Visit_Frequency from '@salesforce/label/c.Visit_Frequency';

@@ -8,7 +8,6 @@ import { refreshApex } from '@salesforce/apex';
 import SalesTarget from '@salesforce/label/c.AccountVisitTabSalesTarget';
 import MonthlyGrossSales from '@salesforce/label/c.AccountMonthlySalesFigures';
 import LensesGrossSales from '@salesforce/label/c.AccountGrossSalesHeader';
-import ParentNetSales from '@salesforce/label/c.AccountParentNetSales';
 import MonthlyObjective from '@salesforce/label/c.AccountVisitTabMonthlyVsSeiko';
 import Last12MoVsObjective from '@salesforce/label/c.AccountVisitTabAnnualVsSeiko';
 import Lenses from '@salesforce/label/c.AccountLenses';
@@ -16,7 +15,6 @@ import Frames from '@salesforce/label/c.AccountFrames';
 import ContactLenses from '@salesforce/label/c.AccountContactLenses';
 import Instruments from '@salesforce/label/c.AccountInstruments';
 import Others from '@salesforce/label/c.AccountOther';
-import GrossSales from '@salesforce/label/c.AccountGrossSalesHeader';
 import TotalFY from '@salesforce/label/c.AccountTotalFy';
 import TotalLFY from '@salesforce/label/c.AccountTotalLfy';
 import Variation from '@salesforce/label/c.AccountVariation';
@@ -24,7 +22,7 @@ import LensesLFY from '@salesforce/label/c.AccountLensesSalesLFY';
 import LensesVariation from '@salesforce/label/c.AccountLensesVariation';
 import Save from '@salesforce/label/c.Save_Button';
 import LensSalesForecast from '@salesforce/label/c.Lens_Sales_Forecast_Header_Gross';
-
+import Volumes from '@salesforce/label/c.Volumes';
 //Object
 import Account_obj from '@salesforce/schema/Account';
 //Fields
@@ -94,9 +92,9 @@ export default class TabStatisticsGrossSales extends LightningElement {
     ForecastvsLFY = [];
     maxMonth;
     custLabel = {
-        SalesTarget,MonthlyGrossSales,LensesGrossSales,ParentNetSales,
+        SalesTarget,MonthlyGrossSales,LensesGrossSales,Volumes,
         MonthlyObjective,Last12MoVsObjective,Save,LensSalesForecast,
-        Lenses,Frames,ContactLenses,Instruments,Others,GrossSales,TotalFY,TotalLFY,Variation,LensesLFY,LensesVariation
+        Lenses,Frames,ContactLenses,Instruments,Others,TotalFY,TotalLFY,Variation,LensesLFY,LensesVariation
     }
     MonthColumns = ['APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC','JAN','FEB','MAR','TOTAL'];   
     Labels = ['Apr','May','June','Jul','Aug','Sept','oct','Nov', 'Dec','Jan','Feb','Mar'];
@@ -150,7 +148,6 @@ export default class TabStatisticsGrossSales extends LightningElement {
         .then(response => {
            this.maxMonth = response;
         }).catch(error => {
-            console.log(error);
             this.showToast('Error', error.message, error.message);
         })   
         
@@ -420,7 +417,6 @@ export default class TabStatisticsGrossSales extends LightningElement {
                             forecastCFYTD = 0;
                         break;               
             }
-            console.log(forecastCFYTD);
             //Calculate variation
             for(let i=0; i<=11; i++){
                 var totalSalesVariation = 0;                
@@ -609,23 +605,21 @@ export default class TabStatisticsGrossSales extends LightningElement {
             ]).then(() => {
                 const ctx = this.template.querySelector('canvas.chartGrossSales').getContext('2d');
                 this.chart = new window.Chart(ctx,this.config);
-                console.log(this.config);
                 const ctx1 = this.template.querySelector('canvas.volumeChart').getContext('2d');
                 this.chart = new window.Chart(ctx1,this.configVol);
                 
             }).catch(error => {
                 this.dispatchEvent(
                     new ShowToastEvent({
-                        title: error.message,
-                        message: 'error',
-                        variant: 'error',
+                        title: 'Error',
+                        message: error.message,
+                        variant: 'Error',
                     }),
                 );
             });
         })
         .catch(error => {
-            console.log(error);
-            this.showToast('Error', error.message, error.message);
+            this.showToast('Error', 'Error',error.message );
         })       
     }
     showToast(title, variant, message) {

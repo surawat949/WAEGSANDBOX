@@ -62,10 +62,9 @@ export default class TabActivationEquipmentsInstalled extends LightningElement {
                 res.loyalLink = '/' + res.Id;
             });
             this.InstraucInShop =response;
-           // this.InstraucInShop = (response.length <= 5) ? [...response] : [...response].splice(0,5);
         })
         .catch(error => {
-            //this.showToast('Error', 'Error', error.body.message);
+            this.showToast('Error', 'Error', error.body.message);
         })
     }
     getSoftwareInShop(){
@@ -76,10 +75,17 @@ export default class TabActivationEquipmentsInstalled extends LightningElement {
                 res.loyalLink = '/' + res.Id;
             });
             this.SoftwareInShop = response;
-            //this.SoftwareInShop = (response.length <= 5) ? [...response] : [...response].splice(0,5);
         })
         .catch(error => {
-            //this.showToast('Error', 'Error', error.body.message);
+            this.showToast('Error', 'Error', error.body.message);
         })
+    }
+    showToast(title,message,variant) {
+        const event = new ShowToastEvent({
+            title: title,
+            message: message,
+            variant: variant
+        });
+        this.dispatchEvent(event);
     }
 }

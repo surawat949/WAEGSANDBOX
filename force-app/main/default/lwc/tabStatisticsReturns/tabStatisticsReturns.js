@@ -2,7 +2,8 @@ import { LightningElement, api ,wire} from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 //custom labels
-//import AccountLensDelays from '@salesforce/label/c.AccountLensesDelays';
+import NonAdaptationRets12Mo from '@salesforce/label/c.Non_Adaptation_Rets_L12Mo';
+import NonAdaptationRets3Mo from '@salesforce/label/c.Non_Adaptation_Rets_L3Mo';
 //Apex
 import getLensReturns from '@salesforce/apex/TabStatisticsController.getLensReturns';
 import getNonAdaptationReturns from '@salesforce/apex/TabStatisticsController.getNonAdaptationReturns';
@@ -57,7 +58,10 @@ export default class TabStatisticsReturns extends LightningElement {
 
     nonAdaptationRets3Mo;
     nonAdaptationRets12Mo;
-    isNonAdaptationRetsExist = true;
+    isNonAdap12MoRetsExist = false;
+    isNonAdap3MoRetsExist = false;
+
+    custLabel={NonAdaptationRets12Mo,NonAdaptationRets3Mo}
     connectedCallback() {
         getLensReturns({ recordId: this.receivedId})
         .then(response => {
@@ -108,27 +112,27 @@ export default class TabStatisticsReturns extends LightningElement {
             this.totalRetSalesLast12Mo = result.TotalRetSales12;
             this.totalRetSalesLast3Mo = result.TotalRetSales3;
         }).catch(error => {
-            console.log(error);
-            this.showToast('Error', error.message, error.message);
+            this.showToast('Error', 'Error', error.message);
         }) 
-    }
-    @wire(getNonAdaptationReturns,{recordId: "$receivedId"})
-    getNonAdaptationReturns(result){        
-        if(result.data){      
-            console.log(result.data);  
-            if(result.data.length == 0)
-                this.isNonAdaptationRetsExist = false;    
-            else{
-                var mon3=result.data[0];    
-                var mon12= result.data[1]; 
-                this.nonAdaptationRets3Mo = JSON.parse(JSON.stringify(mon3));
-                this.nonAdaptationRets12Mo = JSON.parse(JSON.stringify(mon12));
+        getNonAdaptationReturns({ recordId: this.receivedId})
+        .then(response => {
+            if(response != undefined && response != null && response.length > 0){
+                var result = JSON.parse(JSON.stringify(response));  
+                var mon3=result[0];                  
+                var mon12= result[1]; 
+                if(result[0] != null && result[0].length > 0){
+                    this.isNonAdap3MoRetsExist = true;
+                    this.nonAdaptationRets3Mo = JSON.parse(JSON.stringify(mon3));
+                }                    
+                if(result[1] != null && result[1].length > 0 ){
+                    this.isNonAdap12MoRetsExist = true;
+                    this.nonAdaptationRets12Mo = JSON.parse(JSON.stringify(mon12));
+                }              
             }
-        }
-        else if(result.error){
-            this.showToast('Error', 'Error', result.error);
-        }        
-    }
+        }).catch(error => {
+            this.showToast('Error', 'Error', error.message);
+        })   
+    }  
     showToast(title, variant, message) {
         this.dispatchEvent(
             new ShowToastEvent({

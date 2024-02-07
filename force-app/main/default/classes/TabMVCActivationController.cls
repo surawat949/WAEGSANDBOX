@@ -16,11 +16,11 @@ public with sharing class TabMVCActivationController {
     public static List<Integer> getReferringOpticiansCountList(Id contactId){
         List<Integer> opticiansCountLst=new List<Integer>();
         Integer count = 0;
-        List<AccountContactRelation> accContactRelationList = [select Account.AnnualRevenue, Account.id
+        List<AccountContactRelation> accContactRelationList = [select Account.Lenses_Net_Sales_Last_12Mo__c, Account.id
                                               from AccountContactRelation where contactId =:contactId and isdirect=false and Account.RecordTypeId !=: ACCOUNT_CLINIC_RT ];
         if(accContactRelationList.size() > 0){  
             for(AccountContactRelation rel:accContactRelationList){
- 			 if(rel.Account.AnnualRevenue > 0)
+ 			 if(rel.Account.Lenses_Net_Sales_Last_12Mo__c > 0)
   				count++;
 			}
 			opticiansCountLst.add(accContactRelationList.size());

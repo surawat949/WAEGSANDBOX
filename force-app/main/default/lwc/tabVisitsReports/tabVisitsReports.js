@@ -24,7 +24,6 @@ import Report_Status from '@salesforce/label/c.Report_Status';
 import visits from '@salesforce/label/c.visits';
 import Reports_Visit_ID from '@salesforce/label/c.Reports_Visit_ID';
 import Reports_Start from '@salesforce/label/c.Reports_Start';
-import VisitType from '@salesforce/label/c.VisitType';
 import VisitObj from '@salesforce/label/c.VisitObj';
 import VisitStatus from '@salesforce/label/c.VisitStatus';
 import label_viewall from '@salesforce/label/c.ViewAllRelatedList';
@@ -33,6 +32,7 @@ import label_new from '@salesforce/label/c.NewButtonRelatedList';
 import getReportVisit from '@salesforce/apex/TabVisitsReportsController.getReportVisits';
 import getTaskReport from '@salesforce/apex/TabVisitsReportsController.getTaskRecord';
 import getVisitCompleted from '@salesforce/apex/TabVisitsReportsController.getVisitCompleted';
+import { subscribe, unsubscribe, onError } from 'lightning/empApi';
 
 export default class TabMVCVisitsReports extends NavigationMixin(LightningElement) {
   @api receivedId;
@@ -42,11 +42,12 @@ export default class TabMVCVisitsReports extends NavigationMixin(LightningElemen
   @track visitData;
   visitCount=0;
   displayVisitViewAllButton=true;
+  CHANNEL_NAME = '/event/Refresh_Related_list_Visit__e';
 
   label = {Last_Visit_Completed,Report_Visit_Id,Report_Visit_Type,Assigned_To,
           Report_Start,Report_Visit_Objective,Report_Contact,label_viewall,label_new,
           Report_Call_To_Action_Notes,Last_Three_Visit_Completed,Reports_Date,Visit_Notes,Call_To_Action,Last_Three_Tasks,
-          Reports_Created_By,Reports_Subject,Report_Due_Date,Report_Status,visits,Reports_Visit_ID, Reports_Start, VisitType,VisitObj,
+          Reports_Created_By,Reports_Subject,Report_Due_Date,Report_Status,visits,Reports_Visit_ID, Reports_Start,VisitObj,
           VisitStatus}
 
           @track visitcolumns = [
@@ -146,15 +147,27 @@ export default class TabMVCVisitsReports extends NavigationMixin(LightningElemen
           sortable: true
       } 
     ];
+    connectedCallback() {
+      this.getReportVisit();
+      subscribe(this.CHANNEL_NAME, -1, this.refreshList).then(response => {
+        console.log('>>>test2');
+          this.subscription = response;
+      });
+      onError(error => {
+          this.showToast('Error', 'Error', error.body.message);
+      });
+    }
 
-    @wire(getReportVisit, {accountId:'$receivedId'}) visitRec({error, data}){
-      if(data){
-        data = JSON.parse(JSON.stringify(data));
-        data.forEach(res=>{
+    getReportVisit(){
+      getReportVisit({accountId : this.receivedId})
+      .then(response => {
+        console.log('>>>test3');
+        response = JSON.parse(JSON.stringify(response));
+        response.forEach(res=>{
             res.nameLink = '/' + res.Id;
         });
-        this.visitData = data;
-        let allVisit=data;
+        this.visitData = response;
+        let allVisit=response;
         this.visitData = (allVisit.length <= 5) ? [...allVisit] : [...allVisit].splice(0,5);
         this.displayVisitViewAllButton = true;
 
@@ -164,10 +177,14 @@ export default class TabMVCVisitsReports extends NavigationMixin(LightningElemen
           else{
               this.visitCount=allVisit.length;
           }
-      }else if (error){
-        this.showToast('Error','Error While fetching the Last 3 Visits Completed'+error.message,'error');
-    }
+      }).catch(error => {
+        this.showToast('Error', 'Error', error.body.message);
+    })
   }
+  refreshList = ()=> {
+    console.log('>>>test4');
+    this.getReportVisit();
+} 
 
   @wire(getTaskReport, {accountId:'$receivedId'}) taskRec({error, data}){
     if(data && data.length > 0){
@@ -183,6 +200,8 @@ export default class TabMVCVisitsReports extends NavigationMixin(LightningElemen
         this.showToast('Error','Error While fetching the Tasks'+error.message,'error');
       }
   }
+ 
+
 
   @wire(getVisitCompleted, {accountId:'$receivedId'}) visData({error, data}){
     if(data && data.length > 0){
@@ -246,5 +265,10 @@ navigateToNewPage(objectName){
        }
    });
 }
+disconnectedCallback() {
+  console.log('>>>test1');
+  unsubscribe(this.subscription, () => {
+  });   
+}  
 
 }

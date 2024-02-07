@@ -78,6 +78,8 @@ public with sharing class TrainingCertificateController_Test {
     
     @IsTest
     static void UnitTest01(){
+        Test.StartTest();
+        
         Account acc = [SELECT Id, Hoya_Account_ID__c, Shop_City__c, Shop_Country__c, Name, Brand__c FROM Account WHERE Hoya_Account_ID__c='TE011' LIMIT 1];
         Contact con = [SELECT Id,firstname, Lastname, AccountId from contact where AccountId=:acc.Id LIMIT 1];
         ECP_Training__c trains = [SELECT Id, Name, Account__c, start__c, end__c, Assigned_to__c from ECP_Training__c WHERE Account__c=:acc.Id LIMIT 1];
@@ -88,7 +90,6 @@ public with sharing class TrainingCertificateController_Test {
         ECP_Training__c trainSeiko = [SELECT Id, Name, Account__c, start__c, end__c, Assigned_to__c FROM ECP_Training__c WHERE Account__c=:accSeiko.Id LIMIT 1];
         ECP_Training_Member__c membersSeiko = [SELECT Id, Name, Training__c, Contact__c FROM ECP_Training_Member__c WHERE Training__c=:trainSeiko.Id LIMIT 1];
 
-        Test.StartTest();
         TrainingCertificateController.generateCertificate(trains.Id, members.Id, 'Hoya');
         TrainingCertificateController.generateCertificate(trainSeiko.Id, membersSeiko.Id, 'SEIKO');
         TrainingCertificateController.generateCertificate(trains.Id, null, 'Hoya');

@@ -1,13 +1,16 @@
 import { LightningElement, api,track,wire } from 'lwc';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import ACCOUNT_OBJ from '@salesforce/schema/Account';
+
 // fields
 import PORTAL from '@salesforce/schema/Account.Portal__c';
 import LANGUAGE from '@salesforce/schema/Account.Language__c';
 import BRAND_VISIBILITY from '@salesforce/schema/Account.Brand_Visibility__c';
 import PARENT_ACCOUNT from '@salesforce/schema/Account.ParentId';
-import Acc_NumAcc from '@salesforce/schema/Account.Account_Counter__c';
+//import Acc_NumAcc from '@salesforce/schema/Account.Account_Counter__c';
 import getRegistratedContact from '@salesforce/apex/tabActivationPortalRegistration.getRegistratedContact';
 import NumChildAccount from '@salesforce/apex/TabAccountMemberParentId.getNumberOfAllAccount';
+import AccountTemplate from '@salesforce/apex/tabActivationPortalRegistration.getAccountTemplateIdFromAccount';
 import label_ContactName from '@salesforce/label/c.tabAccContactName';
 import label_ContRecType from '@salesforce/label/c.tabAccContactRecType';
 import label_email from '@salesforce/label/c.tabAccContactEmail';
@@ -49,6 +52,9 @@ export default class TabActivationPortalRegistration extends NavigationMixin(Lig
     InetIndicator;
     PurchaseRegistrationIndicator;
     LoyaltyProIndicator;
+
+    AccountTemplateId;
+    AccountTemplateName;
 
     @track sortBy='ContactRecordType';
     @track sortDirection='desc';
@@ -116,6 +122,25 @@ export default class TabActivationPortalRegistration extends NavigationMixin(Lig
     get NumberOfChild(){
         return this.NumChild?.childAccount;
     }
+
+    @wire(AccountTemplate, {receivedId : '$receivedId'})
+    wireAccountTemplate({data, error}){
+        if(data){
+            //console.log('Account Template ==> '+JSON.stringify(data[0]));
+            if(data.length > 0){
+                this.AccountTemplateId = "/" + JSON.parse(JSON.stringify(data[0].Id));
+                this.AccountTemplateName = JSON.parse(JSON.stringify(data[0].Name));
+                //console.log('Account Template Id = > '+this.AccountTemplateId);
+            }else{
+                this.AccountTemplateId = null;
+                this.AccountTemplateName = null;
+                //console.log('Account Template Id = > '+this.AccountTemplateId);
+            }
+        }else if(error){
+            this.showToast('Error', JSON.stringify(error.message), 'error');
+        }
+    }
+
     getRegistratedContact() {
         getRegistratedContact({receivedId: this.receivedId})
             .then(data => {
@@ -176,6 +201,7 @@ export default class TabActivationPortalRegistration extends NavigationMixin(Lig
             window.open(url, '_blank');
         });
     }
+
     doSorting(event) {
         this.sortBy = event.detail.fieldName;
         this.sortDirection = event.detail.sortDirection;
@@ -202,5 +228,15 @@ export default class TabActivationPortalRegistration extends NavigationMixin(Lig
     }  
     custLabel = {label_viewall,label_PortalName,label_ParentAccount,
                  label_PortalLogin,label_NonRegContact,label_PortalRegContact,lblNumChild};
+    
+    showToast(title, variant, message) {
+        this.dispatchEvent(
+            new ShowToastEvent({
+                title: title,
+                message: message,
+                variant: variant,
+            }),
+        );
+    }
 
 }

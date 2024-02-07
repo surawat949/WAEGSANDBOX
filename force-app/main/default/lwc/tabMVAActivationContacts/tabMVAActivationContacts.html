@@ -22,7 +22,8 @@
                                     sorted-by={sortBy}
                                     sorted-direction={sortDirection}
                                     onsort={doSorting}
-                                    hide-checkbox-column="true"></lightning-datatable><br>
+                                    hide-checkbox-column="true"
+                                    wrap-table-header="true"></lightning-datatable><br>
                         </template>
                     </template>
                     <template lwc:else>
@@ -66,13 +67,6 @@
             </section>
             <div class="slds-backdrop slds-backdrop_open"></div>
         </template>
-        
-        <!-- removed from this below component regarding discussed in meeting 2023-07-04 SFDC V.2.0 Project
-        <div class="slds-grid">
-            <div class="slds-col slds-size_1-of-1">
-                <p align="center"><lightning-button label="View All" onclick={navigateToRelatedList}></lightning-button></p><br>
-            </div>
-        </div>-->
     </div>
 
     <!--Validation Request Section-->

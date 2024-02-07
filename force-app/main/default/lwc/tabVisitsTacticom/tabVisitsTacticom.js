@@ -42,6 +42,11 @@ import Sum_of_Total_Visits_per_year from '@salesforce/label/c.Sum_of_Total_Visit
 import View_Report from '@salesforce/label/c.View_Report';
 import RECOMMENDED_TACTICOM from '@salesforce/label/c.RECOMMENDED_TACTICOM';
 import Parent_Recommended_Segmentation from '@salesforce/label/c.Parent_Recommended_Segmentation';
+import Total_Visits from '@salesforce/label/c.Total_Visits';
+import Campaigns from '@salesforce/label/c.Campaigns';
+import Life_Cycle from '@salesforce/label/c.Life_Cycle';
+import TACTICOM_Buddy_Partner from '@salesforce/label/c.TACTICOM_Buddy_Partner';
+import Opportunities from '@salesforce/label/c.opportunities';
 import Manual_Segment from '@salesforce/schema/Account.Manual_Segment__c';
 import AccObj from '@salesforce/schema/Account';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
@@ -69,8 +74,17 @@ export default class TabVisitsTacticom extends NavigationMixin(LightningElement)
     totalVisitsIndicator;
     campaignsIndicator;
     busiOppIndicator;
-    showpadIndicator;
     lifeCycleIndicator;
+
+    //helpText
+    totalVisitsHelpText;
+    strategicValueHelpText;
+    busiOppHelpText;
+    campaignsHelpText;
+    showpadIndicator;
+    tacticomHelpText;
+    lifeCycleHelpText;
+
     section2Fields = [Manual_Segment];
     Account_Obj = AccObj;
    
@@ -87,6 +101,7 @@ export default class TabVisitsTacticom extends NavigationMixin(LightningElement)
         Parent_Account_Total_Sales,
         Parent_Account_Total_Sales_Helptext,
         Parent_Account_SOW,
+        TACTICOM_Buddy_Partner,
         Parent_Account_SOW_Text,
         Parent_Account_Number,
         Local_Segmentation,
@@ -99,7 +114,12 @@ export default class TabVisitsTacticom extends NavigationMixin(LightningElement)
         Sum_of_Total_Visits_per_year,
         View_Report,
         RECOMMENDED_TACTICOM,
-        Parent_Recommended_Segmentation
+        Parent_Recommended_Segmentation,
+        Total_Visits,
+        Campaigns,
+        Opportunities,
+        Life_Cycle,
+        TACTICOM_Buddy_Partner,
     };
 
     constructor() {
@@ -108,7 +128,6 @@ export default class TabVisitsTacticom extends NavigationMixin(LightningElement)
     }
       
    connectedCallback() {
-        console.log('child connected call-' + this.receivedId);
     }
     
     @wire(TacticomDetails, { recordId:'$receivedId'}) tacticomDetailsFromApex({data,error}){
@@ -117,7 +136,7 @@ export default class TabVisitsTacticom extends NavigationMixin(LightningElement)
               this.tacticomDetail=JSON.parse(data);
         }
         else if(error){
-            this.showToast('Error','Error while fetching the tacticom details'+error.message,'error');
+            this.showToast('Error','Error while fetching the tacticom details '+JSON.stringify(error.message),'error');
         }
     };
 
@@ -147,6 +166,7 @@ export default class TabVisitsTacticom extends NavigationMixin(LightningElement)
 // @wire(ParentAggregate, { parentId:'$parentId'}) AggregateData({data,error}){
     @wire(ParentAggregate, { parentId:'$receivedId'}) AggregateData({data,error}){
         if(data){
+            console.log(data);
         this.aggrResult=data;
         }
         else if(error){
@@ -161,7 +181,6 @@ export default class TabVisitsTacticom extends NavigationMixin(LightningElement)
     @wire(getAccByZone,{accOwner:'$ownerId'})
     AccountHandler({data, error}){
         if(data){
-            console.log(data)
             const arrayObj=data;
            
             arrayObj.forEach(acc => {
@@ -178,7 +197,6 @@ export default class TabVisitsTacticom extends NavigationMixin(LightningElement)
     }
     @wire(getIndicators, {receivedId: '$receivedId'})  getIndicators ({error, data}) {
         if(data){
-            console.log('>>>',data.showpadIndicator);
             /** 
              * following are the names of images in Static resource
              * GreenLightAlert.png
@@ -197,12 +215,20 @@ export default class TabVisitsTacticom extends NavigationMixin(LightningElement)
             this.strategicValueIndicator = AI_Indicators + '/'+this.getIndicatorImage(data.strategicValueIndicator);
             this.busiOppIndicator = AI_Indicators + '/'+this.getIndicatorImage(data.busiOppIndicator);
             this.campaignsIndicator =  AI_Indicators + '/'+this.getIndicatorImage(data.campaignsIndicator);
-            //this.showpadIndicator = AI_Indicators + '/'+this.getIndicatorImage(data.showpadIndicator);
             this.tacticomIndicator = AI_Indicators + '/'+this.getIndicatorImage(data.tacticomFlag);
             this.lifeCycleIndicator = AI_Indicators + '/'+this.getIndicatorImage(data.lifeCycleFlag);
-            console.log('>>>>campaignsIndicator',this.campaignsIndicator);
+
+            //helpText
+            this.totalVisitsHelpText = data.flagTotalVisitsHelpText;
+            this.strategicValueHelpText = data.strategicValueIndicatorHelpText;
+            this.busiOppHelpText = data.busiOppIndicatorHelpText;
+            this.campaignsHelpText = data.campaignsIndicatorHelpText;
+            this.showpadIndicator = data.showpadIndicatorHelpText;
+            this.tacticomHelpText = data.tacticomFlagHelpText;
+            this.lifeCycleHelpText = data.lifeCycleFlagHelpText;
+
         }else if(error){
-            console.log('XXX An error was occurred ==>'+JSON.stringify(error));
+            this.showToast('Error','XXX An error was occurred ==>'+error.message,'error');
         }
     }
    //Douhnut chart end
@@ -227,7 +253,6 @@ export default class TabVisitsTacticom extends NavigationMixin(LightningElement)
    @wire(recommendedAccountsByZone,{accOwner:'$ownerId'})
      recommendedVisitsHandler({data, error}){
        if(data){
-           console.log(data)
            const arrayObj=data;
 
             arrayObj.forEach(acc => {

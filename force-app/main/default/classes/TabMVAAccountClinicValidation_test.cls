@@ -5,9 +5,6 @@
  */
 @IsTest
 public with sharing class TabMVAAccountClinicValidation_test {
-    public TabMVAAccountClinicValidation_test() {
-
-    }
 
     @TestSetup
     static void makeData(){
@@ -61,10 +58,10 @@ public with sharing class TabMVAAccountClinicValidation_test {
         
         if(!usr.IsEmpty()){
             System.runAs(usr[0]){
+                Test.StartTest();
                 Account a = [SELECT Id, Hoya_Account_ID__c FROM Account WHERE Hoya_Account_ID__c = 'WKRE00035777' LIMIT 1];
                 List<QIDC__Validation_Request_ims__c> qidc = [SELECT Id FROM QIDC__Validation_Request_ims__c WHERE QIDC__Workplace_ims__c=:a.Id];
 
-                Test.StartTest();
                 TabMVAAccountClinicValidation.getValidationNameByAccountId(a.Id);
                 TabMVAAccountClinicValidation.getValidationNameByAccountIdAll(a.Id);
                 Test.StopTest();

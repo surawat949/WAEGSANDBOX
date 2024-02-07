@@ -235,7 +235,7 @@ export default class TabMVCVisitsCampOpp extends NavigationMixin(LightningElemen
                     this.performRefresh();
                 }).catch(error=>{
                     this.showSpinner = false;
-                    this.errors = 'Error Creating Identified Opportunity' + error.message ;
+                    this.showToast("Error", "Error Creating Identified Opportunity : "+error.message, "error");
                 });
             }
         }

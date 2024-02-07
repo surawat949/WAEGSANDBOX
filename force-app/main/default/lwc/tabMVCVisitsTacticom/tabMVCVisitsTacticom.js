@@ -82,6 +82,7 @@ export default class TabMVCVisitsTacticom extends LightningElement {
                 this.pieChartData.push(acc.cnt);
                 this.totalCount=this.totalCount+acc.cnt;
             });
+            console.log(pieChartData);
          this.isDoughnutChartDataReceived=true;
         }
         if(error){

@@ -3,7 +3,7 @@
  * @description : this test class for TabAccountInvoiceController
  * @CreatedDate : 2023-11-27
  * @version : 1.0
- * Code coverage : 86%
+ * Code coverage : 89%
  */
 @IsTest
 public with sharing class TabAccountInvoiceController_Test {
@@ -27,17 +27,18 @@ public with sharing class TabAccountInvoiceController_Test {
 
     @IsTest
     static void myUnitTest01(){
+        Test.StartTest();
         Account acc = [SELECT Id, Hoya_Account_ID__c, Billing_Account_Name__c, 
                             Name, BillingStreet, BillingState, BillingCountry, BillingPostalCode, 
                             BillingLatitude, BillingLongitude FROM Account WHERE 
                             Hoya_Account_ID__c = 'TEST-998' LIMIT 1];
-        Test.StartTest();
+
         TabAccountInvoiceController.getAccountForMap(acc.Id);
         acc.BillingLongitude = null;
         acc.BillingLatitude = null;
         update acc;
         TabAccountInvoiceController.getAccountForMap(acc.Id);
-        Test.StopTest();
+        
 
         System.assert(true);
 
@@ -47,6 +48,7 @@ public with sharing class TabAccountInvoiceController_Test {
         }catch(Exception e){
             System.assertEquals(e.getMessage(), e.getMessage());
         }
+        Test.StopTest();
     }
 
 }

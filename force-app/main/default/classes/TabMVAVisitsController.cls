@@ -1,7 +1,7 @@
 public with sharing class TabMVAVisitsController {
     
     //get In Store Training and Webinars related list
-    @AuraEnabled(cacheable=true)
+    @AuraEnabled
     public static List<ECP_Training__c> getInStoreTrainingRelatedList(String accountId){
 
             List<ECP_Training__c> trainingLst = [SELECT Id,Name,Training__c,start__c,Assigned_to__c,Training_status__c,Assigned_to__r.Name
@@ -13,9 +13,9 @@ public with sharing class TabMVAVisitsController {
     
     @AuraEnabled(cacheable=true)
     public static List<Visits__c> getVisitsBasedOnContacts(String accountId){
-        List<Visits__c> visits=[Select Id,Name,Contact__c,Contact__r.Name,Visit_Type__c,Visit_Reason__c,Start_Day__c, Account__C,Related_Contact__c from visits__c where Account__C =:accountId Order by Start_Day__c Desc ];
+        List<Visits__c> visits=[Select Id,Name,Contact__c,Contact__r.Name,Visit_Type__c,Visit_Reason__c,Visit_completed_date__c from visits__c where Contact__c IN ( select id from Contact where AccountId=:accountId) order by Contact__r.Name];
         return visits;
-    }  
+    }   
     
     @AuraEnabled(cacheable=true)
     public static List<Contact> getVisitFrequency(String accountId){

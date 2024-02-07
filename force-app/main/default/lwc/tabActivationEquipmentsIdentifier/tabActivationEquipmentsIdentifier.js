@@ -5,6 +5,8 @@ import { loadScript } from 'lightning/platformResourceLoader';
 //Custom Labels
 import Identifier from '@salesforce/label/c.AccountActivationIdentifier';
 import IdentifierUsage from '@salesforce/label/c.AccountActivationIdentifierUsage';
+import IdentifierLastUsage from '@salesforce/label/c.iDentifier_Last_Usage';
+import IdentifierLastTraining from '@salesforce/label/c.iDentifier_Last_Training';
 //Apex
 import getLastTrainingDate from '@salesforce/apex/tabActivationEquipmentsController.getLastTrainingDate';
 import getLastUsageDate from '@salesforce/apex/tabActivationEquipmentsController.getLastMediaUsage';
@@ -15,7 +17,7 @@ export default class TabActivationEquipmentsIdentifier extends LightningElement 
     LastUsageDate;
     LastTraningDate;
     customlabel = {
-        Identifier,IdentifierUsage
+        Identifier,IdentifierUsage,IdentifierLastUsage,IdentifierLastTraining
     };
     connectedCallback() {
         getLastTrainingDate({accountId : this.receivedId,topic : 'HOYA Identifier+'})
