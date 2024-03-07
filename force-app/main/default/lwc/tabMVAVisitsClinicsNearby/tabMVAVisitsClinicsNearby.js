@@ -261,6 +261,7 @@ export default class TabMVAVisitsClinicsNearby extends LightningElement {
         this.displayListView = 'hidden';
         this.isDisplayList = true;
     }
+
     showToast(title, variant, message) {
         const event = new ShowToastEvent({
             title: title,

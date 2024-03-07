@@ -93,7 +93,7 @@ export default class TabAccountContactDeployment extends LightningModal {
     email;
     SendInvitationPortal = false;
     SendImmDiately = false;
-    IsAccountTemplate = true;
+	IsAccountTemplate = true;
     IsDisabled = true;
 
     labelContactName = label_ContactName;
@@ -135,7 +135,7 @@ export default class TabAccountContactDeployment extends LightningModal {
     labelLanguage = label_language;
     labelLanguagePlace = label_languagePlace;
     labelSendEmailImm = label_sendEmailImm;
-    labelNoAccountTemplate = label_NoAccountTemplate;
+	labelNoAccountTemplate = label_NoAccountTemplate;
 
     @track currentStep = '1';
     @track ContactRTRecordList;
@@ -165,7 +165,7 @@ export default class TabAccountContactDeployment extends LightningModal {
             
         }else if(error){
             
-            this.showToast('Error '+JSON.stringify(error));
+            this.showToast('Error '+JSON.stringify(error), 'Error', 'dismissible');
         }
     }
 
@@ -174,7 +174,7 @@ export default class TabAccountContactDeployment extends LightningModal {
             this.EmployeeRecType = data;
             
         }else if(error){
-            this.showToast('Error '+JSON.stringify(error));
+            this.showToast('Error '+JSON.stringify(error), 'Error', 'dismissible');
         }
     }
 
@@ -183,7 +183,7 @@ export default class TabAccountContactDeployment extends LightningModal {
             this.OpthalRecType = data;
             
         }else if(error){
-            this.showToast('Error '+JSON.stringify(error));
+            this.showToast('Error '+JSON.stringify(error), 'Error', 'dismissible');
         }
     }
 
@@ -192,7 +192,7 @@ export default class TabAccountContactDeployment extends LightningModal {
             this.ContactRTRecordList=data;
             
         }else if(error){
-            this.showToast('Error '+JSON.stringify(error));
+            this.showToast('Error '+JSON.stringify(error), 'Error', 'dismissible');
         }
     }
 
@@ -205,7 +205,7 @@ export default class TabAccountContactDeployment extends LightningModal {
             
         }else if(error){
             this.errors5 = error;
-            this.showToast('Error '+JSON.stringify(this.errors5));
+            this.showToast('Error '+JSON.stringify(this.errors5), 'Error', 'dismissible');
         }
     }
 
@@ -218,7 +218,7 @@ export default class TabAccountContactDeployment extends LightningModal {
             
         }else if(error){
             this.errors4 = error;
-            this.showToast('Error '+JSON.stringify(this.errors4));
+            this.showToast('Error '+JSON.stringify(this.errors4), 'Error', 'dismissible');
         }
     }
 
@@ -230,29 +230,29 @@ export default class TabAccountContactDeployment extends LightningModal {
             this.errors3 = undefined;
         }else if(error){
             this.errors3 = error;
-            this.showToast('Error '+JSON.stringify(this.errors3));
+            this.showToast('Error '+JSON.stringify(this.errors3), 'Error', 'dismissible');
         }
     }
     @wire(getAccTemplate, {recordId:'$receivedId'}) wireAccTemplateAccId({data, error})
         {
             if(data){
-                if(data.length > 0){
-                    for(j=0;j<data.length;j++){
-                        this.items2 = [...this.items2, {value: data[j].Id, label: data[j].Name}];
-                    }
-                    this.errors2 = undefined;
-                    this.IsAccountTemplate = false;
-                    this.IsDisabled = false;
-                }else{
-                    this.IsAccountTemplate = true;
-                    this.IsDisabled = true;
-                    this.errors2 = undefined;
-                }
-                
+				if(data.length > 0){
+					for(j=0;j<data.length;j++){
+						this.items2 = [...this.items2, {value: data[j].Id, label: data[j].Name}];
+					}
+					this.errors2 = undefined;
+					this.IsAccountTemplate = false;
+					this.IsDisabled = false;
+				}else{
+					this.IsAccountTemplate = true;
+					this.IsDisabled = true;
+					this.errors2 = undefined;
+				}
             }else if(error){
                 this.errors2 = error;
-                
-                this.showToast('Error '+JSON.stringify(this.errors2));
+                this.showToast('Error '+JSON.stringify(this.errors2), 'Error', 'dismissible');
+				this.IsAccountTemplate = true;
+				this.IsDisabled = true;
             }
         }
     
@@ -264,28 +264,9 @@ export default class TabAccountContactDeployment extends LightningModal {
             this.errors = undefined;
         }else if(error){
             this.errors = error;
-            this.showToast('Error'+JSON.stringify(error));
+            this.showToast('Error'+JSON.stringify(error), 'Error', 'dismissible');
         }
     }
-
-    /*
-    @wire(getAccountTemplate, {recordId : '$receivedId'}) wireAccountTemplate({data, error}){
-        if(data){
-            if(data.length > 0){
-                this.IsAccountTemplate = false;
-                this.IsDisabled = false;
-            }else if(data.length == 0){
-                this.IsAccountTemplate = true;
-                this.IsDisabled = true;
-            }else{
-                this.IsAccountTemplate = true;
-                this.IsDisabled = true;
-                
-            }
-        }else if(error){
-            this.showToast('Error',JSON.parse(JSON.stringify(error.message)),'Error', 'Error');
-        }
-    }*/
 
     get statusOptions(){
         return this.items;

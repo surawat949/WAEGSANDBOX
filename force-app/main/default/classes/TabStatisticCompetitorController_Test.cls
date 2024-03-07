@@ -78,7 +78,7 @@ public with sharing class TabStatisticCompetitorController_Test {
         TabStatisticCompetitorController.searchAccountName(accList.Id, 'Account', 'Test');
         TabStatisticCompetitorController.CreateNewCompetitorReq('Test', 'Test', uList.Id, System.today(), 'In Progress', accList.Id);
         TabStatisticCompetitorController.getFirstCompetitorSOW(accList.Id);
-        TabStatisticCompetitorController.getTaskSFDCStandardTask();
+		
         Test.StopTest();    
         System.assert(true);
 

@@ -14,6 +14,8 @@ export default class TabShowPad extends LightningElement {
     sharingIndicator;
     openingIndicator;
     viewingIndicator;
+    sharingIndicatorgMeaning;
+    viewingIndicatorMeaning;
     custLabel={
         presentations,sharing,viewing
     }
@@ -25,7 +27,9 @@ export default class TabShowPad extends LightningElement {
             this.sharingIndicator = AI_Indicators + '/'+this.getIndicatorImage(data.sharingFlag);
             this.openingIndicator = AI_Indicators + '/'+this.getIndicatorImage(data.openingFlag);
             this.viewingIndicator = AI_Indicators + '/'+this.getIndicatorImage(data.viewingFlag);
-            
+            console.log('>>>>',data.sharingFlagMeaning);
+            this.sharingIndicatorgMeaning = data.sharingFlagMeaning;
+            this.viewingIndicatorMeaning = data.viewingFlagMeaning;
           
         }else if(error){
             this.showToast('Error', 'Error',JSON.stringify(error));

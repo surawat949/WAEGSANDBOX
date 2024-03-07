@@ -90,7 +90,7 @@ public with sharing class TabMVCOpticianNearby2 {
             }
 
             if(Segmentation!=null && Segmentation!='' && Segmentation!='No Filter'){
-                Segmentation = ' AND Segmentation_box__c LIKE \''+Segmentation+'\' ';
+                Segmentation = ' AND Segmentation_Net__c LIKE \''+Segmentation+'\' ';
             }else{
                 Segmentation = '';
             }
@@ -176,7 +176,7 @@ public with sharing class TabMVCOpticianNearby2 {
             }
             List<Account> newAcc = [SELECT Id, Hoya_Account_ID__c, ShippingLatitude, 
                                     ShippingLongitude, Clinic_Name__c, Brand__c, 
-                                    Segmentation_box__c FROM Account WHERE Id IN:acs];
+                                    Segmentation_Net__c FROM Account WHERE Id IN:acs];
             System.debug('XXX Get Account List '+newAcc);
             for(ContactNearby con : dataMap.values()){
                 for(Account a : newAcc){
@@ -191,7 +191,7 @@ public with sharing class TabMVCOpticianNearby2 {
                         con.accountShippingLatitude = ShippingLatitude;
                         con.ClinicName = a.Clinic_Name__c;
                         con.accountBrand = a.Brand__c;
-                        con.accountSegmentation = a.Segmentation_box__c;
+                        con.accountSegmentation = a.Segmentation_Net__c;
 
                         dataList.add(con);
                     }
@@ -216,7 +216,7 @@ public with sharing class TabMVCOpticianNearby2 {
                 String soql = 'SELECT Id, Name, Hoya_Account_ID__c, Record_Type_Name__c, Shop_Name__c, '
                             + 'ShippingLatitude, ShippingLongitude, ShippingStreet, ShippingCity, '
                             + 'ShippingState, ShippingCountry, ShippingPostalCode, Phone, '
-                            + 'RecordType.DeveloperName, Clinic_Name__c, Brand__c, Segmentation_box__c, First_Competitor_global_name__c, First_Competitor_local_name__c, First_Competitor_SOW__c, Myo_Smart_AuthorizeDealer__c FROM Account WHERE ('
+                            + 'RecordType.DeveloperName, Clinic_Name__c, Brand__c, Segmentation_Net__c, First_Competitor_global_name__c, First_Competitor_local_name__c, First_Competitor_SOW__c, Myo_Smart_AuthorizeDealer__c FROM Account WHERE ('
                             + 'DISTANCE(ShippingAddress, GEOLOCATION('+shippingLatitude+', '+shippingLongitude+'), \'km\')<'+distance + VisionAll + MyoSmart + Segmentation + ' AND RecordType.DeveloperName != \'Clinic\')'+ HoyaVisionCenter + ' ORDER BY CreatedDate DESC LIMIT 50';
                 
                 System.debug('XXX SOQL = > '+soql);
@@ -242,7 +242,7 @@ public with sharing class TabMVCOpticianNearby2 {
                         cons.accountId = a.Id;
                         cons.ClinicName = a.Clinic_Name__c;
                         cons.accountBrand = a.Brand__c;
-                        cons.accountSegmentation = a.Segmentation_box__c;
+                        cons.accountSegmentation = a.Segmentation_Net__c;
                         cons.FirstCompetitorGlobal = a.First_Competitor_global_name__c;
                         cons.FirstCompetitorLocal = a.First_Competitor_local_name__c;
                         cons.FirstCompetitorSOW = a.First_Competitor_SOW__c;

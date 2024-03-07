@@ -4,7 +4,7 @@ public class TabActivationAIIndicatorControllerTest {
     static void makeData(){
         Account acc = new Account(
             Name = 'Test Acc',
-            Hoya_Account_ID__c = '012354',
+            Hoya_Account_ID__c = 'TE012354',
             shippingPostalCode='23440',
             phone='0102030405',
             Onboarding_date__c = date.valueOf(system.now()),
@@ -18,6 +18,7 @@ public class TabActivationAIIndicatorControllerTest {
         insert acc;
          Account acc2 = new Account(
             Name = 'Test AccTESR',
+            Hoya_Account_ID__c = 'TE012345',
             shippingPostalCode='23440',
             phone='0103030408',
             Account_Status__c='Closed'
@@ -25,6 +26,7 @@ public class TabActivationAIIndicatorControllerTest {
         insert acc2;
         Account acc1 = new Account(
             Name = 'Test Acc1',
+            Hoya_Account_ID__c = 'TE013455',
             shippingPostalCode='234401',
             phone='0102030406',
             Onboarding_date__c = date.valueOf(system.now()),
@@ -65,9 +67,9 @@ public class TabActivationAIIndicatorControllerTest {
      }   
      @IsTest
     static void getAIIndicatorsTest(){
-        Account actId = [ Select id,Lenses_Net_Sales_Last_12Mo__c,Account_Status__c,Seiko_Network__c,Segmentation_Box__c,
-                            CHCUSTCLASSIFICATIONID__c,Brand__c,Visionary_Alliance__c From Account where Hoya_Account_ID__c = '012354'];
-        Account actId1 = [ Select id,Lenses_Net_Sales_Last_12Mo__c,Account_Status__c,Seiko_Network__c,Segmentation_Box__c,
+        Account actId = [ Select id,Lenses_Net_Sales_Last_12Mo__c,Account_Status__c,Seiko_Network__c,Segmentation_Net__c,
+                            CHCUSTCLASSIFICATIONID__c,Brand__c,Visionary_Alliance__c From Account where Hoya_Account_ID__c = 'TE012354'];
+        Account actId1 = [ Select id,Lenses_Net_Sales_Last_12Mo__c,Account_Status__c,Seiko_Network__c,Segmentation_Net__c,
                             CHCUSTCLASSIFICATIONID__c,Brand__c,Visionary_Alliance__c From Account 
                          where name='Test Acc1'];
         Account actId2 = [ Select id,Account_Status__c From Account 
@@ -85,7 +87,6 @@ public class TabActivationAIIndicatorControllerTest {
                                                     From Last_Sales_Statistics__c Where  Account__c =:actId.Id And name = 'test'];
          
         Test.startTest();
-            system.debug('>>>');
             TabActivationAIIndicatorController.getAIIndicators(actId.Id);
             TabActivationAIIndicatorController.getAIIndicators(actId1.Id);
             TabActivationAIIndicatorController.getAIIndicators(actId2.Id);
@@ -120,6 +121,7 @@ public class TabActivationAIIndicatorControllerTest {
     static void getAIIndicatorsTest1(){
      	Account acc = new Account(
             Name = 'Test Acc1',
+            Hoya_Account_ID__c = 'TE013456',
             shippingPostalCode='234401',
             Lenses_Net_Sales_Last_12Mo__c = 11,
             Brand_Visibility__c='SEIKO',

@@ -2,18 +2,18 @@
 public class TabMVCActivationController_test {
 	@IsTest
     static void runTest(){
-        
-       String SeikoRec = Schema.SObjectType.ECP_Training__c.getRecordTypeInfosByDeveloperName().get('SEIKO_Training').getRecordTypeId();
+        String HoyaRec = Schema.SObjectType.ECP_Training__c.getRecordTypeInfosByDeveloperName().get('HOYA_Training').getRecordTypeId();
+        String SeikoRec = Schema.SObjectType.ECP_Training__c.getRecordTypeInfosByDeveloperName().get('SEIKO_Training').getRecordTypeId();
 
         Account acc = new Account();
         acc.Name='sales test account';
         acc.hoya_account_id__c='SO3399999xx';
-        acc.Lenses_Net_Sales_Last_12Mo__c = 10000;
-        acc.RecordTypeId='012b00000000P38';        
+        acc.Lenses_Net_Sales_Last_12Mo__c = 10000;       
         insert acc;
         
         Contact con = new Contact();
         con.LastName = 'Rep';
+        con.FirstName = 'Tes';
         con.AccountId = acc.Id;        
         insert con;          
         

@@ -16,8 +16,12 @@ export default class TabMVAAccountSystem extends LightningElement {
     custLabel = {
         system_information
     }
-    
-    ACC_OBJ = Account_obj;
-    fields1 = [Account_CreatedDate, Account_CreatedBy, Account_LastModifiedDate, Account_LastModifiedBy, Account_RecordType_Name, Account_OneKeyId];
 
+    objectapiname = Account_obj;
+    accountCreatedDate = Account_CreatedDate;
+    accountCreateBy = Account_CreatedBy;
+    accountLastModified = Account_LastModifiedDate;
+    accountLastModifiedBy = Account_LastModifiedBy;
+    accountRecTypeName = Account_RecordType_Name;
+    accountOneKey = Account_OneKeyId;
 }

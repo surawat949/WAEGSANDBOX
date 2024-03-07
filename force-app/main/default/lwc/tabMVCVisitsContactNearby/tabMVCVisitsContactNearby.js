@@ -70,46 +70,47 @@ export default class TabMVCVisitsContactNearby extends LightningElement {
         getContactsNearby({ContactId : this.receivedId, distance : Math.floor(this.distanceSlider), miyoSmartAttitude : this.MyoSmartAttitude, prescriptionPotential : this.PrescriptionPotential, preferredMethod : this.PreferredContactMethod, firstSpeciality : this.FirstSpeciality, professional : this.ProfessionalType, PreferDayTime : this.workTime})
         .then(result=>{
             this.mapMarkers = [];
-            for(var i=0;i<result.length;i++){
-                if(i==0){
-                    let AccountName = '';
-                    let ContactName = '';
-                    let MiyoSmartAttitude = '';
-                    let lastvisiteddate = '';
-                    let preferContactMethod = '';
-                    let mailingCity = '';
-                    let mailingStreet = '';
-                    let mailingPostalcode = '';
+			if(result.length > 0){
+				for(var i=0;i<result.length;i++){
+					if(i==0){
+						let AccountName = '';
+						let ContactName = '';
+						let MiyoSmartAttitude = '';
+						let lastvisiteddate = '';
+						let preferContactMethod = '';
+						let mailingCity = '';
+						let mailingStreet = '';
+						let mailingPostalcode = '';
 
-                    if(result[i].MiyoSmart_Attitude__c!=undefined){
-                        MiyoSmartAttitude = result[i].MiyoSmart_Attitude__c;
-                    }
+						if(result[i].MiyoSmart_Attitude__c!=undefined){
+							MiyoSmartAttitude = result[i].MiyoSmart_Attitude__c;
+						}
 
-                    if(result[i].Last_contact_visit_date__c!=undefined){
-                        lastvisiteddate = result[i].Last_contact_visit_date__c;
-                    }
+						if(result[i].Last_contact_visit_date__c!=undefined){
+							lastvisiteddate = result[i].Last_contact_visit_date__c;
+						}
 
-                    if(result[i].Preferred_contact_method__c!=undefined){
-                        preferContactMethod = result[i].Preferred_contact_method__c;
-                    }
-                    if(result[i].MailingStreet!=undefined){
-                        mailingStreet = result[i].MailingStreet;
-                    }
-                    if(result[i].MailingCity!=undefined){
-                        mailingCity = result[i].MailingCity;
-                    }
-                    if(result[i].MailingPostalCode!=undefined){
-                        mailingPostalcode = result[i].MailingPostalCode;
-                    }
+						if(result[i].Preferred_contact_method__c!=undefined){
+							preferContactMethod = result[i].Preferred_contact_method__c;
+						}
+						if(result[i].MailingStreet!=undefined){
+							mailingStreet = result[i].MailingStreet;
+						}
+						if(result[i].MailingCity!=undefined){
+							mailingCity = result[i].MailingCity;
+						}
+						if(result[i].MailingPostalCode!=undefined){
+							mailingPostalcode = result[i].MailingPostalCode;
+						}
 
-                    if(result[i].Account.Name != undefined){
-                        AccountName = result[i].Account.Name;
-                    }
+						if(result[i].Account.Name != undefined){
+							AccountName = result[i].Account.Name;
+						}
 
-                    if(result[i].Name != undefined){
-                        ContactName = result[i].Name;
-                    }
-                    this.mapMarkers = [...this.mapMarkers,
+						if(result[i].Name != undefined){
+							ContactName = result[i].Name;
+						}
+						this.mapMarkers = [...this.mapMarkers,
                         {
                             location : {
                                 Latitude : result[i].MailingLatitude,
@@ -135,47 +136,47 @@ export default class TabMVCVisitsContactNearby extends LightningElement {
                                             +preferContactMethod+'<br>'+'Related Account Name : '+AccountName
                                             +'<br>'+'Contact Address : '+mailingStreet+ ' '+mailingCity+ ' '+mailingPostalcode,
 
-                        }
-                    ];
-                }else{
-                    let AccountName = '';
-                    let ContactName = '';
-                    let MiyoSmartAttitude = '';
-                    let lastvisiteddate = '';
-                    let preferContactMethod = '';
-                    let mailingCity = '';
-                    let mailingStreet = '';
-                    let mailingPostalcode = '';
+							}
+						];
+					}else{
+						let AccountName = '';
+						let ContactName = '';
+						let MiyoSmartAttitude = '';
+						let lastvisiteddate = '';
+						let preferContactMethod = '';
+						let mailingCity = '';
+						let mailingStreet = '';
+						let mailingPostalcode = '';
 
-                    if(result[i].MiyoSmart_Attitude__c!=undefined){
-                        MiyoSmartAttitude = result[i].MiyoSmart_Attitude__c;
-                    }
+						if(result[i].MiyoSmart_Attitude__c!=undefined){
+							MiyoSmartAttitude = result[i].MiyoSmart_Attitude__c;
+						}
 
-                    if(result[i].Last_contact_visit_date__c!=undefined){
-                        lastvisiteddate = result[i].Last_contact_visit_date__c;
-                    }
+						if(result[i].Last_contact_visit_date__c!=undefined){
+							lastvisiteddate = result[i].Last_contact_visit_date__c;
+						}
 
-                    if(result[i].Preferred_contact_method__c!=undefined){
-                        preferContactMethod = result[i].Preferred_contact_method__c;
-                    }
-                    if(result[i].MailingStreet!=undefined){
-                        mailingStreet = result[i].MailingStreet;
-                    }
-                    if(result[i].MailingCity!=undefined){
-                        mailingCity = result[i].MailingCity;
-                    }
-                    if(result[i].MailingPostalCode!=undefined){
-                        mailingPostalcode = result[i].MailingPostalCode;
-                    }
+						if(result[i].Preferred_contact_method__c!=undefined){
+							preferContactMethod = result[i].Preferred_contact_method__c;
+						}
+						if(result[i].MailingStreet!=undefined){
+							mailingStreet = result[i].MailingStreet;
+						}
+						if(result[i].MailingCity!=undefined){
+							mailingCity = result[i].MailingCity;
+						}
+						if(result[i].MailingPostalCode!=undefined){
+							mailingPostalcode = result[i].MailingPostalCode;
+						}
 
-                    if(result[i].Account.Name != undefined){
-                        AccountName = result[i].Account.Name;
-                    }
-                    if(result[i].Name != undefined){
-                        ContactName = result[i].Name;
-                    }
+						if(result[i].Account.Name != undefined){
+							AccountName = result[i].Account.Name;
+						}
+						if(result[i].Name != undefined){
+							ContactName = result[i].Name;
+						}
 
-                    this.mapMarkers = [...this.mapMarkers,
+						this.mapMarkers = [...this.mapMarkers,
                         {
                             location : {
                                 Latitude : result[i].MailingLatitude,
@@ -193,30 +194,33 @@ export default class TabMVCVisitsContactNearby extends LightningElement {
                                 strokeWeight: 1.1,
                                 scale: 1.5,             //blue pin for first record
                             },
-                            icon : 'standard:contact',
-                            title : ContactName,
-                            value : result[i].Id,
-                            description : 'MiyoSmart Attitude : '+MiyoSmartAttitude+'<br>'+'Last Contact Visit Day : '
+								icon : 'standard:contact',
+								title : ContactName,
+								value : result[i].Id,
+								description : 'MiyoSmart Attitude : '+MiyoSmartAttitude+'<br>'+'Last Contact Visit Day : '
                                             +lastvisiteddate+'<br>'+'Preferred Contact Method : '
                                             +preferContactMethod+'<br>'+'Related Account Name : '+AccountName
                                             +'<br>'+'Contact Address : '+mailingStreet+ ' '+mailingCity+ ' '+mailingPostalcode,
 
-                        }
-                    ];
-                }
-            }
+						}
+						];
+					}
+				}
 
-            this.vcenter = {
-                location : {
-                    Latitude : result[0].MailingLatitude,
-                    Longitude : result[0].MailingLongitude,
-                    Street : result[0].MailingStreet,
-                    City : result[0].MailingCity,
-                    State : result[0].MailingState,
-                    Country : result[0].MailingCountry,
-                    PostalCode : result[0].MailingPostalCode
-                },
-            };
+				this.vcenter = {
+					location : {
+						Latitude : result[0].MailingLatitude,
+						Longitude : result[0].MailingLongitude,
+						Street : result[0].MailingStreet,
+						City : result[0].MailingCity,
+						State : result[0].MailingState,
+						Country : result[0].MailingCountry,
+						PostalCode : result[0].MailingPostalCode
+					},
+				};
+			}else{
+				this.showToast('Warning', 'warning', 'Address details is missing');
+			}
         })
         .catch(error=>{
             this.errors7 = error;
@@ -256,14 +260,14 @@ export default class TabMVCVisitsContactNearby extends LightningElement {
 
         if(event.target.name === 'FirstSpeciality'){
             this.FirstSpeciality = event.target.value;
-            //console.log('XXX First Speciality Value =>'+JSON.stringify(this.FirstSpeciality));
+           // console.log('XXX First Speciality Value =>'+JSON.stringify(this.FirstSpeciality));
 
             this.handleKeyMapChange();
         }
 
         if(event.target.name === 'ProfessionalType'){
             this.ProfessionalType = event.target.value;
-           // console.log('XXX Prefessional Type Value =>'+JSON.stringify(this.ProfessionalType));
+            //console.log('XXX Prefessional Type Value =>'+JSON.stringify(this.ProfessionalType));
 
             this.handleKeyMapChange();
         }

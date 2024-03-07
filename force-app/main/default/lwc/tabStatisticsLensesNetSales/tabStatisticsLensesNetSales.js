@@ -82,7 +82,6 @@ export default class TabStatisticsLensesNetSales extends LightningElement {
     checkCurrency(result){
         if(result.data){
             this.CurrencyCode = JSON.parse(JSON.stringify(result.data));
-            console.log(this.CurrencyCode);
         }
         else if(result.error){
             this.showToast('Error', 'Error', result.error);

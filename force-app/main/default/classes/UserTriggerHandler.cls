@@ -5,7 +5,6 @@ public class UserTriggerHandler {
     }
     public void onBeforeInsert(final List<User> newObjects) {
         System.debug('Executing " UserTriggerHandler.onBeforeInsert"...');
-        //UserLogic.controlBeforeInsert(newObjects);
         updateHoyaAccountIdBeforeInsert(newObjects);
     }
 
@@ -38,7 +37,7 @@ public class UserTriggerHandler {
         System.debug('Executing " UserTriggerHandler.onAfterUndelete"...');
     }*/
 
-    /* Update the Hoya Account id value on user record for community users. 
+        /* Update the Hoya Account id value on user record for community users. 
      * Community profiles not provided access to accounts and contacts and hence for in OAuth flows they can use this field to fecth customer details
     */
     public static void updateHoyaAccountIdBeforeInsert(List<User> newObjects){

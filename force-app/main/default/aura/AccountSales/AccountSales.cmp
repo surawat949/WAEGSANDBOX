@@ -14,7 +14,10 @@
         <aura:attribute name="accountSalesTargetsFields" type="String[]" default="['Seiko_objective_ECP_agr__c']"/>
         <aura:attribute name="statPdf" type="String"/>
         <aura:attribute name="statConsoPdf" type="String"/>
-      
+        <!--
+        <ltng:require scripts="{!$Resource.jsChart}" 
+        afterScriptsLoaded="{!c.canvastest}"/>
+        -->
         <ltng:require scripts="{!join(',',
         $Resource.chartjs2 + '/Chart.min.js',
         $Resource.chartjs2 + '/Chart.bundle.min.js')}"
@@ -23,29 +26,72 @@
         <ltng:require scripts="{!$Resource.jsPDF_png}"/>
         <ltng:require scripts="{!$Resource.jsPDF_html2pdf}"/>
 
-<!-- SALES Statistics-->
-<div class="container slds-theme_default slds-box" >   
+<!-- SALES TABLE-->
+<div class="container slds-theme_default slds-box" >
+
     <aura:if isTrue="{!v.account.Brand__c=='SEIKO'}">
         <div class="slds-theme_default slds-box" style="margin-bottom: 10px;" >
-            <!-- LENS SUPPLIER (SEIKO)-->
             <h3 class="slds-section__title  test-id__section-header-container" data-aura-rendered-by="344:1408;a">     
                 <button aria-controls="toggle" id="toggle2" aria-expanded="true" class="slds-button slds-section__title-action" onclick="{!c.toggle}" >
                     <lightning:icon iconName="{!v.IconName}" class="slds-p-right_x-small" aura:id="swithcicon" width="100%" Height="100%" default="utility:chevrondown" size="X-small"  alternativeText="Expand"/>
                         <span class="test-id__section-header-title slds-truncate" title="{!v.InputTitle}">{!$Label.c.AccountVisitTabLensSupplier}</span>
                 </button>
             </h3>
-            <lightning:recordForm aura:id="accountRecordForm" recordId="{!v.recordId}" objectApiName="Account"
+            <!--<lightning:recordForm aura:id="accountRecordForm" recordId="{!v.recordId}" objectApiName="Account"
                 fields="{!v.accountFields}" columns="3" mode="view"
-                density="auto"/>
+                density="auto"/>-->
+            <!-- Below code to amend for First global competitor not allow to editable | Surawat ADDED 2024-02-21 -->
             
+            <lightning:recordEditForm recordId="{!v.recordId}" objectApiName="Account" onsuccess="{!c.handleSuccess}">
+                <div class="slds-grid slds-grid_align-space">
+                    <div class="slds-col slds-size_1-of-3">
+                        <lightning:inputField fieldName="Potential__c" />
+                    </div>
+                    <div class="slds-col slds-size_1-of-3">
+                        <lightning:outputField fieldName="AnnualRevenue" />
+                    </div>
+                    <div class="slds-col slds-size_1-of-3">
+                        <lightning:outputField fieldName="Share_of_Wallet__c" />
+                    </div>
+                </div>
+                <div class="slds-grid slds-grid_align-space">
+                    <div class="slds-col slds-size_1-of-3">
+                        <lightning:outputField fieldName="First_Competitor_global_name__c" />
+                    </div>
+                    <div class="slds-col slds-size_1-of-3">
+                        <lightning:inputField fieldName="First_Competitor_local_name__c" />
+                    </div>
+                    <div class="slds-col slds-size_1-of-3">
+                        <lightning:inputField fieldName="First_Competitor_SOW__c" />
+                    </div>
+                </div>
+                <div class="slds-grid slds-grid_align-space">
+                    <div class="slds-col slds-size_1-of-3">
+                        <lightning:outputField fieldName="Second_Competitor_global_name__c" />
+                    </div>
+                    <div class="slds-col slds-size_1-of-3">
+                        <lightning:inputField fieldName="Second_Competitor_Local_Name__c" />
+                    </div>
+                    <div class="slds-col slds-size_1-of-3">
+                        <lightning:inputField fieldName="Second_Competitor_SOW__c" />
+                    </div>
+                </div>
+                <div class="slds-grid slds-grid_align-space slds-m-bottom_medium">
+                    <div class="slds-col slds-size_1-of-3">&nbsp;</div>
+                    <div class="slds-col slds-size_2-of-3">
+                        <lightning:button variant="brand" type="submit" label="Save" />
+                    </div>
+                </div>
+            </lightning:recordEditForm>
+
             <h3 class="slds-section__title  test-id__section-header-container" data-aura-rendered-by="344:1408;a">    
                 <button aria-controls="toggle" id="toggle2" aria-expanded="true" class="slds-button slds-section__title-action" onclick="{!c.toggle}" >
                     <lightning:icon iconName="{!v.IconName}" class="slds-p-right_x-small" aura:id="swithcicon" width="100%" Height="100%" default="utility:chevrondown" size="X-small"  alternativeText="Expand"/>
                         <span class="test-id__section-header-title slds-truncate" title="{!v.InputTitle}">{!$Label.c.AccountVisitTabSalesTarget}</span>
                 </button>
             </h3>
-            <!-- SALES TARGETS-->
-            <lightning:recordEditForm aura:id="accountRecordSalesTargetForm" recordId="{!v.recordId}" objectApiName="Account">
+
+            <lightning:recordEditForm aura:id="accountRecordSalesTargetForm" recordId="{!v.recordId}" objectApiName="Account" onsuccess="{!c.handleSuccess}">
                 <div class="slds-grid">
                     <div class="slds-col slds-size_4-of-12"><lightning:inputField fieldName="Seiko_objective_ECP_agr__c" /></div>
                     
@@ -64,7 +110,6 @@
             </lightning:recordEditForm>
         </div>
         <aura:set attribute="else">
-            <!-- LENS SUPPLIER (HOYA)-->
             <div class="slds-theme_default slds-box" style="margin-bottom: 10px;" >
                 <h3 class="slds-section__title  test-id__section-header-container" data-aura-rendered-by="344:1408;a">     
                     <button aria-controls="toggle" id="toggle2" aria-expanded="true" class="slds-button slds-section__title-action" onclick="{!c.toggle}" >
@@ -72,26 +117,76 @@
                             <span class="test-id__section-header-title slds-truncate" title="{!v.InputTitle}">{!$Label.c.AccountVisitTabLensSupplier}</span>
                     </button>
                 </h3>
-                <lightning:recordForm aura:id="accountRecordForm" recordId="{!v.recordId}" objectApiName="Account"
+                <!--<lightning:recordForm aura:id="accountRecordForm" recordId="{!v.recordId}" objectApiName="Account"
                     fields="{!v.accountFields}" columns="3" mode="view"
-                    density="auto"/>
+                    density="auto"/>-->
+                <!-- Below code to amend for Global Competitor not allow to edit | Surawat add 2024-02-21 -->
+                <lightning:recordEditForm recordId="{!v.recordId}" objectApiName="Account" onsuccess="{!c.handleSuccess}">
+                    <div class="slds-grid slds-grid_align-space">
+                        <div class="slds-col slds-size_1-of-3">
+                            <lightning:inputField fieldName="Potential__c" />
+                        </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <lightning:outputField fieldName="AnnualRevenue" />
+                        </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <lightning:outputField fieldName="Share_of_Wallet__c" />
+                        </div>
+                    </div>
+                    <div class="slds-grid slds-gird_align-space">
+                        <div class="slds-col slds-size_1-of-3">
+                            <lightning:outputField fieldName="First_Competitor_global_name__c" />
+                        </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <lightning:inputField fieldName="First_Competitor_local_name__c" />
+                        </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <lightning:inputField fieldName="First_Competitor_SOW__c" />
+                        </div>
+                    </div>
+                    <div class="slds-grid slds-grid_align-space">
+                        <div class="slds-col slds-size_1-of-3">
+                            <lightning:outputField fieldName="Second_Competitor_global_name__c" />
+                        </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <lightning:inputField fieldName="Second_Competitor_Local_Name__c" />
+                        </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <lightning:inputField fieldName="Second_Competitor_SOW__c" />
+                        </div>
+                    </div>
+                    <div class="slds-grid slds-grid_align-space">
+                        <div class="slds-col slds-size_1-of-3">&nbsp;</div>
+                        <div class="slds-col slds-size_2-of-3">
+                            <lightning:button variant="brand" type="submit" label="Save" />
+                        </div>
+                    </div>
+                </lightning:recordEditForm>
             </div>
         </aura:set>
     </aura:if>
 
-
-
-    <h3 class="slds-section__title  test-id__section-header-container" data-aura-rendered-by="344:1408;a">    
-        <button aria-controls="toggle" id="toggle2" aria-expanded="true" class="slds-button slds-section__title-action" onclick="{!c.toggle}" >
-            <lightning:icon iconName="{!v.IconName}" class="slds-p-right_x-small" aura:id="swithcicon" width="100%" Height="100%" default="utility:chevrondown" size="X-small"  alternativeText="Expand"/>
-                <span class="test-id__section-header-title slds-truncate" title="{!v.InputTitle}">{!$Label.c.AccountSalesFiscalYearLabel}</span>
-        </button>
-    </h3>
+    <aura:if isTrue="{!v.account.Brand__c=='SEIKO'}">
+        <h3 class="slds-section__title  test-id__section-header-container" data-aura-rendered-by="344:1408;a">    
+            <button aria-controls="toggle" id="toggle2" aria-expanded="true" class="slds-button slds-section__title-action" onclick="{!c.toggle}" >
+                <lightning:icon iconName="{!v.IconName}" class="slds-p-right_x-small" aura:id="swithcicon" width="100%" Height="100%" default="utility:chevrondown" size="X-small"  alternativeText="Expand"/>
+                    <span class="test-id__section-header-title slds-truncate" title="{!v.InputTitle}">{!$Label.c.AccountSalesFiscalYearLabel}</span>
+            </button>
+        </h3>
+        <aura:set attribute="else">
+            <h3 class="slds-section__title  test-id__section-header-container" data-aura-rendered-by="344:1408;a">    
+                <button aria-controls="toggle" id="toggle2" aria-expanded="true" class="slds-button slds-section__title-action" onclick="{!c.toggle}" >
+                    <lightning:icon iconName="{!v.IconName}" class="slds-p-right_x-small" aura:id="swithcicon" width="100%" Height="100%" default="utility:chevrondown" size="X-small"  alternativeText="Expand"/>
+                        <span class="test-id__section-header-title slds-truncate" title="{!v.InputTitle}">Fiscal Year Accounting Figures (Lenses)</span>
+                </button>
+            </h3>
+        </aura:set>
+    </aura:if>
     <div class="slds-grid" style="padding-bottom: 40px;">
         <div class="slds-col slds-size_1-of-2"><canvas aura:id="chartSales" id="myChart" height="80"></canvas></div>
         <div class="slds-col slds-size_1-of-2"><canvas aura:id="volumeChart" id="myChart" height="80"></canvas></div>
     </div>
-    <div>
+    <div class="slds-scrollable_x" style="width:100%">
     <table class="slds-table slds-table_bordered slds-table_cell-buffer" >
         <thead>
             <tr>
@@ -254,7 +349,7 @@
                         <td>TOTAL</td>
                     </tr>
                 </thead>
-                 <tbody>
+                <tbody>
                     <tr class="slds-text-title_caps">
                         <th>{!$Label.c.LastFiscalYear}</th>
                         <td>
@@ -471,39 +566,57 @@
                     </tr>
                 </tbody>
 
-
             </table>
         </div>
 
 <div class="slds-grid slds-gutters">
-    <div class="slds-col slds-size_2-of-12"><span><label class="slds-form-element__label">Annual Revenue</label></span></div>
-    <div class="slds-col slds-size_2-of-12"><span><lightning:formattedNumber style="currency" value="{!v.sales.account.AnnualRevenue}" maximumFractionDigits="0"/></span></div>
+    <div class="slds-col slds-size_1-of-1"><span>&nbsp;</span></div>
+</div>
+<div class="slds-grid slds-gutters">
+    <div class="slds-col slds-size_2-of-12"><span><label class="slds-form-element__label">{!$Label.c.EMEAAccStatAnnualRevenue}</label></span></div>
+    <div class="slds-col slds-size_2-of-12"><span><lightning:formattedNumber style="currency" currencyCode="{!v.sales.account.CurrencyIsoCode}" value="{!v.sales.account.AnnualRevenue}" maximumFractionDigits="0"/></span></div>
     <div class="slds-col slds-size_2-of-12"><span></span></div>
-    <div class="slds-col slds-size_2-of-12"><span>Annual Quantity</span></div>
+    <div class="slds-col slds-size_2-of-12"><span>{!$Label.c.EMEAAccStatAnnualQuantity}</span></div>
     <div class="slds-col slds-size_2-of-12"><span><lightning:formattedNumber value="{!v.sales.AnnualQuantity}" maximumFractionDigits="0"/></span></div>
     <div class="slds-col slds-size_2-of-12"><span></span></div>
 </div>
 <div class="slds-grid slds-gutters">
-    <div class="slds-col slds-size_2-of-12"><span><label class="slds-form-element__label">Total turnover CFY<!--{v_.SeikoObjectType.Seiko_Data__c.Total_turnover__c.label}--></label></span></div>
-    <div class="slds-col slds-size_2-of-12"><span><lightning:formattedNumber value="{!v.sales.seikoSales.Total_turnover__c}" maximumFractionDigits="0" style="currency" currencyCode="{!v.sales.account.CurrencyIsoCode}"/></span></div>
+    <div class="slds-col slds-size_2-of-12"><span><label class="slds-form-element__label">{!$Label.c.EMEAAccstatTotalTurnoverCFY}<!--{v_.SeikoObjectType.Seiko_Data__c.Total_turnover__c.label}--></label></span></div>
+    <aura:if isTrue="{!v.sales.account.Brand__c=='HOYA'}">
+        <div class="slds-col slds-size_2-of-12"><span><lightning:formattedNumber value="{!v.sales.account.Sales_Total_Current_Year__c}" maximumFractionDigits="0" style="currency" currencyCode="{!v.sales.account.CurrencyIsoCode}"/></span></div>
+    <aura:set attribute="else">
+        <div class="slds-col slds-size_2-of-12"><span><lightning:formattedNumber value="{!v.sales.seikoSales.Total_turnover__c}" maximumFractionDigits="0" style="currency" currencyCode="{!v.sales.account.CurrencyIsoCode}"/></span></div>
+    </aura:set>
+    </aura:if>
     <div class="slds-col slds-size_2-of-12"><span>&nbsp;</span></div>
-    <div class="slds-col slds-size_2-of-12"><span>Total Quantity CFY</span></div>
+    <div class="slds-col slds-size_2-of-12"><span>{!$Label.c.EMEAAccStatAnnualQuantityCFY}</span></div>
     <div class="slds-col slds-size_2-of-12"><span><lightning:formattedNumber value="{!v.sales.TotalQty}" maximumFractionDigits="0"/></span></div>
     <div class="slds-col slds-size_2-of-12"><span></span></div>
 </div>
 <div class="slds-grid slds-gutters">
-    <div class="slds-col slds-size_2-of-12"><span><label class="slds-form-element__label">Total turnover LFY<!--{v_.SeikoObjectType.Seiko_Data__c.Total_turnover_last_year__c.label}--></label></span></div>
-    <div class="slds-col slds-size_2-of-12"><span><lightning:formattedNumber value="{!v.sales.seikoSales.Total_turnover_last_year__c}" maximumFractionDigits="0" style="currency" currencyCode="{!v.sales.account.CurrencyIsoCode}"/></span></div>
-    <div class="slds-col slds-size_2-of-12"><span></span></div>
-    <div class="slds-col slds-size_2-of-12"><span>Total Quantity LFY</span></div>
+    <div class="slds-col slds-size_2-of-12"><span><label class="slds-form-element__label">{!$Label.c.EMEAAccStatTotalTurnoverLFY}<!--{v_.SeikoObjectType.Seiko_Data__c.Total_turnover_last_year__c.label}--></label></span></div>
+    <aura:if isTrue="{!v.sales.account.Brand__c == 'HOYA'}">
+        <div class="slds-col slds-size_2-of-12"><span><lightning:formattedNumber value="{!v.sales.account.Sales_Total_Last_Year__c}" maximumFractionDigits="0" style="currency" currencyCode="{!v.sales.account.CurrencyIsoCode}" /></span></div>
+        <div class="slds-col slds-size_2-of-12"><span></span></div>
+    <aura:set attribute="else">
+        <div class="slds-col slds-size_2-of-12"><span><lightning:formattedNumber value="{!v.sales.seikoSales.Total_turnover_last_year__c}" maximumFractionDigits="0" style="currency" currencyCode="{!v.sales.account.CurrencyIsoCode}"/></span></div>
+        <div class="slds-col slds-size_2-of-12"><span></span></div>
+    </aura:set>
+    </aura:if>
+    <div class="slds-col slds-size_2-of-12"><span>{!$Label.c.EMEAAccStatAnnualQuantityLFY}</span></div>
     <div class="slds-col slds-size_2-of-12"><span><lightning:formattedNumber value="{!v.sales.TotalQtyLY}" maximumFractionDigits="0"/></span></div>
     <div class="slds-col slds-size_2-of-12"><span></span></div>
 </div>
 <div class="slds-grid slds-gutters">
-    <div class="slds-col slds-size_2-of-12"><span><label class="slds-form-element__label">Total turnover Trend<!--{v_.SeikoObjectType.Seiko_Data__c.Total_turnover_Trend__c.label}--></label></span></div>
-    <div class="slds-col slds-size_2-of-12"><span><lightning:formattedNumber value="{!v.sales.seikoSales.Total_turnover_Trend__c}" maximumFractionDigits="0" /> %</span></div>
+    <div class="slds-col slds-size_2-of-12"><span><label class="slds-form-element__label">{!$Label.c.EMEAAccStatTurnoverTrend}<!--{v_.SeikoObjectType.Seiko_Data__c.Total_turnover_Trend__c.label}--></label></span></div>
+    <aura:if isTrue="{!v.account.Brand__c == 'HOYA'}">
+        <div class="slds-col slds-size_2-of-12"><span><lightning:formattedNumber value="{!v.sales.account.Total_Turnover_Trend__c}" maximumFractionDigits="0" /> %</span></div>
+    <aura:set attribute="else">
+        <div class="slds-col slds-size_2-of-12"><span><lightning:formattedNumber value="{!v.sales.seikoSales.Total_turnover_Trend__c}" maximumFractionDigits="0" /> %</span></div>
+    </aura:set>
+    </aura:if>
     <div class="slds-col slds-size_2-of-12"><span>&nbsp;</span></div>
-    <div class="slds-col slds-size_2-of-12"><span>Total Quantity Trend</span></div>
+    <div class="slds-col slds-size_2-of-12"><span>{!$Label.c.EMEAAccStatTotalQuantityTrend}</span></div>
     <div class="slds-col slds-size_2-of-12"><span><lightning:formattedNumber value="{!v.sales.TotalQuantityTrend}" maximumFractionDigits="0"/> %</span></div>
     <div class="slds-col slds-size_2-of-12"><span></span></div>
 </div>
@@ -511,18 +624,18 @@
     <div class="slds-col slds-size_1-of-1"><span>&nbsp;</span></div>
 </div>
 <div class="slds-grid slds-gutters">
-    <div class="slds-col slds-size_2-of-12"><span><label class="slds-form-element__label">Total Turnover YTD LFY</label></span></div>
+    <div class="slds-col slds-size_2-of-12"><span><label class="slds-form-element__label">{!$Label.c.EMEAAccStatTotalturnoverYTDLFY}</label></span></div>
     <div class="slds-col slds-size_2-of-12"><span><lightning:formattedNumber value="{!v.sales.account.Sales_Total_YTD_LY__c}" maximumFractionDigits="0" style="currency" currencyCode="{!v.sales.account.CurrencyIsoCode}"/></span></div>
     <div class="slds-col slds-size_2-of-12"><span>&nbsp;</span></div>
-    <div class="slds-col slds-size_2-of-12"><span>Total Quantity YTD LFY</span></div>
+    <div class="slds-col slds-size_2-of-12"><span>{!$Label.c.EMEAAccStatTotalQtyYTDLFY}</span></div>
     <div class="slds-col slds-size_2-of-12"><span><lightning:formattedNumber value="{!v.sales.TotalQuantityYTD_LFY}" maximumFractionDigits="0"/></span></div>
     <div class="slds-col slds-size_2-of-12"><span></span></div>
 </div>
 <div class="slds-grid slds-gutters">
-    <div class="slds-col slds-size_2-of-12"><span><label class="slds-form-element__label">Total Turnover YTD VS LFY</label></span></div>
+    <div class="slds-col slds-size_2-of-12"><span><label class="slds-form-element__label">{!$Label.c.EMEAAccStatTotalturnoverYTDVSLFY}</label></span></div>
     <div class="slds-col slds-size_2-of-12"><span><lightning:formattedNumber value="{!v.sales.account.Sales_CY_vs_LY_YTD__c}" maximumFractionDigits="0"/> %</span></div>
     <div class="slds-col slds-size_2-of-12"><span>&nbsp;</span></div>
-    <div class="slds-col slds-size_2-of-12"><span>Total Quantity YTD VS LFY</span></div>
+    <div class="slds-col slds-size_2-of-12"><span>{!$Label.c.EMEAAccStatTotalQtyYTDVSLFY}</span></div>
     <div class="slds-col slds-size_2-of-12"><span><lightning:formattedNumber value="{!v.sales.TotalQuantityYTD_VS_LFY}" maximumFractionDigits="0"/> %</span></div>
     <div class="slds-col slds-size_2-of-12"><span></span></div>
 </div>
@@ -530,52 +643,61 @@
     <div class="slds-col slds-size_1-of-1"><span>&nbsp;</span></div>
 </div>
 <div class="slds-grid slds-gutters">
-    <div class="slds-col slds-size_2-of-12"><span><label class="slds-form-element__label">Last 3 Months Avg sales</label></span></div>
+    <div class="slds-col slds-size_2-of-12"><span><label class="slds-form-element__label">{!$Label.c.EMEAAccStatLast3MthAvgSales}</label></span></div>
     <div class="slds-col slds-size_2-of-12"><span><lightning:formattedNumber value="{!v.sales.account.Turnover_Amount__c/3}" maximumFractionDigits="0" style="currency" currencyCode="{!v.sales.account.CurrencyIsoCode}"/></span></div>
     <div class="slds-col slds-size_2-of-12"><span>&nbsp;</span></div>
-    <div class="slds-col slds-size_2-of-12"><span>Last 3 Months Avg Quantity</span></div>
+    <div class="slds-col slds-size_2-of-12"><span>{!$Label.c.EMEAAccStatLast3MthQtySales}</span></div>
     <div class="slds-col slds-size_2-of-12"><span><lightning:formattedNumber value="{!v.sales.QuantityLast3Month/3}" maximumFractionDigits="0"/></span></div>
     <div class="slds-col slds-size_2-of-12"><span></span></div>
 </div>
 <div class="slds-grid slds-gutters">
-    <div class="slds-col slds-size_2-of-12"><span><label class="slds-form-element__label">Last 3 Months Total Sales</label></span></div>
+    <div class="slds-col slds-size_2-of-12"><span><label class="slds-form-element__label">{!$Label.c.EMEAAccStatLast3MthTotalSales}</label></span></div>
     <div class="slds-col slds-size_2-of-12"><span><lightning:formattedNumber value="{!v.sales.account.Turnover_Amount__c}"  maximumFractionDigits="0" style="currency" currencyCode="{!v.sales.account.CurrencyIsoCode}"/></span></div>
     <div class="slds-col slds-size_2-of-12"><span>&nbsp;</span></div>
-    <div class="slds-col slds-size_2-of-12"><span>Last 3 Months Quantity</span></div>
+    <div class="slds-col slds-size_2-of-12"><span>{!$Label.c.EMEAAccStatLast3MthQty}</span></div>
     <div class="slds-col slds-size_2-of-12"><span><lightning:formattedNumber value="{!v.sales.QuantityLast3Month}" maximumFractionDigits="0"/></span></div>
     <div class="slds-col slds-size_2-of-12"><span></span></div>
 </div>
 <div class="slds-grid slds-gutters">
-    <div class="slds-col slds-size_2-of-12"><span><label class="slds-form-element__label">Last 3 Months Total sales LY</label></span></div>
+    <div class="slds-col slds-size_2-of-12"><span><label class="slds-form-element__label">{!$Label.c.EMEAAccStatLast3MthTotalSalesLY}</label></span></div>
     <div class="slds-col slds-size_2-of-12"><span><lightning:formattedNumber value="{!v.sales.account.Last_3_Month_Total_sales_LY__c}" maximumFractionDigits="0" style="currency" currencyCode="{!v.sales.account.CurrencyIsoCode}"/></span></div>
     <div class="slds-col slds-size_2-of-12"><span>&nbsp;</span></div>
-    <div class="slds-col slds-size_2-of-12"><span>Last 3 Months Total Quantity LY</span></div>
+    <div class="slds-col slds-size_2-of-12"><span>{!$Label.c.EMEAAccStatLast3MthTotalQtyLY}</span></div>
     <div class="slds-col slds-size_2-of-12"><span><lightning:formattedNumber value="{!v.sales.QuantityLast3MonthLY}" maximumFractionDigits="0"/></span></div>
     <div class="slds-col slds-size_2-of-12"><span></span></div>
 </div>
 <div class="slds-grid slds-gutters">
-    <div class="slds-col slds-size_2-of-12"><span><label class="slds-form-element__label">Last 3 Months Total sales VS LY</label></span></div>
+    <div class="slds-col slds-size_2-of-12"><span><label class="slds-form-element__label">{!$Label.c.EMEAAccStatLast3MthTotalSalesVSLY}</label></span></div>
     <div class="slds-col slds-size_2-of-12"><span><lightning:formattedNumber value="{!v.sales.account.Last_3_Months_Total_Sales_VS_LY__c}" maximumFractionDigits="0" /> %</span></div>
     <div class="slds-col slds-size_2-of-12"><span>&nbsp;</span></div>
-    <div class="slds-col slds-size_2-of-12"><span>Last 3 Months Total Quantity VS LY</span></div>
+    <div class="slds-col slds-size_2-of-12"><span>{!$Label.c.EMEAAccStatLast3MthTotalQtyVSLY}</span></div>
     <div class="slds-col slds-size_2-of-12"><span><lightning:formattedNumber value="{!((v.sales.QuantityLast3Month-v.sales.QuantityLast3MonthLY)/v.sales.QuantityLast3MonthLY)*100}" maximumFractionDigits="0"/> %</span></div>
     <div class="slds-col slds-size_2-of-12"><span></span></div>
 </div>
 
 <!-- CALENDAR SALES SECTION-->
 
-
-<h3 class="slds-section__title  test-id__section-header-container" data-aura-rendered-by="344:1408;a" style="padding-top: 40px;">    
-    <button aria-controls="toggle" id="toggle2" aria-expanded="true" class="slds-button slds-section__title-action" onclick="{!c.toggle}" >
-        <lightning:icon iconName="{!v.IconName}" class="slds-p-right_x-small" aura:id="swithcicon" width="100%" Height="100%" default="utility:chevrondown" size="X-small"  alternativeText="Expand"/>
-            <span class="test-id__section-header-title slds-truncate" title="{!v.InputTitle}">{!$Label.c.AccountSalesCalendarYearLabel}</span>
-    </button>
-</h3>
-
+<aura:if isTrue="{!v.account.Brand__c=='SEIKO'}">
+    <h3 class="slds-section__title  test-id__section-header-container" data-aura-rendered-by="344:1408;a" style="padding-top: 40px;">    
+        <button aria-controls="toggle" id="toggle2" aria-expanded="true" class="slds-button slds-section__title-action" onclick="{!c.toggle}" >
+            <lightning:icon iconName="{!v.IconName}" class="slds-p-right_x-small" aura:id="swithcicon" width="100%" Height="100%" default="utility:chevrondown" size="X-small"  alternativeText="Expand"/>
+                <span class="test-id__section-header-title slds-truncate" title="{!v.InputTitle}">{!$Label.c.AccountSalesCalendarYearLabel}</span>
+        </button>
+    </h3>
+    <aura:set attribute="else">
+        <h3 class="slds-section__title  test-id__section-header-container" data-aura-rendered-by="344:1408;a" style="padding-top: 40px;">    
+            <button aria-controls="toggle" id="toggle2" aria-expanded="true" class="slds-button slds-section__title-action" onclick="{!c.toggle}" >
+                <lightning:icon iconName="{!v.IconName}" class="slds-p-right_x-small" aura:id="swithcicon" width="100%" Height="100%" default="utility:chevrondown" size="X-small"  alternativeText="Expand"/>
+                    <span class="test-id__section-header-title slds-truncate" title="{!v.InputTitle}">Calendar Year Accounting Figures (Lenses)</span>
+            </button>
+        </h3>
+    </aura:set>
+</aura:if>
 <div class="slds-grid" style="padding-bottom: 40px;">
     <div class="slds-col slds-size_1-of-2"><canvas aura:id="chartCalendarSales" id="myChart" height="80"></canvas></div>
     <div class="slds-col slds-size_1-of-2"><canvas aura:id="chartCalendarVolumes" id="myChart" height="80"></canvas></div>
 </div>
+<div class="slds-scrollable_x" style="width:100%">
 <table class="slds-table slds-table_bordered slds-table_cell-buffer" >
 <!-- VOLUME TABLE-->
         <thead>
@@ -687,7 +809,7 @@
 <tr><td colspan="13">&nbsp;</td></tr>
 <tr>
     <td><label class="slds-form-element__label">Total Turnover YTD LY</label></td>
-    <td colspan="2"><lightning:formattedNumber value="{!v.sales.TotalTurnoverYTD_LY}" maximumFractionDigits="0" /></td>
+    <td colspan="2"><lightning:formattedNumber value="{!v.sales.TotalTurnoverYTD_LY}" maximumFractionDigits="0" style="currency" currencyCode="{!v.sales.account.CurrencyIsoCode}" /></td>
     <td colspan="4">&nbsp;</td>
     <td colspan="3">Total Volumes YTD LY</td>
     <td><lightning:formattedNumber value="{!v.sales.TotalVolumeYTD_LY}" maximumFractionDigits="0"/></td>
@@ -701,6 +823,7 @@
 </tr>
 <tr><td colspan="13">&nbsp;</td></tr>
 </table>
+</div>
 
 
 <!-- Multi shop sales -->
@@ -715,6 +838,7 @@
     <div class="slds-col slds-size_1-of-2"><canvas aura:id="relatedChartSales" id="relatedChartSal" height="80"></canvas></div>
     <div class="slds-col slds-size_1-of-2"><canvas aura:id="relatedChartVolumes" id="relatedChartVol" height="80"></canvas></div>
 </div>
+<div class="slds-scrollable_x" style="width:100%">
 <table class="slds-table slds-table_bordered slds-table_cell-buffer" >
     <!-- Sales TABLE-->
         <thead>
@@ -764,6 +888,57 @@
                     </tr>
                 </aura:if>
             </aura:iteration>
+            <tr class="slds-text-title_caps"><td colspan="14">&nbsp;</td></tr>
+            <aura:iteration items="{!v.relatedDataListLY}" var="sal">
+                <!-- Account + related shops + total -->
+                <aura:if isTrue="{!sal.type=='sales'}">
+                    <tr class="slds-text-title_caps">
+                        <td><lightning:formattedUrl value="{!'/'+sal.accountId}" label="{!sal.hoya_account_id}" target="_blank"/></td>
+                        <td><lightning:formattedNumber value="{!sal.april}" maximumFractionDigits="0"/><aura:if isTrue="{!sal.hoya_account_id=='CFY vs LFY'}">%</aura:if></td>
+                        <td><lightning:formattedNumber value="{!sal.may}" maximumFractionDigits="0"/><aura:if isTrue="{!sal.hoya_account_id=='CFY vs LFY'}">%</aura:if></td>
+                        <td><lightning:formattedNumber value="{!sal.june}" maximumFractionDigits="0"/><aura:if isTrue="{!sal.hoya_account_id=='CFY vs LFY'}">%</aura:if></td>
+                        <td><lightning:formattedNumber value="{!sal.july}" maximumFractionDigits="0"/><aura:if isTrue="{!sal.hoya_account_id=='CFY vs LFY'}">%</aura:if></td>
+                        <td><lightning:formattedNumber value="{!sal.august}" maximumFractionDigits="0"/><aura:if isTrue="{!sal.hoya_account_id=='CFY vs LFY'}">%</aura:if></td>
+                        <td><lightning:formattedNumber value="{!sal.september}" maximumFractionDigits="0"/><aura:if isTrue="{!sal.hoya_account_id=='CFY vs LFY'}">%</aura:if></td>
+                        <td><lightning:formattedNumber value="{!sal.october}" maximumFractionDigits="0"/><aura:if isTrue="{!sal.hoya_account_id=='CFY vs LFY'}">%</aura:if></td>
+                        <td><lightning:formattedNumber value="{!sal.november}" maximumFractionDigits="0"/><aura:if isTrue="{!sal.hoya_account_id=='CFY vs LFY'}">%</aura:if></td>
+                        <td><lightning:formattedNumber value="{!sal.december}" maximumFractionDigits="0"/><aura:if isTrue="{!sal.hoya_account_id=='CFY vs LFY'}">%</aura:if></td>
+                        <td><lightning:formattedNumber value="{!sal.january}" maximumFractionDigits="0"/><aura:if isTrue="{!sal.hoya_account_id=='CFY vs LFY'}">%</aura:if></td>
+                        <td><lightning:formattedNumber value="{!sal.february}" maximumFractionDigits="0"/><aura:if isTrue="{!sal.hoya_account_id=='CFY vs LFY'}">%</aura:if></td>
+                        <td><lightning:formattedNumber value="{!sal.march}" maximumFractionDigits="0"/><aura:if isTrue="{!sal.hoya_account_id=='CFY vs LFY'}">%</aura:if></td>
+                        <td>
+                            <aura:if isTrue="{!sal.hoya_account_id=='CFY vs LFY'}">
+                                -
+                                <aura:set attribute="else">
+                                    <lightning:formattedNumber value="{!sal.april+sal.may+sal.june+sal.july+sal.august+sal.september+sal.october+sal.november+sal.december+sal.january+sal.february+sal.march}" maximumFractionDigits="0"/>
+                                </aura:set>
+                            </aura:if>
+                        </td>
+                    </tr>
+                </aura:if>
+            </aura:iteration>
+            <tr class="slds-text-title_caps"><td colspan="14">&nbsp;</td></tr>
+            <aura:iteration items="{!v.relatedDataListCYvsLY}" var="sal">
+                <!-- Account + related shops + total -->
+                <aura:if isTrue="{!sal.type=='sales'}">
+                    <tr class="slds-text-title_caps">
+                        <td><lightning:formattedUrl value="{!'/'+sal.accountId}" label="{!sal.hoya_account_id}" target="_blank"/></td>
+                        <td><lightning:formattedNumber value="{!sal.april}" maximumFractionDigits="0"/>%</td>
+                        <td><lightning:formattedNumber value="{!sal.may}" maximumFractionDigits="0"/>%</td>
+                        <td><lightning:formattedNumber value="{!sal.june}" maximumFractionDigits="0"/>%</td>
+                        <td><lightning:formattedNumber value="{!sal.july}" maximumFractionDigits="0"/>%</td>
+                        <td><lightning:formattedNumber value="{!sal.august}" maximumFractionDigits="0"/>%</td>
+                        <td><lightning:formattedNumber value="{!sal.september}" maximumFractionDigits="0"/>%</td>
+                        <td><lightning:formattedNumber value="{!sal.october}" maximumFractionDigits="0"/>%</td>
+                        <td><lightning:formattedNumber value="{!sal.november}" maximumFractionDigits="0"/>%</td>
+                        <td><lightning:formattedNumber value="{!sal.december}" maximumFractionDigits="0"/>%</td>
+                        <td><lightning:formattedNumber value="{!sal.january}" maximumFractionDigits="0"/>%</td>
+                        <td><lightning:formattedNumber value="{!sal.february}" maximumFractionDigits="0"/>%</td>
+                        <td><lightning:formattedNumber value="{!sal.march}" maximumFractionDigits="0"/>%</td>
+                        <td><lightning:formattedNumber value="{!sal.total}" maximumFractionDigits="0"/>%</td>
+                    </tr>
+                </aura:if>
+            </aura:iteration>
         </tbody>
         <tr><td colspan="13" style="padding-top:40px;"></td></tr>
         <thead>
@@ -790,18 +965,18 @@
                 <aura:if isTrue="{!sal.type=='volume'}">
                     <tr class="slds-text-title_caps">
                         <td><lightning:formattedUrl value="{!'/'+sal.accountId}" label="{!sal.hoya_account_id}" target="_blank"/></td>
-                        <td><lightning:formattedNumber value="{!sal.april}" maximumFractionDigits="0"/><aura:if isTrue="{!sal.hoya_account_id=='CFY vs LFY'}">%</aura:if></td>
-                        <td><lightning:formattedNumber value="{!sal.may}" maximumFractionDigits="0"/><aura:if isTrue="{!sal.hoya_account_id=='CFY vs LFY'}">%</aura:if></td>
-                        <td><lightning:formattedNumber value="{!sal.june}" maximumFractionDigits="0"/><aura:if isTrue="{!sal.hoya_account_id=='CFY vs LFY'}">%</aura:if></td>
-                        <td><lightning:formattedNumber value="{!sal.july}" maximumFractionDigits="0"/><aura:if isTrue="{!sal.hoya_account_id=='CFY vs LFY'}">%</aura:if></td>
-                        <td><lightning:formattedNumber value="{!sal.august}" maximumFractionDigits="0"/><aura:if isTrue="{!sal.hoya_account_id=='CFY vs LFY'}">%</aura:if></td>
-                        <td><lightning:formattedNumber value="{!sal.september}" maximumFractionDigits="0"/><aura:if isTrue="{!sal.hoya_account_id=='CFY vs LFY'}">%</aura:if></td>
-                        <td><lightning:formattedNumber value="{!sal.october}" maximumFractionDigits="0"/><aura:if isTrue="{!sal.hoya_account_id=='CFY vs LFY'}">%</aura:if></td>
-                        <td><lightning:formattedNumber value="{!sal.november}" maximumFractionDigits="0"/><aura:if isTrue="{!sal.hoya_account_id=='CFY vs LFY'}">%</aura:if></td>
-                        <td><lightning:formattedNumber value="{!sal.december}" maximumFractionDigits="0"/><aura:if isTrue="{!sal.hoya_account_id=='CFY vs LFY'}">%</aura:if></td>
-                        <td><lightning:formattedNumber value="{!sal.january}" maximumFractionDigits="0"/><aura:if isTrue="{!sal.hoya_account_id=='CFY vs LFY'}">%</aura:if></td>
-                        <td><lightning:formattedNumber value="{!sal.february}" maximumFractionDigits="0"/><aura:if isTrue="{!sal.hoya_account_id=='CFY vs LFY'}">%</aura:if></td>
-                        <td><lightning:formattedNumber value="{!sal.march}" maximumFractionDigits="0"/><aura:if isTrue="{!sal.hoya_account_id=='CFY vs LFY'}">%</aura:if></td>
+                        <td><lightning:formattedNumber value="{!sal.april}" maximumFractionDigits="0"/></td>
+                        <td><lightning:formattedNumber value="{!sal.may}" maximumFractionDigits="0"/></td>
+                        <td><lightning:formattedNumber value="{!sal.june}" maximumFractionDigits="0"/></td>
+                        <td><lightning:formattedNumber value="{!sal.july}" maximumFractionDigits="0"/></td>
+                        <td><lightning:formattedNumber value="{!sal.august}" maximumFractionDigits="0"/></td>
+                        <td><lightning:formattedNumber value="{!sal.september}" maximumFractionDigits="0"/></td>
+                        <td><lightning:formattedNumber value="{!sal.october}" maximumFractionDigits="0"/></td>
+                        <td><lightning:formattedNumber value="{!sal.november}" maximumFractionDigits="0"/></td>
+                        <td><lightning:formattedNumber value="{!sal.december}" maximumFractionDigits="0"/></td>
+                        <td><lightning:formattedNumber value="{!sal.january}" maximumFractionDigits="0"/></td>
+                        <td><lightning:formattedNumber value="{!sal.february}" maximumFractionDigits="0"/></td>
+                        <td><lightning:formattedNumber value="{!sal.march}" maximumFractionDigits="0"/></td>
                         <td>
                             <aura:if isTrue="{!sal.hoya_account_id=='CFY vs LFY'}">
                                 -
@@ -813,13 +988,83 @@
                     </tr>
                 </aura:if>
             </aura:iteration>
+            <tr class="slds-text-title_caps"><td colspan="14">&nbsp;</td></tr>
+            <aura:iteration items="{!v.relatedDataListLY}" var="sal">
+                <!-- Account + related shops + total -->
+                <aura:if isTrue="{!sal.type=='volume'}">
+                    <tr class="slds-text-title_caps">
+                        <td><lightning:formattedUrl value="{!'/'+sal.accountId}" label="{!sal.hoya_account_id}" target="_blank"/></td>
+                        <td><lightning:formattedNumber value="{!sal.april}" maximumFractionDigits="0"/></td>
+                        <td><lightning:formattedNumber value="{!sal.may}" maximumFractionDigits="0"/></td>
+                        <td><lightning:formattedNumber value="{!sal.june}" maximumFractionDigits="0"/></td>
+                        <td><lightning:formattedNumber value="{!sal.july}" maximumFractionDigits="0"/></td>
+                        <td><lightning:formattedNumber value="{!sal.august}" maximumFractionDigits="0"/></td>
+                        <td><lightning:formattedNumber value="{!sal.september}" maximumFractionDigits="0"/></td>
+                        <td><lightning:formattedNumber value="{!sal.october}" maximumFractionDigits="0"/></td>
+                        <td><lightning:formattedNumber value="{!sal.november}" maximumFractionDigits="0"/></td>
+                        <td><lightning:formattedNumber value="{!sal.december}" maximumFractionDigits="0"/></td>
+                        <td><lightning:formattedNumber value="{!sal.january}" maximumFractionDigits="0"/></td>
+                        <td><lightning:formattedNumber value="{!sal.february}" maximumFractionDigits="0"/></td>
+                        <td><lightning:formattedNumber value="{!sal.march}" maximumFractionDigits="0"/></td>
+                        <!--td><lightning:formattedNumber value="{!sal.total}" maximumFractionDigits="0"/>%</td-->
+                        <td>
+                            <aura:if isTrue="{!sal.hoya_account_id=='CFY vs LFY'}">
+                                -
+                                <aura:set attribute="else">
+                                    <lightning:formattedNumber value="{!sal.april+sal.may+sal.june+sal.july+sal.august+sal.september+sal.october+sal.november+sal.december+sal.january+sal.february+sal.march}" maximumFractionDigits="0"/>
+                                </aura:set>
+                            </aura:if>
+                        </td>
+                    </tr>
+                </aura:if>
+            </aura:iteration>
+            <tr class="slds-text-title_caps"><td colspan="14">&nbsp;</td></tr>
+            <aura:iteration items="{!v.relatedDataListCYvsLY}" var="sal">
+                <!-- Account + related shops + total -->
+                <aura:if isTrue="{!sal.type=='volume'}">
+                    <tr class="slds-text-title_caps">
+                        <td><lightning:formattedUrl value="{!'/'+sal.accountId}" label="{!sal.hoya_account_id}" target="_blank"/></td>
+                        <td><lightning:formattedNumber value="{!sal.april}" maximumFractionDigits="0"/>%</td>
+                        <td><lightning:formattedNumber value="{!sal.may}" maximumFractionDigits="0"/>%</td>
+                        <td><lightning:formattedNumber value="{!sal.june}" maximumFractionDigits="0"/>%</td>
+                        <td><lightning:formattedNumber value="{!sal.july}" maximumFractionDigits="0"/>%</td>
+                        <td><lightning:formattedNumber value="{!sal.august}" maximumFractionDigits="0"/>%</td>
+                        <td><lightning:formattedNumber value="{!sal.september}" maximumFractionDigits="0"/>%</td>
+                        <td><lightning:formattedNumber value="{!sal.october}" maximumFractionDigits="0"/>%</td>
+                        <td><lightning:formattedNumber value="{!sal.november}" maximumFractionDigits="0"/>%</td>
+                        <td><lightning:formattedNumber value="{!sal.december}" maximumFractionDigits="0"/>%</td>
+                        <td><lightning:formattedNumber value="{!sal.january}" maximumFractionDigits="0"/>%</td>
+                        <td><lightning:formattedNumber value="{!sal.february}" maximumFractionDigits="0"/>%</td>
+                        <td><lightning:formattedNumber value="{!sal.march}" maximumFractionDigits="0"/>%</td>
+                        <td><lightning:formattedNumber value="{!sal.total}" maximumFractionDigits="0"/>%</td>
+                    </tr>
+                </aura:if>
+            </aura:iteration>
         </tbody>
 </table>
+</div>
 
-<lightning:formattedUrl 
-    value="http://ec2-34-252-248-24.eu-west-1.compute.amazonaws.com/SfdcSynchroWeb/DocumentWebService?entity=seikostat&amp;id=0010X00004ELh6pQAD&amp;name=SO4400129781.pdf"
-    label="Statistics (PDF)"
-    target="_blank"/>
-
+<br/>
+<aura:if isTrue="{!v.account.Brand__c=='SEIKO'}">
+    <h3 class="slds-section__title  test-id__section-header-container" data-aura-rendered-by="344:1408;a" style="padding-top:20px;">    
+        <button aria-controls="toggle" id="toggle2" aria-expanded="true" class="slds-button slds-section__title-action" onclick="{!c.toggle}" >
+            <lightning:icon iconName="{!v.IconName}" class="slds-p-right_x-small" aura:id="swithcicon" width="100%" Height="100%" default="utility:chevrondown" size="X-small"  alternativeText="Expand"/>
+                <span class="test-id__section-header-title slds-truncate" title="{!v.InputTitle}">{!$Label.c.AccountCalendarYearProductMixFigures}</span>
+        </button>
+    </h3>
+        <br/>
+        <lightning:formattedUrl 
+            value="{!v.statPdf}"
+            label="Statistics (PDF)"
+            target="_blank"/>
+            <br/><br/>
+        <lightning:formattedUrl 
+            value="{!v.statConsoPdf}"
+            label="Statistics conso (PDF)"
+        target="_blank"/>
+    <aura:set attribute="else">
+        <div class="slds-grid"><div class="slds-col slds-size_1-of-1"><span>&nbsp;</span></div></div>
+    </aura:set>
+    </aura:if>
 </div>
 </aura:component>

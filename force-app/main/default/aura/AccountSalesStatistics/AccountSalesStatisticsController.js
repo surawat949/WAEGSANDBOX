@@ -6,8 +6,6 @@
             helper.initSales(component, recordId, function(err, result){
                 console.log(result);               
                 component.set('v.sales', result[0]); 
-                console.log(result[0].account.CurrencyIsoCode);
-                component.set('v.currency',result[0].account.CurrencyIsoCode);
                 var obj = JSON.parse(result[1]);
                 var OhabitsArray = new Array(parseInt(obj.ManualOrders),parseInt(obj.HVCsys),parseInt(obj.OtherOrders),parseInt(obj.UnCutlens),parseInt(obj.RemoteEdging),parseInt(obj.Mounting),parseInt(obj.FramesByHvc),parseInt(obj.RealShape),parseInt(obj.StandShape),parseInt(obj.Boxing) );
                 var prodRetArray = new Array(parseInt(obj.ProdRet12),parseInt(obj.ProdRet3),parseInt(obj.CutRet12),parseInt(obj.CutRet3),parseInt(obj.MountRet12),parseInt(obj.MountRet3),parseInt(obj.TotalProdRet12),parseInt(obj.TotalProdRet3));
@@ -17,7 +15,7 @@
                 component.set('v.nonProdRetLst', nonProdRetArray);
                 component.set('v.totalRet',totalRetArray);
                 component.set('v.orderingHabitsLst', OhabitsArray);
-                var CYSales = result[2];
+				var CYSales = result[2];
                 var totalconLensNetSales = CYSales[4].contactLensNetSales+CYSales[5].contactLensNetSales+CYSales[6].contactLensNetSales+CYSales[7].contactLensNetSales+CYSales[8].contactLensNetSales+CYSales[9].contactLensNetSales+CYSales[10].contactLensNetSales+CYSales[11].contactLensNetSales+CYSales[12].contactLensNetSales+CYSales[1].contactLensNetSales+CYSales[2].contactLensNetSales+CYSales[3].contactLensNetSales;
                 var conLensNetLst = new Array(CYSales[4].contactLensNetSales,CYSales[5].contactLensNetSales,CYSales[6].contactLensNetSales,CYSales[7].contactLensNetSales,CYSales[8].contactLensNetSales,CYSales[9].contactLensNetSales,CYSales[10].contactLensNetSales,CYSales[11].contactLensNetSales,CYSales[12].contactLensNetSales,CYSales[1].contactLensNetSales,CYSales[2].contactLensNetSales,CYSales[3].contactLensNetSales,totalconLensNetSales);
                 var totalconLensGrossSales = CYSales[4].contactLensGrossSales+CYSales[5].contactLensGrossSales+CYSales[6].contactLensGrossSales+CYSales[7].contactLensGrossSales+CYSales[8].contactLensGrossSales+CYSales[9].contactLensGrossSales+CYSales[10].contactLensGrossSales+CYSales[11].contactLensGrossSales+CYSales[12].contactLensGrossSales+CYSales[1].contactLensGrossSales+CYSales[2].contactLensGrossSales+CYSales[3].contactLensGrossSales;
@@ -253,5 +251,16 @@
         } catch(error){
             alert(error);
         }
+    },
+    
+    handleSuccess : function(component, event, helper){
+        var toastEvent = $A.get("e.force:showToast");
+        toastEvent.setParams({
+            "title" : "Save Success",
+            "message" : "The record saved successfully",
+            "type" : "Success"
+        });
+        toastEvent.fire();
+
     }
 })

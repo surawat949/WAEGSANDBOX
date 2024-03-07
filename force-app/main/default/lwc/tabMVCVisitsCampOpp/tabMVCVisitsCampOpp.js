@@ -61,6 +61,14 @@ export default class TabMVCVisitsCampOpp extends NavigationMixin(LightningElemen
     displayIdentifiedOppViewAllButton;
     isModalOpen = false; //for opportunity popup
 
+    subject;
+    projectName;
+    category;
+    description;
+    nextSteps;
+    level;
+    status;
+
     @track businessOppColumns = [
         {
             label: this.label.project_name,
@@ -176,7 +184,14 @@ export default class TabMVCVisitsCampOpp extends NavigationMixin(LightningElemen
         }
           
         closePopup() {
-          this.isModalOpen = false;       
+          this.isModalOpen = false;
+          this.status = '';
+          this.projectName = '';
+          this.description = '';
+          this.category = '';
+          this.nextSteps = '';
+          this.level = '';
+          this.subject = '';       
           
         }
     
@@ -203,10 +218,6 @@ export default class TabMVCVisitsCampOpp extends NavigationMixin(LightningElemen
          levelCH(event){
              this.level = event.target.value;
          }
-     
-         statusCH(event){
-             this.status = event.target.value;
-         }
 
          subjectCH(event){
             this.subject = event.target.value;
@@ -215,9 +226,15 @@ export default class TabMVCVisitsCampOpp extends NavigationMixin(LightningElemen
     
         onSave(event){
             if(this.projectName =='' || this.projectName == null){
-                alert('Project Name must have the value, please input some values Project Name field');
-            }
-            else{
+                //alert('Project Name must have the value, please input some values Project Name field');
+                this.showToast('Error', 'Project Name cannot be empty', 'Error');
+            }else if(this.category == '' || this.category == null){
+                this.showToast('Error', 'Category cannot be empty', 'Error');
+            }else if(this.status == '' || this.status == null){
+                this.showToast('Error', 'Status cannot be empty', 'Error');
+            }else if(this.subject == '' || this.subject == null){
+                this.showToast('Error', 'Subject cannot be empty', 'Error');
+            }else{
                 this.showSpinner = true ;
                 createBusinessOpportunity({
                     projectName : this.projectName,
@@ -233,6 +250,13 @@ export default class TabMVCVisitsCampOpp extends NavigationMixin(LightningElemen
                     this.closePopup();
                     this.showToast('Success','Successfully Created Business Opportunity','success');
                     this.performRefresh();
+                    this.status = '';
+                    this.projectName = '';
+                    this.description = '';
+                    this.category = '';
+                    this.nextSteps = '';
+                    this.level = '';
+                    this.subject = '';
                 }).catch(error=>{
                     this.showSpinner = false;
                     this.showToast("Error", "Error Creating Identified Opportunity : "+error.message, "error");

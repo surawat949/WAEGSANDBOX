@@ -35,13 +35,12 @@ public class tabActivationPortalRegistration {
         for(ContactWrapperClass wrapperObj : wrapperList){
             if(mapOfContactIdWithLoginDate.keyset().contains(wrapperObj.Id)){
                    wrapperObj.lastLogin = mapOfContactIdWithLoginDate.get(wrapperObj.Id);
-                   system.debug('>>>'+wrapperObj);
             }    
          }
         return wrapperList;
     }
-
-    @AuraEnabled(cacheable=true)
+	
+	@AuraEnabled(cacheable=true)
     public static List<Account_Template__c> getAccountTemplateIdFromAccount(String receivedId){
         try {
             List<Account_Template__c> accTemplate = [SELECT Id, Account__c, Name FROM Account_Template__c WHERE Account__c=:receivedId LIMIT 1];
@@ -55,7 +54,7 @@ public class tabActivationPortalRegistration {
             throw new AuraHandledException(e.getMessage());
         }
     }
-
+	
     class ContactWrapperClass{
         @AuraEnabled
         public date lastLogin;
@@ -67,7 +66,4 @@ public class tabActivationPortalRegistration {
         @AuraEnabled public Boolean RegistratedFlag{get;set;}
         
     }
-   
-
-
 }

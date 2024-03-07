@@ -1,5 +1,6 @@
 ({
-    doInit : function(component, event, helper) {     
+    doInit : function(component, event, helper) {
+     
         var recordId = component.get('v.recordId');
         if(recordId!=null){
             helper.initSales(component, recordId, function(err, result){
@@ -421,6 +422,7 @@
                 });
 
             });
+            
             helper.initAccount(component, recordId, function(err, result){
                 component.set('v.account', result);
                 
@@ -499,5 +501,15 @@
         } catch(error){
             alert(error);
         }
+    },
+    handleSuccess : function(component, event, helper){
+        var toastEvent = $A.get("e.force:showToast");
+        toastEvent.setParams({
+            "title" : "Save Success",
+            "message" : "The record saved successfully",
+            "type" : "Success"
+        });
+        toastEvent.fire();
+
     }
 })

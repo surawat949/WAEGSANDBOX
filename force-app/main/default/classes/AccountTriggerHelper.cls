@@ -21,6 +21,7 @@ public with sharing class AccountTriggerHelper {
         List<Account> oppList = new List<Account>();
         List<Account> ecList = new List<Account>();
         List<Account> oneKeyList = new List<Account>();
+        List<Account> namesToBeUpdatedList = new List<Account>();
         Set<Id> blockedAccs = new Set<Id>();
         Set<Id> unblockedAccs = new Set<Id>();
         Boolean somethingToDo = false;
@@ -106,6 +107,18 @@ public with sharing class AccountTriggerHelper {
                         somethingToDo = true;
                     }
                 }
+                //Update first & Second competitor Global name from metadata
+                //
+                if(triggerEvent == System.TriggerOperation.BEFORE_INSERT && (a.First_Competitor_local_name__c != null || a.Second_Competitor_Local_Name__c !=null)){
+                    namesToBeUpdatedList.add(a);
+                    somethingToDo = true;
+                }else if(triggerEvent == System.TriggerOperation.BEFORE_UPDATE  && oldMap != null){
+                    Account oldAccount = oldMap.get(a.Id);
+                    if((a.First_Competitor_local_name__c != oldAccount.First_Competitor_local_name__c) || (a.Second_Competitor_Local_Name__c != oldAccount.Second_Competitor_Local_Name__c)){
+                        namesToBeUpdatedList.add(a);
+                        somethingToDo = true;
+                    }
+                }
                 //before insert if Strategic gross sales value is there
                 if(triggerEvent == System.TriggerOperation.BEFORE_INSERT && a.Strategic_Value_Gross_Sales__c != null){
                       strategicGrossUpdateList.add(a);
@@ -114,10 +127,10 @@ public with sharing class AccountTriggerHelper {
             }
         } else if(triggerEvent == System.TriggerOperation.BEFORE_DELETE && oldMap != null ) {
             for (Account a : oldMap.values()) {
-	              if (a.hoya_account_id__c.startsWithIgnoreCase('US') ||a.hoya_account_id__c.startsWithIgnoreCase('CA')||a.hoya_account_id__c.startsWithIgnoreCase('VE')||a.hoya_account_id__c.startsWithIgnoreCase('SOA')) {
-            			hvnaList.add(a);
-            			somethingToDo = true;			
-    		      }  
+                  if (a.hoya_account_id__c.startsWithIgnoreCase('US') ||a.hoya_account_id__c.startsWithIgnoreCase('CA')||a.hoya_account_id__c.startsWithIgnoreCase('VE')||a.hoya_account_id__c.startsWithIgnoreCase('SOA')) {
+                        hvnaList.add(a);
+                        somethingToDo = true;           
+                  }  
             }
         }
 
@@ -128,10 +141,11 @@ public with sharing class AccountTriggerHelper {
                     doHOLKBeforeInsert(holkList);
                     doAPACAccountBeforeInsert(apacList);
                     validateEndConsumer(ecList);
-                   // modifyOnekeyRecords(oneKeyList);
+                    modifyOnekeyRecords(oneKeyList);
                     //To assign the Strategic Net Sales based on Gross Sales
                     //As there is no Id before insert sending the null as newMap
                     doLastSalesStatisticsUpdate(strategicGrossUpdateList,null,'gross','INSERT');
+                    SetGlobalCompetitorNames(namesToBeUpdatedList);
                 }
                 addSAPCompanyCode(newList);
             }
@@ -151,7 +165,8 @@ public with sharing class AccountTriggerHelper {
                     //For Statistics Potential and Strategic Net Sales
                     System.debug(strategicNetUpdateList);
                     doLastSalesStatisticsUpdate(strategicGrossUpdateList,newMap,'gross','UPDATE');
-                    doLastSalesStatisticsUpdate(strategicNetUpdateList,newMap,'net','UPDATE');  
+                    doLastSalesStatisticsUpdate(strategicNetUpdateList,newMap,'net','UPDATE');
+                    SetGlobalCompetitorNames(namesToBeUpdatedList);
                 }
             }
             when AFTER_UPDATE {
@@ -216,7 +231,7 @@ public with sharing class AccountTriggerHelper {
         }
 
     }
-   /* private static void modifyOnekeyRecords(List<Account> newList) {
+    private static void modifyOnekeyRecords(List<Account> newList) {
         String clinicRecordTypeId = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('Clinic').getRecordTypeId();
         Map<String, Owner_Assignmet_Rules_IQVIA__mdt> allMetadadata = Owner_Assignmet_Rules_IQVIA__mdt.getAll();
         for (Account eachAcc : newList) {
@@ -239,7 +254,7 @@ public with sharing class AccountTriggerHelper {
                 }   
             }
         }
-    }*/
+    }
 
     public static void deactivateContacts(Set<Id> accIds) {
         if(!System.isFuture() && !System.isBatch()) {
@@ -404,7 +419,7 @@ public with sharing class AccountTriggerHelper {
             //String oppCustomDefaultId = [select Id from Opportunity_Custom__c where Company_Name__c='DEFAULT'].Id;
 
             List<Opportunity_Custom__c> oppCustomDefaultId = [select Id from Opportunity_Custom__c where Company_Name__c='DEFAULT' LIMIT 1];
-            String oppCustDefaultId = String.ValueOf(oppCustomDefaultId[0].Id);
+            String oppCustDefaultId = String.valueOf(oppCustomDefaultId);            
             
             System.debug('XXX Opporutnity Custom Default '+oppCustDefaultId);
 
@@ -484,7 +499,7 @@ public with sharing class AccountTriggerHelper {
             List<Opportunity_Custom__c> oppCustomList = [select Id, Name, Company_Name__c from Opportunity_Custom__c where Company_Name__c IN:companyIds];
             //String oppCustomDefaultId = [select Id from Opportunity_Custom__c where Company_Name__c='DEFAULT'].Id;
             List<Opportunity_Custom__c> oppCustomDefaultId = [select Id from Opportunity_Custom__c where Company_Name__c='DEFAULT'];
-            String oppCustDefaultId = String.valueOf(oppCustomDefaultId[0].Id);
+            String oppCustDefaultId = String.valueOf(oppCustomDefaultId);
             //System.debug('XXX Opporutnity Custom Default '+oppCustDefaultId);
 
             for(Account a : newList){
@@ -565,7 +580,7 @@ public with sharing class AccountTriggerHelper {
                 //link account and additional data
                 for(Integer i = 0; i < newList.size(); i++) {
                     newList.get(i).additionnal_account_data__c = insertList.get(i).id;
-					//Update Account Portal for US and Canada Accounts
+                    //Update Account Portal for US and Canada Accounts
                     if(newList.get(i).hoya_account_id__c.startsWithIgnoreCase('US')){
                     newList.get(i).Portal__c=System.Label.US_Portal;  
                     }
@@ -648,7 +663,7 @@ public with sharing class AccountTriggerHelper {
     */
     private static void doHVNAAfterUpdate(List<Account> newList, Map<Id, Account> newMap, Map<Id, Account> oldMap){
         List<Task> taskList = new List<Task>();
-		
+        
         Set<Id> accids=new set<Id>();
         List<Additionnal_account_data__c> updateList = new List<Additionnal_account_data__c>();
         Map<String, String> accountDataMap = new Map<String, String>();
@@ -669,16 +684,16 @@ public with sharing class AccountTriggerHelper {
             if(oldAccount.HVNA_Create_Onboarding_Tasks__c<>a.HVNA_Create_Onboarding_Tasks__c && a.HVNA_Create_Onboarding_Tasks__c==true){
                 taskList.addAll(manageHvnaOnboardingTasks(a, onBoardingRecordTypeId));
             }
-			
-			
+            
+            
             if(oldAccount.OwnerId<>a.OwnerId){
                 accids.add(a.Id);
                 accountDataMap.put(a.Id,a.OwnerId);                
             }
            
-			
+            
         }
-		
+        
         if (!accids.isEmpty()) {
             List<Additionnal_account_data__c> datas = [select id,OwnerId, master_account__c from additionnal_account_data__c where master_account__c in :accids ];
             for(Additionnal_account_data__c data: datas){
@@ -1061,7 +1076,7 @@ public with sharing class AccountTriggerHelper {
             return result.Sales_Role__c;
         }
     }
-	
+    
     private static void doLastSalesStatisticsUpdate(List<Account> accountsList,Map<Id,Account> accNewMap,String type,String operationType){
         Map<Id,Last_Sales_Statistics__c> salesMap = new Map<Id,Last_Sales_Statistics__c>();
         List<Last_Sales_Statistics__c> lastSalesNetLst = new List<Last_Sales_Statistics__c>();
@@ -1074,7 +1089,7 @@ public with sharing class AccountTriggerHelper {
                     String HoyaAccountID = acc.Hoya_Account_ID__c;
                     Boolean isGermanyAccount = false;
                     if(HoyaAccountID != null && (HoyaAccountID.startsWith('SO4900') ||  HoyaAccountID.startsWith('SO4990')))
-                		isGermanyAccount = true;
+                        isGermanyAccount = true;
                     if(isGermanyAccount){
                         double avgDiscount = 0;
                         if(accNewMap != null && accNewMap.get(acc.Id).Market_Avg_Disc_Ind_L12M__c != null)
@@ -1083,7 +1098,7 @@ public with sharing class AccountTriggerHelper {
                         acc.Strategic_Value_Net_Sales__c = stategicGross*(1+avgDiscount);
                     }
                 }
-            	if( operationType == 'UPDATE'){
+                if( operationType == 'UPDATE'){
                     for(Account acc:accountsList){
                         accList.add(acc.Id);
                     }
@@ -1118,7 +1133,7 @@ public with sharing class AccountTriggerHelper {
                                     if(sale.Hoya_Lens_Gross_Sales_Last_12Mo__c != null && (strategicGrossSales != 0  && strategicGrossSales != null))
                                         hoyaLensGrossSOWLast12Mo = (sale.Hoya_Lens_Gross_Sales_Last_12Mo__c/strategicGrossSales)*100; 
                                     if(hoyaLensGrossSOWLast12Mo > 100)
-                                        hoyaLensGrossSOWLast12Mo = 100;				            
+                                        hoyaLensGrossSOWLast12Mo = 100;                         
                                     if(sale.H_S_Lens_Gross_Sales_Last_12Mo__c != null && (strategicGrossSales != 0  && strategicGrossSales != null))
                                         hsLensGrossSOWLast12Mo = (sale.H_S_Lens_Gross_Sales_Last_12Mo__c/strategicGrossSales)*100; 
                                     if(hsLensGrossSOWLast12Mo > 100)
@@ -1128,7 +1143,7 @@ public with sharing class AccountTriggerHelper {
                                         strategicShare = strategicGrossSales/4;
                                     }
                                     if(strategicShare != 0)
-                                    {					        	
+                                    {                               
                                         if(sale.Seiko_Lens_Gross_Sales_Last_3Mo__c != null)
                                             seikoLensGrossSOWLast3Mo =(sale.Seiko_Lens_Gross_Sales_Last_3Mo__c/strategicShare)*100; 
                                         if(seikoLensGrossSOWLast3Mo > 100)
@@ -1204,6 +1219,45 @@ public with sharing class AccountTriggerHelper {
                     }
              }
             }
-    	}
+        }
     }   
+    
+    Public static void SetGlobalCompetitorNames(List<Account> accList){
+        Map<String, String> mapLocalToGlobalString = new Map<String, String>();
+        for(Global_Competitor_Entity__mdt eachEntity : Global_Competitor_Entity__mdt.getAll().values()){
+            mapLocalToGlobalString.put(eachEntity.Competitor_Entity_Name__c,eachEntity.First_Competitor_Global_Name__c);
+        }
+        for(Account accData : accList){
+            //update 1st competitor
+            String stringFirstCompetitor ='';
+            String stringSecondCompetitor ='';
+            if(String.isNotBlank(accData.First_Competitor_local_name__c) || String.isNotBlank(accData.Second_Competitor_Local_Name__c)){
+                stringFirstCompetitor= accData.First_Competitor_local_name__c; 
+                stringSecondCompetitor = accData.Second_Competitor_Local_Name__c;
+            }
+            Map<String, String> MapGlobalCompetitor = new Map<String, String>();
+            if(!mapLocalToGlobalString.isEmpty() && String.isNotBlank(accData.First_Competitor_Local_Name__c)){
+                String FirstGlobalCompetitor = mapLocalToGlobalString.get(stringFirstCompetitor);
+                if(FirstGlobalCompetitor!=null){
+                    accData.First_Competitor_Global_Name__c = FirstGlobalCompetitor;
+                }else{
+                    accData.First_Competitor_Global_Name__c = 'Other';
+                }
+            }else if(String.isBlank(accData.First_Competitor_Local_Name__c) || accData.First_Competitor_Local_Name__c==''){
+                accData.First_Competitor_Global_Name__c = '';
+            }
+            
+            if(!mapLocalToGlobalString.isEmpty() && String.isNotBlank(accData.Second_Competitor_Local_Name__c)){
+                String SecondCompetitor = mapLocalToGlobalString.get(stringSecondCompetitor);
+                if(SecondCompetitor!=null){
+                    accData.Second_Competitor_global_name__c = SecondCompetitor;
+                }else{
+                    accData.Second_Competitor_global_name__c = 'Other';
+                }
+            }else if(String.isBlank(accData.Second_Competitor_Local_Name__c) || accData.Second_Competitor_Local_Name__c == ''){
+                accData.Second_Competitor_global_name__c = '';
+            }
+        }
+        
+    }
 }

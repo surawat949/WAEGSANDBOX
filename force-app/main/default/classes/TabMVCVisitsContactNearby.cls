@@ -145,11 +145,7 @@ public with sharing class TabMVCVisitsContactNearby {
                     }
                 }else if(String.isNotBlank(PreferDayTime)){
                     for(AccountContactRelation acr : acList){
-                        if((c.Id == acr.ContactId) && (acr.Contact.MailingLatitude!=null) && (acr.Contact.MailingLongitude!=null)){
-                            result.add(c);
-                        }else if((c.Id == acr.ContactId) && (acr.Contact.MailingLatitude==null) && (acr.Contact.MailingLongitude==null)){
-                            c.MailingLatitude = 0;
-                            c.MailingLongitude = 0;
+                        if((c.Id == acr.ContactId)){
                             result.add(c);
                         }
                     }

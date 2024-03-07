@@ -45,6 +45,7 @@
             if (component.isValid() && state === "SUCCESS" && response.getReturnValue() !=null) {
          
                 var nextVisit = response.getReturnValue();
+				
                 let obj = {
                     nameLink : '/'+ nextVisit.Id,
                     assignedLink:'/'+ nextVisit.Assigned_to__c,
@@ -77,6 +78,7 @@
 
         var action= component.get('c.getVisits');
         action.setParams({"contactId": contactId});
+
         action.setCallback(this, function(response) {
             var state = response.getState();
             if (component.isValid() && state === "SUCCESS" && response.getReturnValue() !=null) {
@@ -84,6 +86,7 @@
                 let res=response.getReturnValue();
                 
                 let result = JSON.parse(JSON.stringify(res));   
+				
                 result.forEach((row)=>{
                         let obj = {
                             nameLink:'/'+row.Id,
@@ -98,12 +101,14 @@
                         }
                         
                         data.push(obj);
+					
                 });
 
                var visitsData = (data.length <= 5) ? [...data] : [...data].splice(0,5);
 
                 component.set('v.visitLists', visitsData);
               
+
                 if(data.length > 5){
                     component.set('v.isDataExists',true);
                     component.set('v.visitCount','5+');

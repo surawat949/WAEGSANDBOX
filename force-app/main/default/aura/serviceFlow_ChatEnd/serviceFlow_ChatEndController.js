@@ -18,11 +18,42 @@
             console.log( 'Error is' + JSON.stringify( error ) );
         });
     },
+    handleProceedWithNewCase : function(component, event, helper) {
+        component.set("v.isProceedWithNewCaseSelected",true);
+        component.set("v.isProceedWithExistingCaseSelected",false);        
+    },
+    handlePrevious : function(component, event, helper) {
+        component.set("v.isProceedWithNewCaseSelected",false);
+        component.set("v.isProceedWithExistingCaseSelected",false);
+    },
+    handleRadioChange: function(component, event, helper) {
+        let selectedCaseId = event.getSource().get("v.value");
+        console.log("Selected Case Id: " + selectedCaseId);
+        component.set("v.selecteCaseRecordId",selectedCaseId);
+        let caseRecordsList = component.get("v.openCaseList");
+        let selectedRecord = caseRecordsList.find(item => item.Id===selectedCaseId);
+        console.log(JSON.stringify(selectedRecord));
+        
+        component.set("v.isProceedWithNewCaseSelected",true);
+        component.set("v.isProceedWithExistingCaseSelected",true);
+        
+        component.find("Country").set("v.value",selectedRecord.User_country__c);
+        component.find("Subject").set("v.value", selectedRecord.SFlow_Subject__c);
+        component.find("SubSubject").set("v.value",selectedRecord.SFlow_Sub_Subject__c);
+        component.find("Description").set("v.value", selectedRecord.Description);
+        component.find("Origin").set("v.value",selectedRecord.serviceFlow_Origin__c);
+        component.find("ecpPatient").set("v.value", selectedRecord.serviceFlow_ECP_patient_order_number__c);
+        component.find("hoyaRef").set("v.value", selectedRecord.serviceFlow_Hoya_reference_number__c);
+        component.find("Status").set("v.value", selectedRecord.Status);
+    },
     closeModel: function(component, event, helper) {        
        helper.closeModel(component, event, helper);
     },
-    createCase: function (component, event, helper) {
-        helper.validateInputFields(component, event, helper, "Case");
+    handleNewCase: function (component, event, helper) {
+        helper.validateInputFields(component, event, helper, "Case",undefined);
+    },
+    handleExistingCase: function (component, event, helper) {
+        helper.validateInputFields(component, event, helper, "Case",component.get("v.selecteCaseRecordId"));
     },
     resetErrors: function (component, event, helper) {
         helper.resetErrors(component, event, helper);

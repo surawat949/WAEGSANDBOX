@@ -29,7 +29,7 @@ public with sharing class TrainingCertificateController_Test {
         ECP_Training__c training = new ECP_Training__c();
         training.Account__c = a.Id;
         training.start__c = System.today()-3;
-        training.end__c = System.today();
+        training.end__c = System.Now();
         training.Assigned_to__c = UserInfo.getUserId();
         training.RecordTypeId = ecpRecId;
         training.Training__c = 'HOYA';

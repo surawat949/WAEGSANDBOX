@@ -2,7 +2,7 @@ import { LightningElement, api } from 'lwc';
 import chartJs from '@salesforce/resourceUrl/chartJs'
 import chartJsPlugin from '@salesforce/resourceUrl/chartJsPlugin'
 import {loadScript} from 'lightning/platformResourceLoader'
-export default class Charts extends LightningElement {
+export default class pieChartRenderer extends LightningElement {
     isChartJsInitialized
     chart
     @api type
@@ -11,7 +11,8 @@ export default class Charts extends LightningElement {
     @api chartLabels
     @api totalCount=0;
     displayText='Total'
-
+    pieChartDataTemp = [];
+    pieChartLablesTemp = [];
     renderedCallback(){
         if(this.isChartJsInitialized){
             return;
@@ -30,11 +31,15 @@ export default class Charts extends LightningElement {
         Promise.all([
             loadScript(this, chartJs+'/chartJs/Chart.js'),
             loadScript(this, chartJsPlugin+'/chartJsPlugin/chartjs-plugin-datalabels.js'),
-            loadScript(this, chartJsPlugin+'/chartJsPlugin/chartjs-plugin-doughnutlabel.js')
-           // loadScript(this, chartJsPlugin+'/chartJsPlugin/chartjs-plugin-piechart-outlabels.js')
+            loadScript(this, chartJsPlugin+'/chartJsPlugin/chartjs-plugin-doughnutlabel.js'),
+            loadScript(this, chartJsPlugin+'/chartJsPlugin/chartjs-plugin-piechart-outlabels.js')
                       
         ]).then(()=>{
-
+            console.log("chartJs loaded succesfully")
+            this.pieChartDataTemp = this.chartData;
+            this.pieChartLablesTemp = this.chartLabels;
+            this.chartData= JSON.parse(JSON.stringify(this.pieChartDataTemp));
+            this.chartLabels= JSON.parse(JSON.stringify(this.pieChartLablesTemp));
             this.isChartJsInitialized = true
             this.loadCharts()
         }).catch(error=>{
@@ -49,6 +54,8 @@ export default class Charts extends LightningElement {
         const canvas = document.createElement('canvas')
         this.template.querySelector('div.chart').appendChild(canvas)
         const ctx = canvas.getContext('2d')
+        ctx.canvas.width = 300;
+        ctx.canvas.height = 350;
         this.chart = new window.Chart(ctx, this.config());
     }
     config(){
@@ -78,7 +85,9 @@ export default class Charts extends LightningElement {
             plugins: [ChartDataLabels], //registring plugin
             options: {
                 responsive: true,
+                maintainAspectRatio : false,
                 legend: {
+                    display: true,
                     position: 'bottom'
                 },/*
                 animation: {
@@ -98,7 +107,7 @@ export default class Charts extends LightningElement {
                           },
                     },
                     doughnutlabel: {
-                        paddingPercentage: 1,
+                        paddingPercentage: 5,
                         labels: [
                           {
                             text: this.totalCount,
@@ -113,16 +122,17 @@ export default class Charts extends LightningElement {
                         ],
                       },
                       
-                 /*     outlabels: {
+                      outlabels: {
+                        display : false,
                         text: '%l %p', //text: '%l %p',
-                        color: 'white',
-                        stretch: 10,
+                        color: 'black',
+                        stretch: 25,
                         font: {
                           resizable: true,
-                          minSize: 12,
-                          maxSize: 18,
+                          minSize: 10,
+                          maxSize: 12,
                         },
-                      }*/
+                      }
                 }
             }
         }

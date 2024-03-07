@@ -2,8 +2,8 @@ import { LightningElement, api ,track ,wire} from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 import Account_obj from '@salesforce/schema/Account'; 
-import Last_Sales_Statistics_obj from '@salesforce/schema/Last_Sales_Statistics__c';
-import { getPicklistValuesByRecordType } from 'lightning/uiObjectInfoApi'; 
+import Last_Sales_Statistics_obj from '@salesforce/schema/Last_Sales_Statistics__c'; 
+import { getPicklistValuesByRecordType } from 'lightning/uiObjectInfoApi';
 
 //Fields
 import Account_First_Global_Name from '@salesforce/schema/Account.First_Competitor_global_name__c';  
@@ -63,6 +63,8 @@ import { RefreshEvent } from 'lightning/refresh';
 
 export default class TabStatisticsPotential extends LightningElement {
     @api receivedId;    
+	@api isGermanAccount; 						
+	
     lastSalesId;
     FirstCompLocalName;
     SecondCompLocalName;
@@ -104,8 +106,8 @@ export default class TabStatisticsPotential extends LightningElement {
     firstCompetitorGlobalName;
     status = this.value;
     whatid = this.receivedId;
-
-    @track StatusOptions;
+	
+	@track StatusOptions;
     TaskStatusRecordTypeId;
 
     custLabel = {
@@ -120,8 +122,8 @@ export default class TabStatisticsPotential extends LightningElement {
         // passed parameters are not yet received here
         
     }
-
-    @wire(SFDC_V2_StandardTask)
+	
+	@wire(SFDC_V2_StandardTask)
     standard_sfdcv2_task({data,error}){
         if(data){
             data = JSON.parse(JSON.stringify(data));
@@ -292,7 +294,6 @@ export default class TabStatisticsPotential extends LightningElement {
         this.showToast('Success', 'Success', 'The update is success.Please wait a while to get the changes reflected');
         this.showLoading = true;
         this.isRender =false;
-        console.log('submit');
         this.updateRecordView();    
     }
 
@@ -316,9 +317,8 @@ export default class TabStatisticsPotential extends LightningElement {
     }
     
     updateRecordView(){
-        console.log('submitted');
         setTimeout(() => {
-           // eval("$A.get('e.force:refreshView').fire();");
+            
             this.showLoading = false;
             this.isRender = true;            
         },30000);
@@ -326,6 +326,17 @@ export default class TabStatisticsPotential extends LightningElement {
     }
 
     connectedCallback() {
+												   
+						   
+										  
+																									
+											 
+				
+											  
+											   
+						   
+								 
+			
         this.FirstCompetitorLocal = this.FirstCompLocalName;
         this.SecondCompetitorLocal = this.SecondCompLocalName;        
     }
@@ -402,10 +413,6 @@ export default class TabStatisticsPotential extends LightningElement {
                 this.showToast2('Error', 'Error during update record', 'error');
             });
         
-    }
-
-    get options(){
-        return this.items;
     }
 
     openModal(){

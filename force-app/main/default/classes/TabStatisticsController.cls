@@ -124,6 +124,7 @@ public with sharing class TabStatisticsController {
         else 
             return null;
     }
+    
     @AuraEnabled(cacheable=true)
     public static List<AccountRelatedSales> getConsolidatedAccountsList(Id recordId,String type){
         List<AccountRelatedSales> relatedAccountList =new List<AccountRelatedSales>(); 
@@ -781,18 +782,10 @@ public with sharing class TabStatisticsController {
                     //Nothing to do
                 } 
             }  
-           
-            returnsList = new List<Object>();            
-            if(lensRets3MonJson.size() > 0)
-                returnsList.add(0,lensRets3MonJson);
-            else
-                returnsList.add(0,null);
-            if( lensRets12MonJson.size() > 0)
-                returnsList.add(1,lensRets12MonJson);
-             else
-                returnsList.add(1,null);
+            returnsList = new Object[2];
+            returnsList.add(0,lensRets3MonJson);          
+            returnsList.add(1,lensRets12MonJson);  
         }
-        system.debug(returnsList);
         return returnsList;
 	}
     public static Map<Integer,Map<String,Integer>> getNonAdaptationMap(Map<Decimal,Sales_Statistics__c> Type0Map,Map<Decimal,Sales_Statistics__c> Type1Map){

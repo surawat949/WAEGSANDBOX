@@ -44,7 +44,8 @@ public with sharing class TabAccountMemberParentId_Test {
 
     @IsTest
     static void TestMultipleClass1(){
-
+        
+        Test.StartTest();
         String StandardHoyatask = Schema.SObjectType.Task.getRecordTypeInfosByDeveloperName().get('Standard_New').getRecordTypeId();
 
         Account a1 = [SELECT Id, Hoya_Account_ID__c FROM Account WHERE Hoya_Account_ID__c='TE002' LIMIT 1];
@@ -53,7 +54,6 @@ public with sharing class TabAccountMemberParentId_Test {
 
         Date duedate = System.today();
 
-        Test.StartTest();
         TabAccountMemberParentId.getNumberOfAllAccount(a1.Id);
         TabAccountMemberParentId.getAccountNameId(a1.Id);
         TabAccountMemberParentId.CreateTask('Test', a1.Id, 'This is a test', u1.Id, duedate, 'Completed', null, u1.Id, a1.Id);
@@ -65,7 +65,6 @@ public with sharing class TabAccountMemberParentId_Test {
         TabAccountMemberParentId.searchLookupAccountData('test', 'Account', a1.Id);
         TabAccountMemberParentId.searchLookupAccountDefaultRecordData(a1.Id, 'Account');
         TabAccountMemberParentId.searchLookupContactData('test', 'Contact', c1.Id);
-        TabAccountMemberParentId.getTaskSFDCStandardTask();
         
         Test.StopTest();
 

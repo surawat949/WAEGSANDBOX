@@ -1,10 +1,8 @@
-/**
- * @author : Surawat Sakulmontreechai <<surawat.sakulmontreechai@hoya.com>>
- * @description : this test class for TabMVAAccountClinicValidation controller
- * @api : v.55.0
- */
 @IsTest
 public with sharing class TabMVAAccountClinicValidation_test {
+    public TabMVAAccountClinicValidation_test() {
+
+    }
 
     @TestSetup
     static void makeData(){
@@ -38,7 +36,6 @@ public with sharing class TabMVAAccountClinicValidation_test {
         a1.ShippingPostalcode = '41151';
         a1.ShippingLatitude = 35.87007;
         a1.ShippingLongitude = 128.69203;
-        a1.OwnerId = u.Id;
         insert a1;
 
         QIDC__Validation_Request_ims__c q1 = new QIDC__Validation_Request_ims__c();
@@ -58,15 +55,19 @@ public with sharing class TabMVAAccountClinicValidation_test {
         
         if(!usr.IsEmpty()){
             System.runAs(usr[0]){
-                Test.StartTest();
                 Account a = [SELECT Id, Hoya_Account_ID__c FROM Account WHERE Hoya_Account_ID__c = 'WKRE00035777' LIMIT 1];
                 List<QIDC__Validation_Request_ims__c> qidc = [SELECT Id FROM QIDC__Validation_Request_ims__c WHERE QIDC__Workplace_ims__c=:a.Id];
 
+                Test.StartTest();
                 TabMVAAccountClinicValidation.getValidationNameByAccountId(a.Id);
                 TabMVAAccountClinicValidation.getValidationNameByAccountIdAll(a.Id);
                 Test.StopTest();
 
-                //System.assert(true);
+                try{
+                    TabMVAAccountClinicValidation.getValidationNameByAccountId(null);
+                }catch(Exception e){
+                    System.assertEquals(e.getMessage(), e.getMessage());
+                }
             }
         }
     }

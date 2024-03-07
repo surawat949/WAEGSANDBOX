@@ -28,7 +28,7 @@ public with sharing class TabMVCVisitsController {
     public static Visits__c getNextVisitPlanned(Id contactId){
          List<Visits__c>  visit=[SELECT id,Name, Visit_Type__c, Assigned_to__c,Start_Day__c,Assigned_to__r.Name,Visit_Reason__c, Start_Date_Time__c, End_Date_Time__c, HVNA_Visit_Objective__c,Contact__c,
                            Contact__r.Name,Contact__r.FirstName, Contact__r.LastName,Visit_Notes__c, Call_To_Action_Notes__c  from Visits__c
-                           WHERE  Visit_Status__c ='Planned' AND  Contact__c=:contactId AND Start_Day__c >= Today ORDER BY Start_Day__c  LIMIT 1]; 
+                           WHERE  Visit_Status__c ='Planned' AND Visit_Type__c in ('Visit','Digital Visit') AND  Contact__c=:contactId AND Start_Day__c >= Today ORDER BY Start_Day__c  LIMIT 1]; 
          
         return visit.size()> 0 ? visit[0]:null;
    }
@@ -40,6 +40,7 @@ public with sharing class TabMVCVisitsController {
                            Contact__r.Name,Contact__r.FirstName, Contact__r.LastName,Visit_Notes__c, Call_To_Action_Notes__c  from Visits__c
                            WHERE Contact__c=:contactId order by Start_Day__c DESC ]; 
          return visits;
+					  
    }
    
     @AuraEnabled(cacheable=true)

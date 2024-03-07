@@ -25,12 +25,12 @@ Used on opportunity management screen
             $Resource.fullcalendar + '/moment-timezone-with-data.min.js'
             )}"
     afterScriptsLoaded="{!c.jsLoaded}"/>
-<!--recordTypeId="0126700000110DGAAY"-->
+	<!--recordTypeId="0126700000110DGAAY"-->
     <div class="slds-theme_default slds-box">   
         <lightning:recordEditForm aura:id="recordEditForm"
                                 objectApiName="Visits__c"
                                 density="compact"
-                                recordTypeId="0120Q00000033Z3QAI"
+                                recordTypeId="0126700000110DGAAY"
                                 onsuccess="{!c.handleSuccess}">
             <lightning:messages />
             <lightning:inputField fieldName="RecordTypeId"/>

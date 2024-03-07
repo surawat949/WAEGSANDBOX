@@ -108,8 +108,8 @@ export default class TabVisitsCampOpp extends NavigationMixin(LightningElement) 
     nextSteps;
     status;
     level;
-    monthlyInc;
-    errors = '';
+    monthlyInc = 0;
+    errors;
 
     @track campaigncolumns = [
         {
@@ -316,35 +316,32 @@ export default class TabVisitsCampOpp extends NavigationMixin(LightningElement) 
             }).then(url => {
                 window.open(url, '_blank');
             });
-    }
+        }
     getCampaignMembership() {
         getCampaignMembership({accountId: this.receivedId})
         .then(result => {
-            console.log('>>>>',result);
-            if(result){
-                result = JSON.parse(JSON.stringify(result));
-                result.forEach(res=>{
-                    res.nameLink = '/' + res.Id;
-                });
+        if(result){
+            result = JSON.parse(JSON.stringify(result));
+            result.forEach(res=>{
+                res.nameLink = '/' + res.Id;
+            });
 
-                let allVCampaigns=result;
-                console.log('>>>allVCampaigns',allVCampaigns);
-                this.campaigns = (allVCampaigns.length <= 5) ? [...allVCampaigns] : [...allVCampaigns].splice(0,5);
-                console.log('>>>this.campaigns',this.campaigns);
-                this.displayCampaignViewAllButton = true;
+            let allVCampaigns=result;
+            this.campaigns = (allVCampaigns.length <= 5) ? [...allVCampaigns] : [...allVCampaigns].splice(0,5);
+            this.displayCampaignViewAllButton = true;
 
-                if(result.length > 5){
-                    this.campaignCount='5+';
-                }
-                else{
-                    this.campaignCount=allVCampaigns.length;
-                }
+            if(result.length > 5){
+                this.campaignCount='5+';
             }
+            else{
+                this.campaignCount=allVCampaigns.length;
+            }
+        }
         }).catch(error => {
             this.showToast("Error", "Error while getting the Opportunity Details : "+error, 
             "error");
         });
-    }
+      }
 
       showCampaignPage(){
         this.navigateToNewCampaignPage('Account_Campaing_Member__c');
@@ -458,14 +455,15 @@ export default class TabVisitsCampOpp extends NavigationMixin(LightningElement) 
     }
   
     closePopup() {
-      this.isModalOpen = false; 
+      this.isModalOpen = false;  
       this.projectName='';
       this.description='';
       this.category='';
       this.nextSteps='';
       this.status='';
       this.level='';
-      this.monthlyInc='';      
+      this.monthlyInc= 0;
+      this.errors = '';     
       
     }
 
@@ -490,66 +488,64 @@ export default class TabVisitsCampOpp extends NavigationMixin(LightningElement) 
 
     projectNameCH(event){
         this.projectName = event.target.value; 
-     }
+    }
  
-     categoryCH(event){
-           this.category = event.target.value;
-     }
+    categoryCH(event){
+        this.category = event.target.value;
+    }
  
-     descriptionCH(event){
-         this.description = event.target.value;
-     }
+    descriptionCH(event){
+        this.description = event.target.value;
+    }
  
-     nextStepsCH(event){
-         this.nextSteps = event.target.value;
-     }
+    nextStepsCH(event){
+        this.nextSteps = event.target.value;
+    }
  
-     statusCH(event){
-         this.status = event.target.value;
-     }
+    statusCH(event){
+        this.status = event.target.value;
+    }
  
-     levelCH(event){
-         this.level = event.target.value;
-     }
+    levelCH(event){
+        this.level = event.target.value;
+    }
  
-     statusCH(event){
-         this.status = event.target.value;
-     }
+    statusCH(event){
+        this.status = event.target.value;
+    }
  
-     monthlyIncCH(event){
-         this.monthlyInc = event.target.value;
-     }
+    monthlyIncCH(event){
+        this.monthlyInc = event.target.value;
+    }
 
     onSave(event){
-        if(this.projectName =='' || this.projectName == null){
-            alert('Project Name must have the value, please input some values Project Name field');
-        }
-        else{
-            this.showSpinner = true ;
+        if(this.projectName == '' || this.projectName == null){
+            this.showToast('Error', 'Project Name cannot be empty', 'Error');
+        }else if(this.category == '' || this.category == null){
+            this.showToast('Error', 'Category cannot be empty', 'Error');
+        }else if(this.description == '' || this.description == null){
+            this.showToast('Error', 'Description cannot be empty', 'Error');
+        }else if(this.status == '' || this.status == null){
+            this.showToast('Error', 'Status cannot be empty', 'Error');
+        }else{
+            this.showSpinner = true;
             createBusinessOpportunity({
                 projectName : this.projectName,
                 accountId : this.receivedId,
-                description : this.description,
                 category : this.category,
+                description : this.description,
+                status : this.status,
                 nextSteps : this.nextSteps,
                 level : this.level,
-                monthlyInc : this.monthlyInc,
-                status : this.status
+                monthlyInc : this.monthlyInc
             }).then(result=>{
                 this.showSpinner = false;
                 this.closePopup();
-                this.showToast('Success','Successfully Created Business Opportunity','success');
+                this.showToast('Success', 'Successfully Created Business Opportunity', 'Success');
                 this.performRefresh();
-                this.projectName='';
-                this.description='';
-                this.category='';
-                this.nextSteps='';
-                this.status='';
-                this.level='';
-                this.monthlyInc='';
             }).catch(error=>{
                 this.showSpinner = false;
-                this.errors = 'Error Creating Identified Opportunity' + error.message ;
+                this.errors = 'Error Creating Identified Opportunity ' + JSON.stringify(error);
             });
         }
     }

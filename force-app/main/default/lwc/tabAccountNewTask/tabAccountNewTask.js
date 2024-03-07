@@ -25,7 +25,7 @@ export default class TabAccountNewTask extends NavigationMixin(LightningElement)
             }
             
         }
-     
+
     connectedCallback() {
       if(this.recordId.startsWith('001')){
         this.nevigateFromAccount=true; 
@@ -38,43 +38,44 @@ export default class TabAccountNewTask extends NavigationMixin(LightningElement)
         })
         .catch(error =>{
             this.showToast('Error', 'Error', error);
+
         })
       }
     }
-         navigateToNewTaskPage() {
-            if(this.nevigateFromAccount){
+    navigateToNewTaskPage() {
+        if(this.nevigateFromAccount){
                 const defaultValues= encodeDefaultFieldValues({
-                    WhatId : this.recordId,
-                    RecordTypeId : this.recordTypeId,
-                });
-                this[NavigationMixin.Navigate]({
-                type: 'standard__objectPage',
-                attributes: {
-                    objectApiName: 'Task',
-                    actionName: 'new'
-                },
-                state: {
-                    defaultFieldValues: defaultValues,
-                }
-                });
+            WhatId : this.recordId,
+            RecordTypeId : this.recordTypeId,
+         });
+        this[NavigationMixin.Navigate]({
+            type: 'standard__objectPage',
+            attributes: {
+                objectApiName: 'Task',
+                actionName: 'new'
+            },
+            state: {
+                defaultFieldValues: defaultValues,
             }
-            else if(this.nevigateFromContact){
-                const defaultValues= encodeDefaultFieldValues({
-                    WhatId : this.accountId,
-                    WhoId : this.recordId,
-                    RecordTypeId : this.recordTypeId,
-                });
-                this[NavigationMixin.Navigate]({
-                type: 'standard__objectPage',
-                attributes: {
-                    objectApiName: 'Task',
-                    actionName: 'new'
-                },
-                state: {
-                    defaultFieldValues: defaultValues,
+        });
+    }
+    else if(this.nevigateFromContact){
+        const defaultValues= encodeDefaultFieldValues({
+            WhatId : this.accountId,
+            WhoId : this.recordId,
+            RecordTypeId : this.recordTypeId,
+        });
+        this[NavigationMixin.Navigate]({
+            type: 'standard__objectPage',
+            attributes: {
+                objectApiName: 'Task',
+                actionName: 'new'
+            },
+            state: {
+                defaultFieldValues: defaultValues,
                 }
-                });    
-            }
+            });    
+        }
 }
     showToast(title, variant, message) {
         this.dispatchEvent(

@@ -15,9 +15,8 @@ public with sharing class tabAccountAddressLWCController {
      */
 
     /** Add this class for account tabAccountAddress LWC - 2023-06-06 **/
-
-    private static final String Task_Status_SFDC_V2 = Schema.SObjectType.Task.getRecordTypeInfosByDeveloperName().get('SFDC_V2_Standard_Task').getRecordTypeId();
-
+	
+	
     @AuraEnabled(cacheable=true)
     public static List<Contact> getContactsRelatedAccount(String receivedId){
         List<Contact> conList = [SELECT Id, Name, Contact_Record_Type__c, Salutation, Title, Email, Phone 
@@ -400,20 +399,4 @@ public with sharing class tabAccountAddressLWCController {
         }
 
     }
-    /*
-    @AuraEnabled(cacheable=true)
-    public static List<Account_Template__c> getAccountTemplate(String recordId){
-        try{
-            List<Account_Template__c> accTemplate = [SELECT Id, Name FROM Account_Template__c
-                                                        WHERE Account__c=:recordId];
-            if((accTemplate.size()>0) && (!accTemplate.isEmpty())){
-                return accTemplate;
-            }else{
-                return null;
-            }
-        }catch(Exception e){
-            throw new AuraHandledException(e.getMessage());
-        }
-    }
-    */
 }

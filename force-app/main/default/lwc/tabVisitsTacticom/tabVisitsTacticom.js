@@ -178,16 +178,20 @@ export default class TabVisitsTacticom extends NavigationMixin(LightningElement)
    totalCount=0;
    pieChartLabels=[]
     pieChartData=[]
+    pieChartDataTemp = [];
+    pieChartLablesTemp = [];
     @wire(getAccByZone,{accOwner:'$ownerId'})
     AccountHandler({data, error}){
         if(data){
-            const arrayObj=data;
-           
+            const Obj=Object.assign({}, data);
+            const arrayObj = Object.values(Obj);
             arrayObj.forEach(acc => {
-                this.pieChartLabels.push(acc.TACTICOM_SOF__c);
-                this.pieChartData.push(acc.cnt);
+                this.pieChartLablesTemp.push(acc.TACTICOM_SOF__c);
+                this.pieChartDataTemp.push(acc.cnt);
                 this.totalCount=this.totalCount+acc.cnt;
             });
+            this.pieChartData= JSON.parse(JSON.stringify(this.pieChartDataTemp));
+            this.pieChartLabels= JSON.parse(JSON.stringify(this.pieChartLablesTemp));
          this.isDoughnutChartDataReceived=true;
         }
         if(error){
@@ -226,7 +230,7 @@ export default class TabVisitsTacticom extends NavigationMixin(LightningElement)
             this.showpadIndicator = data.showpadIndicatorHelpText;
             this.tacticomHelpText = data.tacticomFlagHelpText;
             this.lifeCycleHelpText = data.lifeCycleFlagHelpText;
-
+            console.log(data.campaignsIndicatorHelpText);
         }else if(error){
             this.showToast('Error','XXX An error was occurred ==>'+error.message,'error');
         }
@@ -250,15 +254,20 @@ export default class TabVisitsTacticom extends NavigationMixin(LightningElement)
   //Bar chart - start
    recommendedVisitsData=[]
    recommendedVisitsPerSubArea=[]
+   recommendedVisitsDataTemp=[]
+   recommendedVisitsPerSubAreaTemp=[]
    @wire(recommendedAccountsByZone,{accOwner:'$ownerId'})
      recommendedVisitsHandler({data, error}){
        if(data){
-           const arrayObj=data;
+        const Obj=Object.assign({}, data);
+        const arrayObj = Object.values(Obj);
 
             arrayObj.forEach(acc => {
-               this.recommendedVisitsData.push(acc.recommendedVisit);
-               this.recommendedVisitsPerSubArea.push(acc.recommendedVisitPerSubArea);
+               this.recommendedVisitsDataTemp.push(acc.recommendedVisit);
+               this.recommendedVisitsPerSubAreaTemp.push(acc.recommendedVisitPerSubArea);
            });
+           this.recommendedVisitsData= JSON.parse(JSON.stringify(this.recommendedVisitsDataTemp));
+           this.recommendedVisitsPerSubArea= JSON.parse(JSON.stringify(this.recommendedVisitsPerSubAreaTemp));
            this.isBarChartDataReceived=true;
        }
        if(error){

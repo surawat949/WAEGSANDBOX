@@ -68,20 +68,8 @@
             <div class="slds-grid">
                 <div class="slds-col slds-size_1-of-1 slds-hide"><lightning-input type="text" label={labelCopyTo} value={copiedtoId} name="form-input-7" data-my-id="form-input-7" onchange={copyToCH}></lightning-input></div>
             </div>
-            <!--<div class="slds-grid">
-                <div class="slds-col slds-size_1-of-1">
-                    <lightning-combobox
-                        name="Status"
-                        label={labelStatus}
-                        value={value}
-                        placeholder="Select Status"
-                        options={options}
-                        required="true"
-                        onchange={statusCH}></lightning-combobox>
-
-                </div>
-            </div>-->
-            <div class="slds-grid">
+            
+			 <div class="slds-grid">
                 <div class="slds-col slds-size_1-of-1">
                     <lightning-combobox
                         name="Status"
@@ -94,6 +82,7 @@
                     ></lightning-combobox>
                 </div>
             </div>
+			
         </div>
     </lightning-modal-body>
     <lightning-modal-footer>

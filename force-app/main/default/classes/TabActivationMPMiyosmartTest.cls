@@ -8,24 +8,23 @@
 public class TabActivationMPMiyosmartTest {
  @TestSetup
     static void makeData(){
-
-        Profile p = [SELECT Id FROM Profile WHERE Name ='System Administrator'];
+		Profile p = [SELECT Id FROM Profile WHERE Name ='System Administrator'];
         String TrainingRecId = Schema.SObjectType.ECP_Training__c.getRecordTypeInfosByDeveloperName().get('HOYA_Training').getRecordTypeId();
 
         User u = new User();
-        u.Firstname = 'Testuser';
-        u.Lastname = 'Testuserzxcv';
-        u.Username = 'testzxcv@hoya.invalid';
-        u.Email = 'testtest@hoya.com.invalid';
-        u.ProfileId = p.Id;
-        u.Alias = 'STest2';
-        u.TimeZoneSidKey = 'Asia/Bangkok';
-        u.LocaleSidKey = 'en_US';
-        u.EmailEncodingKey = 'UTF-8';
-        u.LanguageLocaleKey = 'en_US';
-        u.CompanyName = 'DEFAULT';
-        insert u;
-
+			u.Firstname = 'Testuser';
+			u.Lastname = 'Testuserzxcv';
+			u.Username = 'testzxcv@hoya.invalid';
+			u.Email = 'testtest@hoya.com.invalid';
+			u.ProfileId = p.Id;
+			u.Alias = 'STest2';
+			u.TimeZoneSidKey = 'Asia/Bangkok';
+			u.LocaleSidKey = 'en_US';
+			u.EmailEncodingKey = 'UTF-8';
+			u.LanguageLocaleKey = 'en_US';
+			u.CompanyName = 'DEFAULT';
+			insert u;
+		
         Account acc = new Account(
             Name = 'Test Acc',
             Hoya_Account_ID__c = 'TE-012354',
@@ -39,7 +38,7 @@ public class TabActivationMPMiyosmartTest {
             Seiko_Network__c = 'Hoya Vision Center',
             Visionary_Alliance__c = 'Insider',
             Myo_Main_Comp_Myopia_Control__c = 'Altra Ophtalmic Lense',
-            ownerId = u.Id
+			ownerId = u.Id
         );
         insert acc;   
         ECP_Training__c trainingOne = new ECP_Training__c(
@@ -47,7 +46,7 @@ public class TabActivationMPMiyosmartTest {
             Training__c = 'MIYOSMART',
             Type__c = 'Webinar',
             Training_status__c='Completed',
-            RecordTypeId = TrainingRecId,
+			RecordTypeId = TrainingRecId,
             start__c=system.now()
         );
         insert trainingOne;
@@ -68,7 +67,6 @@ public class TabActivationMPMiyosmartTest {
         List<ECP_Training__c> TrainingLst=[select start__c,Id,Account__c from ECP_Training__c where Account__c =:actId.id and Training__c includes ('MIYOSMART') 
                                            AND Training_status__c ='Completed' order by start__c desc];
         Test.startTest();
-        system.debug('>>>');
         TabActivationMPMiyosmart.getLastSalesStats(actId.Id);
         TabActivationMPMiyosmart.getLastTrainingDate(actId.Id);
         TabActivationMPMiyosmart.searchDefaultRecord(actId.Id,'Account');

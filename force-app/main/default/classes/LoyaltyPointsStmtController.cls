@@ -38,8 +38,7 @@ public class LoyaltyPointsStmtController {
     @AuraEnabled 
     public static String generateCertificate(String accountId, Date startDate, Date endDate,list<String> emailAddresses, String brand) {
         String returnMsg = 'Success';
-        System.debug('>>>>emailAddresses'+emailAddresses);
-        System.debug('Brand name => '+brand);
+        
         try {
             Account account = [SELECT Name, Seiko_local_customer_nr__c,Brand__c, Shop_Street__c, Shop_Postal_Code__c, Shop_City__c, Shop_State__c, Shop_Country__c,Total_Loyalty_Points__c FROM Account Where Id =:accountId];
             //List<String> emailAddresses = new List<String>();

@@ -6,20 +6,17 @@ import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import Account_obj from '@salesforce/schema/Account'; 
 import Seiko_Data from '@salesforce/schema/Seiko_Data__c'; 
 //fields
-/*import Red_Customer_Id from '@salesforce/schema/Seiko_Data__c.Redhab_customer_id__c';
+import Red_Customer_Id from '@salesforce/schema/Seiko_Data__c.Redhab_customer_id__c';
 import Red_Service_Id from '@salesforce/schema/Seiko_Data__c.Redhab_service_id__c';
 import SVS_FB from '@salesforce/schema/Seiko_Data__c.SVS_FB_Page__c';
 import Social_radius from '@salesforce/schema/Seiko_Data__c.SVS_Digital_com_Platform_radius__c';
 import Social_Activation from '@salesforce/schema/Seiko_Data__c.SVS_Digital_communication_platform__c';
 import Social_Confirmation from '@salesforce/schema/Seiko_Data__c.SVS_Digital_com_platform_activation__c';
-import Co_Shop_Name from '@salesforce/schema/Seiko_Data__c.Co_branded_Shop_Name__c';
-import Co_Shop_Website from '@salesforce/schema/Seiko_Data__c.Co_branded_Shop_Website__c';
-import Co_Shop_Hashtag from '@salesforce/schema/Seiko_Data__c.Co_branded_Shop_Hashtags__c';
-import VAT_Number from '@salesforce/schema/Account.VAT_EUROPEAN_NUMBER__c';*/
+import Social_Error_Msg from '@salesforce/schema/Seiko_Data__c.WS_error__c';
+import VAT_Number from '@salesforce/schema/Account.VAT_EUROPEAN_NUMBER__c';
 //Apex
-/*import getSeikoDataId from '@salesforce/apex/tabActivationPortalController.getSeikoDataId';
-import getLastTrainingDate from '@salesforce/apex/tabActivationPortalController.getLastTrainingDate';
-import startEnroll from '@salesforce/apex/tabActivationPortalController.startEnroll';*/
+//import getSeikoDataId from '@salesforce/apex/tabActivationEquipmentsController.getSeikoDataId';
+import startEnroll from '@salesforce/apex/tabActivationEquipmentsController.startEnroll';
 import getChart from '@salesforce/apex/tabActivationEquipmentsController.getEquipmentsChart';
 
 //Custom Labels
@@ -33,21 +30,20 @@ import { RefreshEvent } from 'lightning/refresh';
 export default class TabActivationPortalSocialMedia extends LightningElement {
     @api receivedId;
     accountRec;
-    seikoDataId;
+    @api seikoDataId;
     enrollResult;
-    training = 'SVS Social Media Plateform';
-    lastTrainingDate;
+    //training = 'SVS Social Media Plateform';
+   // lastTrainingDate;
     consumerData;
     objectApiName=Account_obj;
     seikoObjName=Seiko_Data;
-    /*seikoFields=[Social_Activation,Social_Confirmation,Social_radius,SVS_FB,Red_Customer_Id,Red_Service_Id,
-        Co_Shop_Name,Co_Shop_Website,Co_Shop_Hashtag];*/
+    seikoFields=[Social_Activation,Social_Confirmation,SVS_FB,Social_radius,Red_Customer_Id,Red_Service_Id,Social_Error_Msg];
        
-   // accountFields=[VAT_Number];
+    accountFields=[VAT_Number];
     custLabel = {
         SocialManager,TrainingDate,MonthlyPosts,MonthlyConsumerViews,UniqueConsumers,MonthlyConsumerClicks
     }
-   /* @wire(getRecord, { recordId: "$receivedId", fields:[VAT_Number] })
+    @wire(getRecord, { recordId: "$receivedId", fields:[VAT_Number] })
     record( { error, data }){
         if(data){
             this.accountRec = data;
@@ -57,7 +53,7 @@ export default class TabActivationPortalSocialMedia extends LightningElement {
             this.showToast('Error', 'Error',error);
         }
     }
-    //Get Seiko Data Object Id based current Account Record Id
+    /*//Get Seiko Data Object Id based current Account Record Id
     @wire(getSeikoDataId,{accId:'$receivedId'})
     getInfos({error,data}){
         if(error){
@@ -65,22 +61,21 @@ export default class TabActivationPortalSocialMedia extends LightningElement {
         }else if(data){
             this.seikoDataId = JSON.parse(JSON.stringify(data));
         }
-    } 
-    @wire(getLastTrainingDate,{accountId:'$receivedId',training:'$training'})
+    } */
+    /*@wire(getLastTrainingDate,{accountId:'$receivedId',training:'$training'})
     getDate({error,data}){
         if(error){
             this.showToast('Error', error, error);
         }else if(data){
             this.lastTrainingDate = JSON.parse(JSON.stringify(data));
         }
-    } 
+    } */
     
     doEnroll(){      
         const accountId = this.receivedId;
         startEnroll({accountId:accountId})
         .then(result =>{
             this.enrollResult= JSON.stringify(result);
-            console.log(this.enrollResult);
             if(this.enrollResult == 'ok'){
                 this.showToast('Success','Activation done successfully', 'Customer activation is done');
             }else{
@@ -93,12 +88,12 @@ export default class TabActivationPortalSocialMedia extends LightningElement {
         })
     }
     updateRecordView(){
-        eval("$A.get('e.force:refreshView').fire();");
+       // eval("$A.get('e.force:refreshView').fire();");
         this.dispatchEvent(new RefreshEvent());
-    }*/
+    }
     //get Unique Consumers
     //Consumer data should be retrived first ,so added this outside of connected call back
-    @wire(getChart,{recordId : '$receivedId',tool : 'Social Media Manager - Social Media - Monthly Reach',type:'ExactMatch'})
+    @wire(getChart,{recordId : '$receivedId',tool : 'Social Media Manager - Social Media – Monthly Reach',type:'ExactMatch'})
     chartData({error,data}){
         if(data){
             data = JSON.parse(JSON.stringify(data));
@@ -150,7 +145,7 @@ export default class TabActivationPortalSocialMedia extends LightningElement {
     }
     connectedCallback() {
         //get Social media Posts Chart
-        getChart({recordId : this.receivedId,tool : 'Social Media Manager - Number of monthly posts',type:'ExactMatch'})
+        getChart({recordId : this.receivedId,tool : 'Social Media Manager – Number of monthly posts',type:'ExactMatch'})
         .then(response => {
             response = JSON.parse(JSON.stringify(response));
             let val = response;
@@ -167,7 +162,7 @@ export default class TabActivationPortalSocialMedia extends LightningElement {
             this.showToast('Error', 'Error', error.message);
         })
         //get Consumer Views 
-        getChart({recordId : this.receivedId,tool : 'Social Media Manager - Social Media - Monthly Impressions',type:'ExactMatch'})
+        getChart({recordId : this.receivedId,tool : 'Social Media Manager – Social Media - Monthly Impressions',type:'ExactMatch'})
         .then(response => {
             response = JSON.parse(JSON.stringify(response));
             let val = response;

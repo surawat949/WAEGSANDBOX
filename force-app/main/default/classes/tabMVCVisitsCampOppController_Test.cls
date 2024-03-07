@@ -12,12 +12,13 @@ public class tabMVCVisitsCampOppController_Test {
         con.firstName = 'first';
         con.accountId = acc.Id;        
         insert con;
+        
         try{
         	TabMVCVisitsCampOppController.createBusinessOpportunity('SFDCV2',con.Id,'New Medical opp','cate1','next Steps','1','started','new Visit'); 
         }
         catch(Exception e){
             System.debug(e.getMessage());
-        }
+        } 
         TabMVCVisitsCampOppController.getBusinessOpportunityRelatedToContact(con.Id);
     }
 }

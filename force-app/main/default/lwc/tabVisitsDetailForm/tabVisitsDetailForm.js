@@ -19,8 +19,15 @@ import Call_To_Action_Notes from '@salesforce/schema/Visits__c.Call_To_Action_No
 import Expected_Incremental_Sales from '@salesforce/label/c.Expected_Incremental_Sales';
 import Monthly_Incremental from '@salesforce/label/c.Monthly_Incremental';
 import Visit_Objective_followUp from '@salesforce/schema/Visits__c.Visit_Objective_follow_up_notes__c';
+import Visit_Planning_Tracker__c from '@salesforce/schema/Visits__c.Visit_Planning_Tracker__c';
+import Visit_Preparation_Tracker__c from '@salesforce/schema/Visits__c.Visit_Preparation_Tracker__c';
+
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+
+
 import getIdentifiedBusinesssOpp from '@salesforce/apex/tabVisitDetailFormController.getBusinessOpportunityRelatedAccount';
 import createBusinessOpportunity from '@salesforce/apex/TabVisitsCampOppController.createBusinessOpportunity';
+import getUserInfo from '@salesforce/apex/tabVisitDetailFormController.getUserInfo';
 
 //LWC component to create Identified Business Opportunity
 import project_id from '@salesforce/label/c.project_id';
@@ -32,8 +39,8 @@ import priority from '@salesforce/label/c.priority';
 import Project_Description from '@salesforce/label/c.Project_Description';
 
 import label_category1 from '@salesforce/label/c.category';
-import label_status from '@salesforce/label/c.SFDC_V_2_MVAActivation_Status';
-import Name from '@salesforce/label/c.SFDC_V2_MVA_Activation_Name';
+import label_status from '@salesforce/label/c.Status';
+import Name from '@salesforce/label/c.tabContactModalName';
 import description from '@salesforce/label/c.Description';
 import Next_StepsForm from '@salesforce/label/c.Next_Steps';
 import Priority_Level from '@salesforce/label/c.Priority_Level';
@@ -45,13 +52,14 @@ import label_save from '@salesforce/label/c.tabLabelSave';
 import label_Close from '@salesforce/label/c.tabLabelClose';
 import Next_Steps from '@salesforce/label/c.Next_Steps';
 import IdentifiedBusinessOpp from '@salesforce/label/c.IdentifiedBusinessOpp';
+import Visit_Tracker from '@salesforce/label/c.Visit_Tracker';
 //refresh the table
-import { subscribe, unsubscribe, onError } from 'lightning/empApi';
 
 
 
 export default class TabVisitsDetailForm extends LightningElement {
     isModalOpen = false; //for opportunity popup
+    @track isLWCDisabled = false;
     @api recordId;
     label_Project_Description=Project_Description;
     isDataTableRefresh;
@@ -65,9 +73,9 @@ export default class TabVisitsDetailForm extends LightningElement {
     priority_Level = Priority_Level;
     expected_Incremental_Sales = Expected_Incremental_Sales;
     monthly_Incremental = Monthly_Incremental;
-    CHANNEL_NAME = '/event/RefreshOpportunity__e';
     labelSave = label_save;
     labelClose = label_Close;
+    VisitTracker = Visit_Tracker;
 
     projectName;
     description;
@@ -84,6 +92,7 @@ export default class TabVisitsDetailForm extends LightningElement {
     fields3 = [Call_To_Action,Call_To_Action_Notes,Visit_Status];
     fields4 = [Actions_executed];
     fields5 = [Visit_Notes];
+    fields6 = [Visit_Planning_Tracker__c,Visit_Preparation_Tracker__c];
 
     //Identified business opportunity Creation  - Start
     get categoryOptions(){
@@ -102,8 +111,20 @@ export default class TabVisitsDetailForm extends LightningElement {
     @track OppRecord;
     label={project_id,creation_date,project_name,
          yearly_incremental_sales,opp_status,priority,Next_StepsForm,
-        Visit_Detail,Visit_Report,Visit_Preparation,opportunitiesSec,IdentifiedBusinessOpp
+        Visit_Detail,Visit_Report,Visit_Preparation,opportunitiesSec,IdentifiedBusinessOpp,Visit_Tracker
     }
+
+    @wire(getUserInfo, {}) 
+    userData({ error, data }) {
+        if(data) {
+            if(data.Profile.Name == "System Administrator") {    
+                this.isLWCDisabled = true;
+            }
+        } else if(error) {
+            this.showToast('Error', 'Error fetching profile of User',error);
+        }
+    }
+
     @wire(getRecord, { recordId: '$recordId', fields: [Account] })
     record({ error, data }) {
         if (data) {
@@ -113,7 +134,7 @@ export default class TabVisitsDetailForm extends LightningElement {
             this.showToast('Error', 'Error',error);
         }
     }
-    showToast(title,message,variant) {
+showToast(title,message,variant) {
         const event = new ShowToastEvent({
             title: title,
             message: message,
@@ -243,15 +264,12 @@ export default class TabVisitsDetailForm extends LightningElement {
         this.isLoading = true;
         this.isDataTableRefresh=true;
         this.getRelatedRecords();
-        subscribe(this.CHANNEL_NAME, -1, this.refreshList).then(response => {
-            this.subscription = response;
-        });
        
     }
-
-    disconnectedCallback() {
-        unsubscribe(this.subscription, () => {
-        });
+    handleSuccess(event) {
+        //Bug 1064 Fix- Adding placeholder for success logic
+        const updatedRecord = event.detail.id;
+        //console.log('onsuccess: ', updatedRecord);
     }
     onSave(event){
         if(this.projectName =='' || this.projectName == null){

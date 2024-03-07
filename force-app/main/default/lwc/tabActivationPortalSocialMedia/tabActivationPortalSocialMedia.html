@@ -5,21 +5,13 @@
             <tr class="row" style="background-color: #aacbff;">
                 <td><h3 class="slds-section__title  test-id__section-header-container">{custLabel.SocialManager}</h3></td>
                 <!--Commenting button for time being along with below codes-->
-                <!--td><p align="right">
+                <td><p align="right">
                     <lightning-button variant="brand-outline" label="Enroll in Program" onclick={doEnroll} ></lightning-button>&nbsp;
                     </p>
-                </td-->
+                </td>
             </tr>     	        
         </table>
-        <div class="slds-illustration slds-illustration_small" aria-hidden="true">
-            <img src="/projRes/ui-home-private/emptyStates/noTasks.svg" class="slds-illustration__svg" alt=""/>
-            <div class="slds-align_absolute-center" style="height:5rem;color: #009EDB;">
-                <b>UNDER DEVELOPMENT. Nothing to see so far.</b>
-            </div>
-        </div>    
-        <br>
-         <!--Commenting below code for time being as there are requirement changes and the section should be for both Hoya and Seiko in future-->
-        <!--lightning-layout>
+       <lightning-layout>
             <lightning-layout-item flexibility="auto" padding="around-small">
                 <lightning-record-form
                     record-id={seikoDataId}
@@ -47,7 +39,7 @@
                     </lightning-layout-item>
                 </lightning-layout>
             </div>
-            <div style="width:38%;">
+            <!--<div style="width:38%;">
              &nbsp; &nbsp;  &nbsp;  &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;
             </div>
             <div style="width:28%;">
@@ -55,9 +47,9 @@
                     <span class="slds-form-element__label ">{custLabel.TrainingDate}</span><br/>
                     <div class="slds-form-element__static"><lightning-formatted-date-time value={lastTrainingDate} month="2-digit" day="2-digit" year="numeric"></lightning-formatted-date-time></div> 
                 </div>
-            </div>            
+            </div>-->            
         </div>
-        <br/-->
+        <br/>
     </div>     
     <div class="slds-box slds-p-around_none slds-var-m-top_x-small slds-var-m-bottom_medium slds-m-horizontal_none">
         <table class="slds-table slds-table_bordered" aria-label="Monthly Posts">

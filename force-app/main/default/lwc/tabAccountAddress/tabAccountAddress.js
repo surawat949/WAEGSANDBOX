@@ -278,7 +278,7 @@ export default class TabAccountAddress extends NavigationMixin(LightningElement)
     }
     updateRecordView(){
         setTimeout(() => {
-            //eval("$A.get('e.force:refreshView').fire();");
+            
         },1000);
         this.dispatchEvent(new RefreshEvent());
     }

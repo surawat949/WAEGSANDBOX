@@ -1,7 +1,5 @@
 import { LightningElement , track, api, wire } from 'lwc';
-import { loadScript } from 'lightning/platformResourceLoader';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
-import downloadjs from '@salesforce/resourceUrl/downloadjs';
 import processCertificate from '@salesforce/apex/LoyaltyPointsStmtController.generateCertificate';
 import statement from '@salesforce/label/c.loyalty_points_statement';
 import populateDates from '@salesforce/label/c.populate_dates';
@@ -143,9 +141,7 @@ export default class LoyaltyPointsStatement extends LightningElement {
        //this.emailAddress.push(otherEmailAddress);
     }
     renderedCallback() {
-        /*loadScript(this, downloadjs)
-        .then(() => console.log('Loaded download.js'))
-        .catch(error => console.log(error));*/
+        
     }  
 
     @api displayModal()

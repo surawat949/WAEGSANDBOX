@@ -217,7 +217,7 @@ public with sharing class TabMVAVisitsCertificateController {
         return returnMsg;
     }
 
-    @AuraEnabled(cacheable=true)
+    @AuraEnabled
     public static List<ECP_Training__c> getECPTrainings(String accountId){
         List<ECP_Training__c> lstEcpTraining = new List<ECP_Training__c>();
         try {

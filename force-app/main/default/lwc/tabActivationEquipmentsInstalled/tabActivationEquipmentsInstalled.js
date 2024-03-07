@@ -1,6 +1,7 @@
 import { LightningElement, api,track } from 'lwc';
 import getInstrucInShop from '@salesforce/apex/TabActivationEquipmentsInstallCntrl.getInstruInShop';
 import getSoftwareInShop from '@salesforce/apex/TabActivationEquipmentsInstallCntrl.getSoftwareInShop';
+import {ShowToastEvent} from 'lightning/platformShowToastEvent';
 //Custom Labels
 import Instruments_In_Shop from '@salesforce/label/c.Instruments_In_Shop';
 import Software_In_Shop from '@salesforce/label/c.Software_In_Shop';

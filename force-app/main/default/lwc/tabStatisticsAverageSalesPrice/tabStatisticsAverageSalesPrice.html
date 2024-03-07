@@ -9,7 +9,7 @@
             <table class="slds-table slds-table_bordered slds-table_cell-buffer">
                 <thead>
                     <tr>
-                        <th class="fix"><div class="slds-truncate"></div>{colName}</th>
+                        <th class="fix"><div class="slds-truncate"></div>{custLabel.AverageSalesPrice} {custLabel.CurrencyIn} {CurrencyCode}</th>
                         <template for:each={MonthColumns} for:item="column">
                             <th key={column} style="text-align:right;"><div class="slds-truncate">{column}</div></th>
                         </template>

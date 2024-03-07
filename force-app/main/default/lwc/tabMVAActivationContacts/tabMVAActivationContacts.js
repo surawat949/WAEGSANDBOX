@@ -6,7 +6,7 @@ import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 //this section for custom label
 import AllContacts from '@salesforce/label/c.SFDC_V_2_tabMVAContactAssociatedContact';
 import NoData from '@salesforce/label/c.SFDC_V_2_tabMVAContactAssociatedContactNoData';
-import CloseButton from '@salesforce/label/c.tabLabelClose';
+import CloseButton from '@salesforce/label/c.CloseButton';
 import DeleteButton from '@salesforce/label/c.SFDC_V_2_MVAActivaion_DeleteVal';
 import DeleteConfirm from '@salesforce/label/c.SFDC_V_2_MVAActivation_DelVal_Confirm';
 import ButtonDel from '@salesforce/label/c.ButtonDelete';
@@ -31,6 +31,10 @@ import lblReqStatus from '@salesforce/label/c.SFDC_V_2_MVAActivation_Status';
 import lblCreatedBy from '@salesforce/label/c.SFDC_V_2_MVAActivation_Created';
 //end
 
+//import ContactRelated from '@salesforce/apex/tabAccountAddressLWCController.getContactsRelatedAccount';
+//import ContactRelated from '@salesforce/apex/TabMVAActivationContactController.getContactsRelatedAccount';
+//import ContactRelatedList from '@salesforce/apex/tabMVAAccountController.getContactRelatedList';
+//import AllAssociatedContact from '@salesforce/apex/tabMVAAccountController.getAllContactsHierarchy';
 import AllAssociatedContact from '@salesforce/apex/TabMVAActivationContactController.getAllContactsHierarchy';
 import getValidationList from '@salesforce/apex/TabMVAAccountClinicValidation.getValidationNameByAccountId';
 import getValidationAll from '@salesforce/apex/TabMVAAccountClinicValidation.getValidationNameByAccountIdAll';
@@ -53,15 +57,15 @@ const columns2 = [
     {label : '', type : 'action', initialWidth:'50px', typeAttributes: { rowActions: actions },},
 ];
 
-const columns = [   { label: lblContact, fieldName: 'ContactLink', type: 'url', typeAttributes: {label: {fieldName: 'ContactName'}, target: '_top'}, sortable: 'true',wrapText: 'true'},
-                    { label: 'Contact Owner', fieldName: 'contactownerLink', type: 'url', typeAttributes: {label: {fieldName : 'OwnerName'}, target: '_top'}, sortable: 'true',wrapText: 'true'},
-                    { label: lblAccount, fieldName: 'AccountLink', type: 'url', typeAttributes: {label: {fieldName : 'AccountName'}, target: '_top'}, sortable: 'true',wrapText: 'true'},
-                    { label: lblPrefered, fieldName: 'PreferedPlace', type: 'text', sortable: 'true',wrapText: 'true',cellAttributes: { alignment: 'center' }},
-                    { label: lblStreet, fieldName: 'Street', type: 'text', sortable: 'true',wrapText: 'true' },
-                    { label: lblCity, fieldName: 'City', type: 'text', sortable: 'true',wrapText: 'true'},
-                    { label: lblState, fieldName: 'State', type: 'text', sortable: 'true',wrapText: 'true'},
-                    { label: lblPhone, fieldName: 'Phone', type: 'phone', sortable: 'true',wrapText: 'true'},
-                    { label: lblContactRole, fieldName: 'Contact_Role__c', type: 'text', sortable: 'true',wrapText: 'true'},
+const columns = [   { label: lblContact, fieldName: 'ContactLink', type: 'url', typeAttributes: {label: {fieldName: 'ContactName'}, target: '_top'}, sortable: 'true', wrapText: 'true'},
+					{ label: 'Contact Owner', fieldName: 'contactownerLink', type: 'url', typeAttributes: {label: {fieldName : 'OwnerName'}, target: '_top'}, sortable: 'true', wrapText: 'true'},
+                    { label: lblAccount, fieldName: 'AccountLink', type: 'url', typeAttributes: {label: {fieldName : 'AccountName'}, target: '_top'}, sortable: 'true', wrapText: 'true'},
+                    { label: lblPrefered, fieldName: 'PreferedPlace', type: 'text', sortable: 'true', wrapText: 'true',cellAttributes: { alignment: 'center' }},
+                    { label: lblStreet, fieldName: 'Street', type: 'text', sortable: 'true', wrapText: 'true' },
+                    { label: lblCity, fieldName: 'City', type: 'text', sortable: 'true', wrapText: 'true'},
+                    { label: lblState, fieldName: 'State', type: 'text', sortable: 'true', wrapText: 'true'},
+                    { label: lblPhone, fieldName: 'Phone', type: 'phone', sortable: 'true', wrapText: 'true'},
+                    { label: lblContactRole, fieldName: 'Contact_Role__c', type: 'text', sortable: 'true', wrapText: 'true'},
                 ];
 
 export default class TabMVAActivationContacts extends NavigationMixin(LightningElement) {
@@ -72,7 +76,6 @@ export default class TabMVAActivationContacts extends NavigationMixin(LightningE
     ValidationCount;
     ValidCount = 0;
     isContactLstLoading = true;
-    
     @track isModalOpen = false;
     @track isLoading = false;
     @track data;
@@ -113,7 +116,6 @@ export default class TabMVAActivationContacts extends NavigationMixin(LightningE
             }else{
                 this.ValidCount = allValidCount.length;
             }
-            this.isDataExsiting = true;
         }else if(error){
             this.errors = error;
             //console.log('XXX An error was occurred due =>'+JSON.stringify(error));
@@ -137,13 +139,11 @@ export default class TabMVAActivationContacts extends NavigationMixin(LightningE
                 res.Status = res.QIDC__Status_ims__c;
                 res.CreatedBy = res.CreatedBy.Name;
             });
-            //console.log('XXX Get Validation List =>'+JSON.stringify(this.data));
             this.error = undefined;
         }else if(result.error){
             this.errors = error;
             this.error = result.error;
             this.data = undefined;
-            //console.log('XXX An error was occurred : '+JSON.stringify(this.error));
             this.showToast('Error', 'error', this.errors);
         }
     }
@@ -155,22 +155,47 @@ export default class TabMVAActivationContacts extends NavigationMixin(LightningE
             this.data = JSON.parse(JSON.stringify(result.data));
             if(this.data.length > 0)
               this.isAssociatedConsExist = true;
-            console.log('>>>'+this.data.CreatedById);
             this.data.forEach(res=>{
                 res.ContactLink = '/' + res.ContactId;
                 res.AccountLink = '/' + res.AccountId;
-                res.contactownerLink='/'+res.CreatedById;
+				res.contactownerLink='/'+res.CreatedById;
             });
             this.error = undefined;
-            //console.log('XXX Get All Associated Contact =>'+JSON.stringify(this.data));
         }else if(result.error){
             this.data = undefined;
             this.errors = error;
-            //console.log('XXX An error was occurred = >'+JSON.stringify(result.error));
             this.showToast('Error', 'error', this.errors);
         }
     }
-    
+    /*
+    @wire(ContactRelatedList, {receivedId: '$receivedId'})
+    contacts(result) {
+        if (result.data) {
+            this.data = JSON.parse(JSON.stringify(result.data));
+            this.data.forEach(res=>{
+                res.conLink1 = '/' + res.Id;
+                res.conLink2 = '/' + res.AccountId;
+            });
+            this.error = undefined;
+        } else if (result.error) {
+            this.error = result.error;
+            this.data = undefined;
+        }
+    }*/
+    /*
+    @wire(ContactRelated, {receivedId: '$receivedId'})
+    wiredContactRelated({error, data}){
+        if(data){
+            this.contactRecs = data;
+            this.contactCount = data.length;
+            this.errors = undefined;
+            console.log('XXX Get Contact Related List =>'+JSON.stringify(this.contactRecs));
+        }else if(error){
+            this.errors = error;
+            this.contactRecs = undefined;
+            console.log('XXX An error was occurred =>'+JSON.stringify(this.errors));
+        }
+    }*/
 
     doSorting(event) {
         this.sortBy = event.detail.fieldName;

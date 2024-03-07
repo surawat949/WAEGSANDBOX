@@ -57,7 +57,7 @@ export default class TabMVAVisitsTraining extends NavigationMixin(LightningEleme
     @track showAttendee = false;
     @track showMissingError = false;
 
-    @track inStoreTrainingLst;
+    inStoreTrainingLst;
     isDataExist;
     recCount = 0;
     showTrainingCertificate = false;
@@ -118,19 +118,17 @@ export default class TabMVAVisitsTraining extends NavigationMixin(LightningEleme
 
     connectedCallback(){
         this.isLoading = true;
-        this.ECPTraining();
+        //this.ECPTraining();
         this.getInStoreTraining();
         subscribe(this.CHANNEL_NAME, -1, this.refreshList).then(response => {
             this.subscription = response;
-            console.log('RefreshList is called 99');
-          });
+        });
           onError(error => {
-              console.error('Server Error--->'+error);
-          });
+            this.showToast('Error', 'Error', JSON.stringify(error.message));
+        });
       }
     refreshList = ()=> {
         this.getInStoreTraining();
-        console.log('>>>>here');
     } 
         
     showToast(title, variant, message) {
@@ -144,10 +142,9 @@ export default class TabMVAVisitsTraining extends NavigationMixin(LightningEleme
     }
     getInStoreTraining(){
         getInStoreTrainingRelatedList({accountId : this.receivedId})
-        .then(result => {
-            console.log('>>>');
-            result = JSON.parse(JSON.stringify(result)); 
-            result.forEach(res=>{              
+        .then(response => {
+            response = JSON.parse(JSON.stringify(response)); 
+            response.forEach(res=>{              
                 res.TrainingLink = '/' + res.Id;
                 if(res.hasOwnProperty('Assigned_to__c'))
                     res.AssignedLink = '/' + res.Assigned_to__c; 
@@ -158,17 +155,16 @@ export default class TabMVAVisitsTraining extends NavigationMixin(LightningEleme
                 else
                     res.AssignedUser = '';
             });                
-            let trainingLst = result;
-            console.log('>>>test',trainingLst);
+            let trainingLst = response;
             this.inStoreTrainingLst = (trainingLst.length <= 5) ? [...trainingLst] : [...trainingLst].splice(0,5);
-            console.log('>>>>',this.inStoreTrainingLst);
+            
             if(trainingLst.length>5){
                 this.recCount='5+';
             }
             else{
                 this.recCount=trainingLst.length;
             }
-            if(this.recCount > 0)
+            if(trainingLst.length > 0)
                 this.isDataExist =true;
             this.isLoading = false;
         })
@@ -177,22 +173,14 @@ export default class TabMVAVisitsTraining extends NavigationMixin(LightningEleme
             this.showToast('Error', 'Error', error.message);
             this.isLoading = false;
         });
-    }
-    showToast(title, variant, message) {
-        this.dispatchEvent(
-            new ShowToastEvent({
-                title: title,
-                message: message,
-                variant: variant,
-            }),
-        );
 
+        this.ECPTraining();
     }
     ECPTraining(){
         getEcplstTraining({accountId : this.receivedId})
         .then(response=>{
             if(response){
-                //console.log('Training List =>'+JSON.parse(JSON.stringify(response)));
+				this.selectEcpTrainingOption = [];
                 for(const eachTraining of response){
                     const option = {
                         label : eachTraining.Name,
@@ -202,7 +190,6 @@ export default class TabMVAVisitsTraining extends NavigationMixin(LightningEleme
                 }
             }
         }).catch(error=>{
-            console.log('Error =>'+JSON.stringify(error.message));
             this.showToast('Error', 'Error', JSON.stringify(error.message));
         });
     }
@@ -212,7 +199,6 @@ export default class TabMVAVisitsTraining extends NavigationMixin(LightningEleme
         getAttendeeList({trainingId : this.selectedTrainingId})
         .then(response=>{
             if(response){
-                console.log('Training Attendees '+JSON.parse(JSON.stringify(response)));
                 for(const eachAttendee of response){
                     var key = eachAttendee.Contact__r.Name.concat('-', eachAttendee.Contact__r.RecordType.Name);
                     const option ={
@@ -229,7 +215,6 @@ export default class TabMVAVisitsTraining extends NavigationMixin(LightningEleme
                 }
             }
         }).catch(error=>{
-            console.log('Error = > '+JSON.stringify(error.message));
             this.showToast('Error', 'Error', JSON.stringify(error.message));
         });
     }
@@ -248,7 +233,6 @@ export default class TabMVAVisitsTraining extends NavigationMixin(LightningEleme
                 }
             }
         }).catch(error=>{
-            console.log('Error '+JSON.stringify(error.message));
             this.showToast('Error', 'Error', JSON.stringify(error.message));
         });
     }
@@ -272,7 +256,6 @@ export default class TabMVAVisitsTraining extends NavigationMixin(LightningEleme
             this.closeModal();
         }).catch(error=>{
             this.isLoading = true;
-            console.log('Error = > '+JSON.stringify(error.message));
             this.showToast('Error', 'error', JSON.stringify(error.message));
             this.isLoading = false;
             this.closeModal();
@@ -341,9 +324,9 @@ export default class TabMVAVisitsTraining extends NavigationMixin(LightningEleme
         this.showAttendee = false;
         this.showMissingError = false;
         this.selectAttendeeOption = [];
-    }
+}
     disconnectedCallback() {
         unsubscribe(this.subscription, () => {
         });   
-    } 
+    }
 }

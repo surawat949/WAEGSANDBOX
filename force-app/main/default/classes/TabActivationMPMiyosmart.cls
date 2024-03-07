@@ -25,14 +25,12 @@ public with sharing class TabActivationMPMiyosmart {
 
     @AuraEnabled(cacheable=true)
     public static sObject searchDefaultRecord(string recordId, string sObjectApiName){
-        System.debug('search value default record'+recordId);
         string recId = recordId;
         
         string sQuery = 'select Id, DurableId, label, value from picklistvalueinfo where ' +
                         'entityparticle.entitydefinition.qualifiedapiname = \''+sObjectApiName+'\' '+
                         'and entityparticle.developername = \'First_Competitor_local_name\' '+
                         'and isactive = true and value LIKE :recId order by value asc limit 1';
-        System.debug('soql is =>'+sQuery);
         /*String sQuery = 'select Id, Name from '+sObjectApiName+' where Id=:recId limit 1';*/
         for(sObject obj : database.query(sQuery)){
             //System.debug(obj);
@@ -97,7 +95,6 @@ public with sharing class TabActivationMPMiyosmart {
     public static string getMainMyopiaDefault(String recordId){
         try {
             String MainMyopiaName = [SELECT Id, Myo_Main_Comp_Myopia_Control__c FROM Account WHERE Id=:recordId LIMIT 1].Myo_Main_Comp_Myopia_Control__c;
-            System.debug('Main Myopia Control Field =>'+MainMyopiaName);
             return MainMyopiaName;
         } catch (Exception e) {
             LogException.log(e);

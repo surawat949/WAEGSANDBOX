@@ -17,7 +17,8 @@ public class TabActivationEquipmentsInstallCntrlTest {
         e.Product_Type__c = 'Software';
         update e;
         TabActivationEquipmentsInstallCntrl.getSoftwareInShop(acc.Id);
-         Test.StopTest();
+        Test.StopTest();
+
 
         
     }   

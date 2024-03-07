@@ -41,19 +41,7 @@
     <aura:attribute name="accept" type="List" default="['.jpg', '.jpeg','.pdf','.csv','.xlsx']"/>  
 	<aura:attribute name="selectedFileName" type="String" default=""/>
     <aura:attribute name="selectedDocumentId" type="String"/>
-    
     <aura:attribute name="fieldMapping" type="Object" />
-    <aura:attribute name="selectedData" type="Map" default="{
-                                                            Description : '',
-                                                            UserCountry : '',
-                                                            Subject : '',
-                                                            SubSubject : '',
-                                                            CaseOrigin : '',
-                                                            sObjectType : '', 
-                                                            button : '',
-                                                            AccountId : '',
-                                                            fieldSetName : ''
-                                                            }" />
     
     <lightning:card>
         <aura:if isTrue="{!v.isModalOpen}">
@@ -82,7 +70,6 @@
                                   title="Track &amp; Trace"
                                   onclick="{! c.getOrders }" class="button-search" disabled="{!v.currentUser.Country_for_Customer_Support__c == 'USA'}"/>					
                     </div>
-                    
                 </div>
                 <lightning:input aura:id="hoyaRef" label="{!v.currentUser.Country_for_Customer_Support__c == 'USA' ? 'Invoice Number' : 'Reference number'}"/>
                 
@@ -128,6 +115,8 @@
                     <div class="slds-text-color_error">Case Origin is required to proceed.</div>
                 </aura:renderIf>
                 
+                <lightning:inputField aura:id="Status" fieldName="Status" />
+                
                 <lightning:fileUpload label="Upload files" multiple="false"   
                       accept="{!v.accept}" 
 					  fileFieldName="serviceFlow_fileupload__c"
@@ -139,52 +128,12 @@
                 <br />
                 
                 <lightning:buttonGroup class="slds-align_absolute-center">
-                    <lightning:button label="{!$Label.c.serviceFlow_Call}" onclick="{!c.validateCall}" variant="brand"
-                                      />&nbsp; &nbsp;
-                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-                    <lightning:button label="{!$Label.c.serviceFlow_Task}" onclick="{!c.createTask}" variant="brand"
-                                      />&nbsp; &nbsp;
-                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 
-                    <lightning:button label="{!$Label.c.serviceFlow_Case}" onclick="{!c.createCase}" variant="brand"
+                    <lightning:button label="LOG" onclick="{!c.createCase}" variant="brand"
                                       />
                 </lightning:buttonGroup>
             </lightning:recordEditForm>
         </div>
     </lightning:card>
-    
-    
-    
-    <aura:if isTrue="{!v.isCall}">
-        <div role="dialog" class="slds-modal slds-fade-in-open ">
-            <div class="slds-modal__container">
-                <div class="slds-modal__header">
-                    <button class="slds-button slds-modal__close slds-button--icon-inverse" title="Close"
-                            onclick="{!c.handleCloseModal}">
-                        X
-                        <span class="slds-assistive-text">Close</span>
-                    </button>
-                    <h1 class="slds-text-heading--medium">Create Call</h1>
-                </div>
-                
-                <div class="slds-modal__content slds-p-around--medium">
-                    <center>
-                        <p><b>
-                            <div class="slds-align_absolute-center slds-text-heading_small">
-                                <h1>Status</h1>
-                            </div>
-                            <lightning:radioGroup name="callStatusGroup" label="" options="{!v.callStatus}"
-                                                  value="{!v.defaultCallStatus}" onchange="{! c.handleChangeStatus }" type="button" />
-                            </b>
-                        </p>
-                    </center>
-                </div>
-                <div class="slds-modal__footer">
-                    <button class="slds-button slds-button--brand" onclick="{!c.createCall}">Continue</button>
-                </div>
-            </div>
-        </div>
-        <div class="slds-backdrop slds-backdrop--open"></div>
-    </aura:if>
     <aura:if isTrue="{!v.isLoading}">
         <div role="dialog" class="slds-modal slds-fade-in-open spinMargin">
             <div class="slds-modal__container">

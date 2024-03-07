@@ -27,6 +27,7 @@ public class tabVisitFormControllerTest {
         Account acc=[Select Id,Name,ownerId from Account LIMIT 1];
         Visits__c visitObj = [SELECT id from Visits__c where Account__c =:acc.id];
         tabVisitDetailFormController.getBusinessOpportunityRelatedAccount(visitObj.id);
+        tabVisitDetailFormController.getUserInfo();
         Test.stopTest();
     }
 }

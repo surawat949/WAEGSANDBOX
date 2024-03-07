@@ -92,10 +92,9 @@ export default class TabActivationBusinessProgramRegistration extends LightningE
             this.RemotEdgingFlagMeaning = data.RemotEdgingFlagMeaning;
             this.MountingFlagMeaning = data.MountingFlagMeaning;
             
-            console.log('>>>>',this.RemoteEdgingIndicator );
-        console.log('>>>>MountingIndicator',this.MountingIndicator );
         }else if(error){
-            console.log('XXX An error was occurred ==>'+JSON.stringify(error));
+            this.showToast('Error', 'Error', error.body.message);
+
         }
     }
     
@@ -136,7 +135,7 @@ export default class TabActivationBusinessProgramRegistration extends LightningE
         if (this.accBrand != undefined && this.accBrand == 'HOYA') {
             this.isHoyaAccount = true;
         }
-        if (this.accChannel != undefined && (this.accChannel === 'Independent' || this.accChannel === 'Chain')) {
+        if (this.accChannel != undefined && (this.accChannel === 'Independent' || this.accChannel === 'Independent Seiko' || this.accChannel === 'Chain' || this.accChannel === 'Chain Seiko')) {
             this.isIndependentChannel = true;
         }
     }
@@ -155,8 +154,8 @@ export default class TabActivationBusinessProgramRegistration extends LightningE
         startOnboarding({accountId : this.receivedId, state:state})
         .then(response => {
             setTimeout(() => {
-                //eval("$A.get('e.force:refreshView').fire();");
-                this.dispatchEvent(new RefreshEvent());
+               // eval("$A.get('e.force:refreshView').fire();");
+			    this.dispatchEvent(new RefreshEvent());
                 this.showLoading = false;
                 if(state){
                     this.showToast('Success', 'Success', 'Started On-boarding process');
@@ -181,9 +180,5 @@ export default class TabActivationBusinessProgramRegistration extends LightningE
                 variant: variant,
             }),
         );
-    }
-
-    changeStyle(event){
-        event.target.style.backgroundColor = "#0044aa";
     }
 }

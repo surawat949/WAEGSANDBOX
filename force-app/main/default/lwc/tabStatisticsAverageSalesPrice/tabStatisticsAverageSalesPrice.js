@@ -1,14 +1,18 @@
 import { LightningElement,api,wire} from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 //Custom Labels
-import AverageSalesPrice from '@salesforce/label/c.AverageSalesPrice';
+import AverageSalesPriceNet from '@salesforce/label/c.AverageSalesPrice';
 import AverageSalesPriceGross from '@salesforce/label/c.AverageSalesPriceGross';
+import AverageSalesPrice from '@salesforce/label/c.AverageSalesPriceColHeader';
+import CurrencyIn from '@salesforce/label/c.Currency_In';
 //Apex
 import getAverageSales from '@salesforce/apex/TabStatisticsController.getAverageSalesList';
 import getMonthWithSales from '@salesforce/apex/TabStatisticsController.getMonthWithSales';
+import getCurrency from '@salesforce/apex/TabStatisticsController.getCurrency';
 export default class TabStatisticsAverageSalesPrice extends LightningElement {
     @api receivedId;
     @api type;
+    CurrencyCode;
     lensesDataLst;
     lensesCFYMap=[];
     lensesCFYQtyMap=[];
@@ -23,7 +27,7 @@ export default class TabStatisticsAverageSalesPrice extends LightningElement {
     averageSalesLFY = [];
     totalVar;
     custLabel = {
-        AverageSalesPrice,AverageSalesPriceGross
+        AverageSalesPrice,AverageSalesPriceGross,AverageSalesPriceNet,CurrencyIn
     }
     MonthColumns = ['APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC','JAN','FEB','MAR','TOTAL'];   
     
@@ -170,9 +174,18 @@ export default class TabStatisticsAverageSalesPrice extends LightningElement {
             this.showToast('Error', 'Error', result.error);
         }
     }
+    @wire(getCurrency,{recordId: "$receivedId"})
+    checkCurrency(result){
+        if(result.data){
+            this.CurrencyCode = JSON.parse(JSON.stringify(result.data));
+        }
+        else if(result.error){
+            this.showToast('Error', 'Error', result.error);
+        }
+    }     
     connectedCallback() {
         if(this.type == 'Net')
-            this.colName = this.custLabel.AverageSalesPrice;
+            this.colName = this.custLabel.AverageSalesPriceNet;
         else
             this.colName = this.custLabel.AverageSalesPriceGross;
         getMonthWithSales({ recordId: this.receivedId})

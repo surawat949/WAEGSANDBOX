@@ -6,24 +6,32 @@
                 <td><h3 class="slds-section__title">{custLabel.SalesTarget}</h3></td>
             </tr>
         </table><br>      
-        <lightning-record-edit-form  object-api-name={ObjectApiName} record-id={receivedId}>
-            <div class="slds-grid">
-                <div class="slds-form-element__static slds-size_4-of-12"><lightning-input-field field-name={field} onkeypress={doRefresh}></lightning-input-field>&nbsp; </div>
-                <div class="slds-col slds-size_1-of-12 slds-align_absolute-center" style="padding-bottom:2px;">
-                    <lightning-button name="save" variant="brand-outline" type="submit" label={custLabel.Save} onclick={doRefresh}></lightning-button>  
-                </div>
-                <div>&nbsp;&nbsp;</div>
-                <div class="slds-size_3-of-12">
-                        <label class="slds-form-element__label">{custLabel.MonthlyObjective}</label><br/>
-                        <div class="slds-form-element__control"><lightning-formatted-number value={MonthlyObjective} maximum-fraction-digits ="0" format-style='currency' currency-code={currencyCode}></lightning-formatted-number></div> 
-                </div>
-                <div class="slds-form-element slds-form-element_stacked slds-size_3-of-12">    
-                        <label class="slds-form-element__label">{custLabel.Last12MoVsObjective}</label><br/>
-                        <div class="slds-form-element__control"><lightning-formatted-number value={Last12MoVsObjective} maximum-fraction-digits ="0"></lightning-formatted-number>%</div> 
-                </div>
-            </div>        
-            <br/>
-        </lightning-record-edit-form>       
+        <div>           
+            <lightning-layout>
+                <lightning-layout-item flexibility="auto" padding="around-small">
+                <lightning-record-form
+                    record-id={receivedId}
+                    object-api-name={ObjectApiName}
+                    fields={field}
+                    mode="view" 
+                    columns = " 2"   
+                    onsubmit={doRefresh}           
+                    >
+                </lightning-record-form>
+            </lightning-layout-item>
+            </lightning-layout>
+            </div>                
+            <div class="slds-grid slds-gutters slds-m-left_medium">
+            <div class="slds-size_1-of-2">
+                    <label >{custLabel.MonthlyObjective}</label>
+                    <div ><lightning-formatted-number value={MonthlyObjective} maximum-fraction-digits ="0" format-style='currency' currency-code={CurrencyCode}></lightning-formatted-number></div> 
+            </div>
+            <div class="slds-form-element slds-form-element_stacked slds-size_1-of-2">    
+                    <label >{custLabel.Last12MoVsObjective}</label>
+                    <div ><lightning-formatted-number value={Last12MoVsObjective} maximum-fraction-digits ="0"></lightning-formatted-number>%</div> 
+            </div>
+        </div>        
+        <br/>        
     </div>
     
     <!--Monthly Net Sales Figures-->
@@ -43,7 +51,7 @@
     <table class="slds-table slds-table_bordered slds-table_cell-buffer">
         <thead>
             <tr>
-                <th class="fix"><div class="slds-truncate">{custLabel.NetSales}</div></th>
+                <th class="fix"><div class="slds-truncate">{custLabel.NetSales} {custLabel.CurrencyIn} {CurrencyCode} {custLabel.FiscalYear}</div></th>
                 <template for:each={MonthColumns} for:item="column">
                     <th key={column} style="text-align:right;"><div class="slds-truncate">{column}</div></th>
                 </template>
@@ -52,7 +60,7 @@
         <tbody>
             <!--Lenses-->
             <tr class="slds-text-title_caps">
-                <td class="fix">{custLabel.Lenses}({CurrencyCode})</td>
+                <td class="fix">{custLabel.Lenses}</td>
                 <template for:each={LensesSalesCFY} for:item="item" for:index="index"> 
                     <td style="text-align:right;" key={item}>
                         <lightning-formatted-number value={item} maximum-fraction-digits="0">
@@ -62,7 +70,7 @@
             </tr>
             <!--Frames-->
             <tr class="slds-text-title_caps">
-                <td class="fix">{custLabel.Frames}({CurrencyCode})</td>
+                <td class="fix">{custLabel.Frames}</td>
                 <template for:each={FramesSalesCFY} for:item="item" for:index="index"> 
                     <td style="text-align:right;" key={item}>
                         <lightning-formatted-number value={item} maximum-fraction-digits="0">
@@ -72,7 +80,7 @@
             </tr>
             <!--ContactLens-->
             <tr class="slds-text-title_caps">
-                <td class="fix">{custLabel.ContactLenses}({CurrencyCode})</td>
+                <td class="fix">{custLabel.ContactLenses}</td>
                 <template for:each={ContactLensesSalesCFY} for:item="item" for:index="index"> 
                     <td style="text-align:right;" key={item}>
                         <lightning-formatted-number value={item} maximum-fraction-digits="0">
@@ -82,7 +90,7 @@
             </tr>
             <!--Instruments-->
             <tr class="slds-text-title_caps">
-                <td class="fix">{custLabel.Instruments}({CurrencyCode})</td>
+                <td class="fix">{custLabel.Instruments}</td>
                 <template for:each={InstrumentsSalesCFY} for:item="item" for:index="index"> 
                     <td style="text-align:right;" key={item}>
                         <lightning-formatted-number value={item} maximum-fraction-digits="0">
@@ -92,7 +100,7 @@
             </tr>                
             <!--Others-->
             <tr class="slds-text-title_caps">
-                <td class="fix">{custLabel.Others}({CurrencyCode})</td>
+                <td class="fix">{custLabel.Others}</td>
                 <template for:each={OthersSalesCFY} for:item="item" for:index="index"> 
                     <td style="text-align:right;" key={item}>
                         <lightning-formatted-number value={item} maximum-fraction-digits="0">
@@ -102,7 +110,7 @@
             </tr>
             <!--Total FY-->
             <tr class="slds-text-title_caps">
-                <td class="fix">{custLabel.TotalFY}({CurrencyCode})</td>
+                <td class="fix">{custLabel.TotalFY}</td>
                 <template for:each={TotalSalesCFY} for:item="item" for:index="index"> 
                     <td style="text-align:right;" key={item}>
                         <lightning-formatted-number value={item} maximum-fraction-digits="0">
@@ -112,7 +120,7 @@
             </tr>
             <!--Total LFY-->
             <tr class="slds-text-title_caps">
-                <td class="fix">{custLabel.TotalLFY}({CurrencyCode})</td>
+                <td class="fix">{custLabel.TotalLFY}</td>
                 <template for:each={TotalSalesLFY} for:item="item" for:index="index"> 
                     <td style="text-align:right;" key={item}>
                         <lightning-formatted-number value={item} maximum-fraction-digits="0">
@@ -140,7 +148,7 @@
             </tr>
             <!--Lenses LFY-->
             <tr class="slds-text-title_caps">
-                <td class="fix">{custLabel.LensesLFY}({CurrencyCode})</td>
+                <td class="fix">{custLabel.LensesLFY}</td>
                 <template for:each={LensesSalesLFY} for:item="item" for:index="index"> 
                     <td style="text-align:right;" key={item}>
                         <lightning-formatted-number value={item} maximum-fraction-digits="0">
@@ -304,7 +312,7 @@
         <table class="slds-table slds-table_bordered slds-table_cell-buffer">
             <thead>
                 <tr>
-                    <th class="fix"><div class="slds-truncate">{custLabel.NetSales}</div></th>
+                    <th class="fix"><div class="slds-truncate">{custLabel.NetSales} {custLabel.CurrencyIn} {CurrencyCode}</div></th>
                     <template for:each={MonthColumns} for:item="column">
                         <th key={column} style="text-align:right;"><div class="slds-truncate">{column}</div></th>
                     </template>

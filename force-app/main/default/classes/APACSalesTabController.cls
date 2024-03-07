@@ -1041,7 +1041,7 @@ public with sharing class APACSalesTabController {
         System.debug('XXX Get Account Id is '+accountId);
 
         List<Visits__c> v = [select id, Name, toLabel(Visit_Reason_APAC__c), toLabel(Visit_Type__c), toLabel(Visit_Status__c), toLabel(Actions_executed__c), toLabel(Call_To_Action__c), 
-                                Visit_Notes__c, Call_To_Action_Notes__c, Start_Time__c, End_Time__c, Assigned_to__r.Name from Visits__c where Account__c =: accountId order by LastModifiedDate desc limit 10];
+                                Visit_Notes__c, Call_To_Action_Notes__c, Start_Time__c, End_Time__c, Assigned_to__r.Name from Visits__c where Account__c =: accountId order by Start_Time__c desc limit 10];
         
         return v;
     }

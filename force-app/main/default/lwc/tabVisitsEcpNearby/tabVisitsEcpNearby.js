@@ -7,7 +7,7 @@ import getAccountMapFetch from '@salesforce/apex/TabVisitsEcpNearby.getAccountsM
 import getSeikoNetworkPicklist from '@salesforce/apex/TabVisitsEcpNearby.getSVSNetworkPicklistVal';
 //End
 
-//custom label start here
+//custom label start here -
 import lblSegmentation from '@salesforce/label/c.SFDC_V_2_MVC_ContactRef_Segment';
 import lblMainCompetitor from '@salesforce/label/c.SFDC_V2_Account_ECP_Nearby_MainCompetitor';
 import lblMinPotential from '@salesforce/label/c.SFDC_V2_Account_ECP_Nearby_MinPotential';
@@ -105,186 +105,189 @@ export default class TabVisitsEcpNearby extends LightningElement {
         getAccountMapFetch({recordId : this.receivedId, distance : Math.floor(this.distance), SegmentationBox : this.optValues, PotentialMin : Math.floor(this.potentialMinVal), PotentialMax : Math.floor(this.potentialMaxVal), FirstLocalCampetitor : this.firstCompetitorSearch, svsnetwork : this.SVSNetworkVal})
         .then(result=>{
             this.mapMaker = [];
-            for(var i=0;i<result.length;i++){
-                if(i==0){
-                    let AccountName = '';
-                    let HoyaAccountId = '';
-                    let AccountStreet = '';
-                    let AccountCity = '';
-                    let AccountState = '';
-                    let AccountCountry = '';
-                    let AccountPostalCode = '';
-                    let AccountShippingLatitude = 0;
-                    let AccountShippingLongitude = 0;
-                    let AccountBrand = '';
-                    let AccountSegment = '';
-                    let AccountMainCompetitor = '';
+			if(result.length > 0){
+				for(var i=0;i<result.length;i++){
+					if(i==0){
+						let AccountName = '';
+						let HoyaAccountId = '';
+						let AccountStreet = '';
+						let AccountCity = '';
+						let AccountState = '';
+						let AccountCountry = '';
+						let AccountPostalCode = '';
+						let AccountShippingLatitude = 0;
+						let AccountShippingLongitude = 0;
+						let AccountBrand = '';
+						let AccountSegment = '';
+						let AccountMainCompetitor = '';
 
-                    if(result[i].Name != undefined){
-                        AccountName = result[i].Name;
-                    }
+						if(result[i].Name != undefined){
+							AccountName = result[i].Name;
+						}
 
-                    if(result[i].Hoya_Account_ID__c != undefined){
-                        HoyaAccountId = result[i].Hoya_Account_ID__c;
-                    }
+						if(result[i].Hoya_Account_ID__c != undefined){
+							HoyaAccountId = result[i].Hoya_Account_ID__c;
+						}
 
-                    if(result[i].ShippingStreet != undefined){
-                        AccountStreet = result[i].ShippingStreet;
-                    }
+						if(result[i].ShippingStreet != undefined){
+							AccountStreet = result[i].ShippingStreet;
+						}
 
-                    if(result[i].ShippingCity != undefined){
-                        AccountCity = result[i].ShippingCity;
-                    }
+						if(result[i].ShippingCity != undefined){
+							AccountCity = result[i].ShippingCity;
+						}
 
-                    if(result[i].ShippingState != undefined){
-                        AccountState = result[i].ShippingState;
-                    }
+						if(result[i].ShippingState != undefined){
+							AccountState = result[i].ShippingState;
+						}
 
-                    if(result[i].ShippingCountry != undefined){
-                        AccountCountry = result[i].ShippingCountry;
-                    }
+						if(result[i].ShippingCountry != undefined){
+							AccountCountry = result[i].ShippingCountry;
+						}
 
-                    if(result[i].ShippingPostalCode != undefined){
-                        AccountPostalCode = result[i].ShippingPostalCode;
-                    }
+						if(result[i].ShippingPostalCode != undefined){
+							AccountPostalCode = result[i].ShippingPostalCode;
+						}
                     
-                    if(result[i].ShippingLatitude != undefined){
-                        AccountShippingLatitude = result[i].ShippingLatitude;
-                    }
+						if(result[i].ShippingLatitude != undefined){
+							AccountShippingLatitude = result[i].ShippingLatitude;
+						}
                     
-                    if(result[i].ShippingLongitude != undefined){
-                        AccountShippingLongitude = result[i].ShippingLongitude;
-                    }
+						if(result[i].ShippingLongitude != undefined){
+							AccountShippingLongitude = result[i].ShippingLongitude;
+						}
 
-                    if(result[i].Brand__c != undefined){
-                        AccountBrand = result[i].Brand__c;
-                    }
+						if(result[i].Brand__c != undefined){
+							AccountBrand = result[i].Brand__c;
+						}
 
-                    if(result[i].Segmentation_Box__c != undefined){
-                        AccountSegment = result[i].Segmentation_Box__c;
-                    }
+						if(result[i].Segmentation_Net__c != undefined){
+							AccountSegment = result[i].Segmentation_Net__c;
+						}
 
-                    if(result[i].First_Competitor_local_name__c != undefined){
-                        AccountMainCompetitor = result[i].First_Competitor_local_name__c;
-                    }
+						if(result[i].First_Competitor_local_name__c != undefined){
+							AccountMainCompetitor = result[i].First_Competitor_local_name__c;
+						}
 
-                    this.mapMaker = [...this.mapMaker,
-                        {
-                            location : {
-                                Latitude : AccountShippingLatitude,
-                                Longitude : AccountShippingLongitude,
-                                Street : AccountStreet,
-                                City : AccountCity,
-                                State : AccountState,
-                                PostalCode : AccountPostalCode,
-                                Country : AccountCountry
-                            },
-                            mapIcon : {
-                                path: 'M 125,5 155,90 245,90 175,145 200,230 125,180 50,230 75,145 5,90 95,90 z',
-                                fillColor: '#3338FF',
-                                fillOpacity: .7,
-                                strokeWeight: 1,
-                                scale: .15,             
-                            },
-                            icon : 'standard:account',
-                            title : AccountName,
-                            value : result[i].Id,
-                            description : 'Hoya Account Id : '+HoyaAccountId+'<br>Brand : '+AccountBrand+'<br>Segmentation : '+AccountSegment+'<br>Main Competitor : '+AccountMainCompetitor+'<br>Street : '+AccountStreet+' '+AccountCity+' '+AccountState+' '+AccountPostalCode+' '+AccountCountry,
-                        }
-                    ];
-                }else{
-                    let AccountName = '';
-                    let HoyaAccountId = '';
-                    let AccountStreet = '';
-                    let AccountCity = '';
-                    let AccountState = '';
-                    let AccountCountry = '';
-                    let AccountPostalCode = '';
-                    let AccountShippingLatitude = 0;
-                    let AccountShippingLongitude = 0;
-                    let AccountBrand = '';
-                    let AccountSegment = '';
-                    let AccountMainCompetitor = '';
+						this.mapMaker = [...this.mapMaker,
+							{
+								location : {
+									Latitude : AccountShippingLatitude,
+									Longitude : AccountShippingLongitude,
+									Street : AccountStreet,
+									City : AccountCity,
+									State : AccountState,
+									PostalCode : AccountPostalCode,
+									Country : AccountCountry
+								},
+								mapIcon : {
+									path: 'M 125,5 155,90 245,90 175,145 200,230 125,180 50,230 75,145 5,90 95,90 z',
+									fillColor: '#3338FF',
+									fillOpacity: .7,
+									strokeWeight: 1,
+									scale: .15,             
+								},
+								icon : 'standard:account',
+								title : AccountName,
+								value : result[i].Id,
+								description : 'Hoya Account Id : '+HoyaAccountId+'<br>Brand : '+AccountBrand+'<br>Segmentation : '+AccountSegment+'<br>Main Competitor : '+AccountMainCompetitor+'<br>Street : '+AccountStreet+' '+AccountCity+' '+AccountState+' '+AccountPostalCode+' '+AccountCountry,
+							}
+						];
+					}else{
+						let AccountName = '';
+						let HoyaAccountId = '';
+						let AccountStreet = '';
+						let AccountCity = '';
+						let AccountState = '';
+						let AccountCountry = '';
+						let AccountPostalCode = '';
+						let AccountShippingLatitude = 0;
+						let AccountShippingLongitude = 0;
+						let AccountBrand = '';
+						let AccountSegment = '';
+						let AccountMainCompetitor = '';
 
-                    if(result[i].Name != undefined){
-                        AccountName = result[i].Name;
-                    }
+						if(result[i].Name != undefined){
+							AccountName = result[i].Name;
+						}
 
-                    if(result[i].Hoya_Account_ID__c != undefined){
-                        HoyaAccountId = result[i].Hoya_Account_ID__c;
-                    }
+						if(result[i].Hoya_Account_ID__c != undefined){
+							HoyaAccountId = result[i].Hoya_Account_ID__c;
+						}
 
-                    if(result[i].ShippingStreet != undefined){
-                        AccountStreet = result[i].ShippingStreet;
-                    }
+						if(result[i].ShippingStreet != undefined){
+							AccountStreet = result[i].ShippingStreet;
+						}
 
-                    if(result[i].ShippingCity != undefined){
-                        AccountCity = result[i].ShippingCity;
-                    }
+						if(result[i].ShippingCity != undefined){
+							AccountCity = result[i].ShippingCity;
+						}
 
-                    if(result[i].ShippingState != undefined){
-                        AccountState = result[i].ShippingState;
-                    }
+						if(result[i].ShippingState != undefined){
+							AccountState = result[i].ShippingState;
+						}
 
-                    if(result[i].ShippingCountry != undefined){
-                        AccountCountry = result[i].ShippingCountry;
-                    }
+						if(result[i].ShippingCountry != undefined){
+							AccountCountry = result[i].ShippingCountry;
+						}
 
-                    if(result[i].ShippingPostalCode != undefined){
-                        AccountPostalCode = result[i].ShippingPostalCode;
-                    }
+						if(result[i].ShippingPostalCode != undefined){
+							AccountPostalCode = result[i].ShippingPostalCode;
+						}
                     
-                    if(result[i].ShippingLatitude != undefined){
-                        AccountShippingLatitude = result[i].ShippingLatitude;
-                    }
+						if(result[i].ShippingLatitude != undefined){
+							AccountShippingLatitude = result[i].ShippingLatitude;
+						}
 
-                    if(result[i].ShippingLongitude != undefined){
-                        AccountShippingLongitude = result[i].ShippingLongitude;
-                    }
+						if(result[i].ShippingLongitude != undefined){
+							AccountShippingLongitude = result[i].ShippingLongitude;
+						}
 
-                    if(result[i].Brand__c != undefined){
-                        AccountBrand = result[i].Brand__c;
-                    }
+						if(result[i].Brand__c != undefined){
+							AccountBrand = result[i].Brand__c;
+						}
 
-                    if(result[i].Segmentation_Box__c != undefined){
-                        AccountSegment = result[i].Segmentation_Box__c;
-                    }
+						if(result[i].Segmentation_Net__c != undefined){
+							AccountSegment = result[i].Segmentation_Net__c;
+						}
 
-                    if(result[i].First_Competitor_local_name__c != undefined){
-                        AccountMainCompetitor = result[i].First_Competitor_local_name__c;
-                    }
+						if(result[i].First_Competitor_local_name__c != undefined){
+							AccountMainCompetitor = result[i].First_Competitor_local_name__c;
+						}
 
-                    this.mapMaker = [...this.mapMaker,
-                        {
-                            location : {
-                                Latitude : AccountShippingLatitude,
-                                Longitude : AccountShippingLongitude,
-                                Street : AccountStreet,
-                                City : AccountCity,
-                                State : AccountState,
-                                PostalCode : AccountPostalCode,
-                                Country : AccountCountry
-                            },
-                            icon : 'standard:account',
-                            title : AccountName,
-                            value : result[i].Id,
-                            description : 'Hoya Account Id : '+HoyaAccountId+'<br>Brand : '+AccountBrand+'<br>Segmentation : '+AccountSegment+'<br>Main Competitor : '+AccountMainCompetitor+'<br>Street : '+AccountStreet+' '+AccountCity+' '+AccountState+' '+AccountPostalCode+' '+AccountCountry,
-                        }
-                    ];
-                }
-            }
-            this.vCenter = {
-                location : {
-                    Latitude : result[0].ShippingLatitude,
-                    Longitude : result[0].ShippingLongitude,
-                    Street : result[0].ShippingStreet,
-                    City : result[0].ShippingCity,
-                    State : result[0].ShippingState,
-                    PostalCode : result[0].ShippingPostalCode,
-                    Country : result[0].ShippingCountry
-                },
-            };
-
+						this.mapMaker = [...this.mapMaker,
+							{
+								location : {
+									Latitude : AccountShippingLatitude,
+									Longitude : AccountShippingLongitude,
+									Street : AccountStreet,
+									City : AccountCity,
+									State : AccountState,
+									PostalCode : AccountPostalCode,
+									Country : AccountCountry
+								},
+									icon : 'standard:account',
+									title : AccountName,
+								value : result[i].Id,
+								description : 'Hoya Account Id : '+HoyaAccountId+'<br>Brand : '+AccountBrand+'<br>Segmentation : '+AccountSegment+'<br>Main Competitor : '+AccountMainCompetitor+'<br>Street : '+AccountStreet+' '+AccountCity+' '+AccountState+' '+AccountPostalCode+' '+AccountCountry,
+							}
+						];
+					}
+				}
+				this.vCenter = {
+					location : {
+						Latitude : result[0].ShippingLatitude,
+						Longitude : result[0].ShippingLongitude,
+						Street : result[0].ShippingStreet,
+						City : result[0].ShippingCity,
+						State : result[0].ShippingState,
+						PostalCode : result[0].ShippingPostalCode,
+						Country : result[0].ShippingCountry
+					},
+				};
+			}else{
+				this.showToast('Warning', 'warining', 'Address details is missing');
+			}
 
         })
         .catch(error=>{

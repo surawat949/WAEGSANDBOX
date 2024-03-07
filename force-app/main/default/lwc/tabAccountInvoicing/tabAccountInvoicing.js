@@ -21,6 +21,7 @@ import ACC_SAP_CODE from '@salesforce/schema/Account.SAP_Company_Code__c';
 import ACC_ACCOUNT_STATUS from '@salesforce/schema/Account.Account_Status__c';
 import ACC_PAYMENT_OUTSTANDING from '@salesforce/schema/Account.Outstanding_Amount__c';
 import ACC_PAYMENT_LAST_OUTSTANDING from '@salesforce/schema/Account.Last_Outstanding_update__c';
+import CREDIT_RISK from '@salesforce/schema/Account.Credit_Risk__c';
 
 //get apex class starting here
 import getAccountFetchMap from '@salesforce/apex/TabAccountInvoiceController.getAccountForMap';
@@ -39,7 +40,7 @@ export default class TabAccountInvoicing extends LightningElement {
     ACC_BILL_FIELDS = [VAT_EU_NUM, ACC_CURRENNCY, ACC_BILL_ACC, ACC_BILL_ACC_NAME, ACC_BILL_ACC_PHONE, ACC_BILL_ACC_EMAIL];
     ACC_PAYMENT_FIELD = [ACC_PAYMENT_METHOD,ACC_SAP_CODE];
     ACC_PAYMENT_FIELDS = [ACC_PAYMENT_ISSUE, ACC_ACCOUNT_STATUS, ACC_PAYMENT_OUTSTANDING, ACC_PAYMENT_LAST_OUTSTANDING];
-
+	Credit_Risk = [CREDIT_RISK];
     constructor() {
         super();
         // passed parameters are not yet received here

@@ -12,14 +12,12 @@ public class TabActivationPortalStoreFinderController {
     }
     @AuraEnabled(cacheable=true)
     public static Decimal getLastTotalMonthSale(Id accountId){
-        system.debug('>>>>accountId'+accountId);
         Decimal lastSales;
         List<Last_Sales_Statistics__c> salesStatistics = [SELECT Lenses_Net_Sales_Last_3Mo_CFY__c,Id,Account__c 
                                                           FROM Last_Sales_Statistics__c where Account__c=:accountId];
             if(salesStatistics.size()>0){
              	lastSales = salesStatistics[0].Lenses_Net_Sales_Last_3Mo_CFY__c;  
             }
-            system.debug('>>>'+lastSales);
             return lastSales;    
     }
 

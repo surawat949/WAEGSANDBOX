@@ -137,7 +137,8 @@ export default class TrainingCertificateModal extends LightningElement {
         this.disableButton = true;
         this.showLoading = true;
         processCertificate({trainingId:this.selectedTrainingId,
-                            attendeeId:this.selectedAttendeeId})
+                            attendeeId:this.selectedAttendeeId,
+                            brand : 'SEIKO'})
         .then(response => {
             this.showLoading = false;
             if (response === 'Success') {

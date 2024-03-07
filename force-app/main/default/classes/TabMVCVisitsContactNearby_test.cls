@@ -73,6 +73,7 @@ public with sharing class TabMVCVisitsContactNearby_test {
         AccountContactRelation ac = [SELECT Id, ContactId, Preferred_contact_day_time__c FROM 
                                         AccountContactRelation WHERE AccountId=:acc2.Id];
         
+						 
         TabMVCVisitsContactNearby.gettAllContacts(con.Id, 5, 'Neutral', 'C', 'email', 'Other', 'Other', '');
         TabMVCVisitsContactNearby.gettAllContacts(con.Id, 5, 'Neutral', 'C', 'email', 'Other', 'Other', 'Monday AM');
         TabMVCVisitsContactNearby.gettAllContacts(con.Id, 1, '', '', '', '', '', '');

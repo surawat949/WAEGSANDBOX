@@ -457,4 +457,26 @@ public with sharing class AccountTriggerHelper_Test {
         update a2;
 
     }
+    
+    @isTest
+    static void updateGlobalNamesTest(){
+        Account a = new Account();
+        a.Hoya_Account_ID__c = 'test-1234';
+        a.Name = 'test';
+        a.First_Competitor_Local_Name__c = 'Apsid';
+        a.Second_Competitor_Local_Name__c = 'Zeiss';
+        a.Target_List__c = false;
+        a.CurrencyIsoCode = 'EUR';
+        List<Account> accList = new List<Account>();
+        accList.add(a);
+        insert accList;
+        
+        a.First_Competitor_Local_Name__c = '';
+        a.Second_Competitor_Local_Name__c = '';
+        update a;
+        a.First_Competitor_Local_Name__c = 'Zeiss';
+        a.Second_Competitor_Local_Name__c = 'Apsid';
+        update a;
+        
+    }
 }

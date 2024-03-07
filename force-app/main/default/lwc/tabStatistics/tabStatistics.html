@@ -1,14 +1,19 @@
 <template>
     <lightning-tabset variant="scoped">
-        <lightning-tab label={custLabel.potentialTab}>
-            <c-tab-statistics-potential received-id = {recordId}> </c-tab-statistics-potential>
+        <lightning-tab label={custLabel.potentialTab}>    
+            <c-tab-statistics-potential received-id = {recordId} is-german-account = {isGermanyAccount}> </c-tab-statistics-potential>
         </lightning-tab>
-        <lightning-tab label={custLabel.netSales}>
-            <c-tab-statistics-net-sales received-id = {recordId}> </c-tab-statistics-net-sales>
-        </lightning-tab>
-        <lightning-tab label={custLabel.grossSales}>
-            <c-tab-statistics-gross-sales received-id = {recordId}> </c-tab-statistics-gross-sales>
-        </lightning-tab>
+        <template lwc:if={isGermanyAccount}>
+            <lightning-tab label={custLabel.grossSales}>
+                <c-tab-statistics-gross-sales received-id = {recordId}> </c-tab-statistics-gross-sales>
+            </lightning-tab>
+        </template>
+        <template lwc:else>
+            <lightning-tab label={custLabel.netSales}>
+                <c-tab-statistics-net-sales received-id = {recordId}> </c-tab-statistics-net-sales>
+            </lightning-tab>
+        </template>
+        
         <lightning-tab label={custLabel.returns}>
             <c-tab-statistics-returns received-id = {recordId}></c-tab-statistics-returns>
         </lightning-tab>

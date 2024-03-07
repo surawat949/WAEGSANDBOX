@@ -19,6 +19,7 @@ public with sharing class TabVisitsEcpNearby_Test {
         a1.ShippingCity = 'Amsterdam';
         a1.ShippingCountry = 'Netherlands';
         a1.RecordTypeId = IndRecId;
+        a1.First_Competitor_global_name__c = 'Essilor';
         a1.First_Competitor_local_name__c = 'Essilor';
         a1.Seiko_Network__c = 'Seiko Vision Specialist';
         insert a1;

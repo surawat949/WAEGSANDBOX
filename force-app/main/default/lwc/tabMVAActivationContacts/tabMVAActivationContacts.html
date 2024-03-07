@@ -67,11 +67,18 @@
             </section>
             <div class="slds-backdrop slds-backdrop_open"></div>
         </template>
+        
+        <!-- removed from this below component regarding discussed in meeting 2023-07-04 SFDC V.2.0 Project
+        <div class="slds-grid">
+            <div class="slds-col slds-size_1-of-1">
+                <p align="center"><lightning-button label="View All" onclick={navigateToRelatedList}></lightning-button></p><br>
+            </div>
+        </div>-->
     </div>
 
     <!--Validation Request Section-->
     <div class="slds-box slds-p-around_none slds-m-top_x-small slds-m-bottom_medium slds-m-horizontal_none">
-        <table class="slds-table slds-table_bordered" aria-label="Visit" style="background-color: #215ca0;">
+        <table class="slds-table slds-table_bordered" aria-label="Validation Request" style="background-color: #215ca0;">
             <tr class="row" style="background-color: #aacbff;">
                 <td>
                     <h3  class="slds-section__title  test-id__section-header-container" data-aura-rendered-by="344:1408;a"><p align="left">{label.ValidationLabel} ({ValidCount})</p></h3>

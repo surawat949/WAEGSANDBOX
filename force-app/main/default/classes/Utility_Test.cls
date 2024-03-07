@@ -11,7 +11,7 @@ public with sharing class Utility_Test {
         insert newAcc;
         
         Contact con=new Contact();
-        con.firstname='TestingN';
+		con.firstname='TestingN';
         con.lastname='Testing';
         con.email='test@test.com';
         con.recordTypeId = shopOwner;
@@ -20,7 +20,7 @@ public with sharing class Utility_Test {
         Messaging.SingleEmailMessage msg = Utility.buildMailMessage('New_Employee_Registration', con.Id, 'test@test.com');
         Utility.sendEmailWithTemplate('New_Employee_Registration', con.Id, 'test@test.com');
         Utility.getPicklistValue('Account','First_Competitor_local_name__c');
-        Utility.getTaskSFDCStandardTask();
+		Utility.getTaskSFDCStandardTask();
         Test.stopTest();
     }
 

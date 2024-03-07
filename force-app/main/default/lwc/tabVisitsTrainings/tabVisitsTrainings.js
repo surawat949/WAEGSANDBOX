@@ -4,7 +4,6 @@ import { NavigationMixin } from 'lightning/navigation';
 import { encodeDefaultFieldValues } from 'lightning/pageReferenceUtils';
 import { subscribe, unsubscribe, onError } from 'lightning/empApi';
 
-
 import Instore_Training_And_Webinars from '@salesforce/label/c.Instore_Training_And_Webinars';
 import ECP_Training_Name from '@salesforce/label/c.ECP_Training_Name';
 import Training_Topic from '@salesforce/label/c.Training_Topic';
@@ -18,13 +17,29 @@ import e_Email from '@salesforce/label/c.e_Email';
 import e_status from '@salesforce/label/c.e_status';
 import End_Date from '@salesforce/label/c.End_Date';
 import label_viewall from '@salesforce/label/c.ViewAllRelatedList';
-import label_new from '@salesforce/label/c.NewButtonRelatedList'; 
+import label_new from '@salesforce/label/c.NewButtonRelatedList';
+import selectTraining from '@salesforce/label/c.Select_Training';
+import createFor from '@salesforce/label/c.Create_Certificate_For';
+import selectAttendee from '@salesforce/label/c.Select_Attendee';
+import noAttendeeError from '@salesforce/label/c.No_Attendee_Error';
+import sendCertificate from '@salesforce/label/c.Send_Certificate';
+import emailSent from '@salesforce/label/c.email_Sent';
+import allAttendees from '@salesforce/label/c.All_Attendees';
+import indiAttendee from '@salesforce/label/c.Individual_Attendee';
+import noTemplateError from '@salesforce/label/c.No_Template_error';
 
 import getTrainingRecord from '@salesforce/apex/TabVisitsTrainingsController.getTrainingRecords';
 import getElearningRecords from '@salesforce/apex/TabVisitsTrainingsController.getElearningRecords';
+import getECPTrainings from '@salesforce/apex/TrainingCertificateController.getECPTrainings';
+import getAttendees from '@salesforce/apex/TrainingCertificateController.getAttendees';
+import processCertificate from '@salesforce/apex/TrainingCertificateController.generateCertificate';
+import attendeeNums from '@salesforce/apex/TrainingCertificateController.getNumAttendee';
+import getAccBrand from '@salesforce/apex/TrainingCertificateController.getAccountBrand';
 
 export default class TabVisitsTrainings extends NavigationMixin(LightningElement) {
     @api receivedId;
+    @api showAttendees = false;
+    @api showMissingError = false;
     trainingRecords;
     elarningRecords;
     trainingCount = 0;
@@ -34,8 +49,21 @@ export default class TabVisitsTrainings extends NavigationMixin(LightningElement
     subscription = {};
     CHANNEL_NAME = '/event/Refresh_Related_list_Training__e';
   
-    label = {Instore_Training_And_Webinars,ECP_Training_Name,Training_Topic,Start,Training_Status,e_learnings,e_learnings_name,
-        e_learnings_name,Created_Date,User_Name,e_Email,e_status,End_Date, label_viewall,label_new}
+    label = {Instore_Training_And_Webinars,
+              ECP_Training_Name,Training_Topic,Start,
+              Training_Status,e_learnings,e_learnings_name,
+              e_learnings_name,Created_Date,User_Name,e_Email,
+              e_status,End_Date, 
+              label_viewall,label_new,
+              selectTraining,
+              createFor,
+              selectAttendee,
+              noAttendeeError,
+              sendCertificate,
+              emailSent,
+              allAttendees,
+              indiAttendee,
+              noTemplateError}
 
    @track trainingColumns = [
     {
@@ -105,58 +133,51 @@ export default class TabVisitsTrainings extends NavigationMixin(LightningElement
         sortable: true
       }
    ]
+
+   @track isModalOpen = false;
+   @track value1;
+   @track disabledButton = true;
+   @track disabledRadio = true;
+   @track selectedOption = [];
+   @track selectedAttendees = [];
+   @track showLoading = false;
+   @track certificateOptions = [{
+      label : this.label.allAttendees, value : 'All'
+   }, {
+      label : this.label.indiAttendee, value : 'Individual'
+   }];
+
+   selectedTrainingId;
+   selectedCertificateOption;
+   selectedAttendeeId;
+   NumOfAttendee;
+   AccountBrand;
     
     constructor() {
         super();
         // passed parameters are not yet received here
     }
     connectedCallback() {
-        console.log('child connected call-' + this.receivedId);
         this.getTrainingRecordsFromApex();
+        this.ECPTranings();
+        this.getAccountBrand();
+
         subscribe(this.CHANNEL_NAME, -1, this.refreshList).then(response => {
           this.subscription = response;
-          console.log('RefreshList is called 99');
         });
         onError(error => {
-            console.error('Server Error--->'+error);
+          this.showToast('Server Error--->', error, 'error');
         });
+
     }
     refreshList = ()=> {
       this.getTrainingRecordsFromApex();
-      console.log('>>>>here');
-  } 
-
-/*  //wire service is not working
-    @wire(getTrainingRecord, {accountId:'$receivedId'}) trainingRec({error, data}){
-      console.log('training records'+JSON.stringify(data))
-      if(data && data.length > 0){
-        data = JSON.parse(JSON.stringify(data));
-        data.forEach(res=>{
-            res.nameLink = '/' + res.Id;
-        });
-
-        let allTrainingRecords=data;
-        this.trainingRecords = (allTrainingRecords.length <= 5) ? [...allTrainingRecords] : [...allTrainingRecords].splice(0,5);
-        console.log('trainingRecords records'+JSON.stringify(trainingRecords))
-        if(allTrainingRecords.length > 5){
-            this.trainingCount='5+';
-            this.displayTrainingViewAllButton = true;
-          }
-          else{
-            console.log('training records'+JSON.stringify(data))
-              this.trainingCount = allTrainingRecords.length;
-              this.displayTrainingViewAllButton = false;
-          }
-      }else if (error){
-        this.showToast('Error','Error While fetching the Training Records'+error.message,'error');
-    }
-  }*/
-
+    } 
+  
   getTrainingRecordsFromApex(){
     getTrainingRecord({accountId:this.receivedId}).then(result=>{
           if(result){
             let data = JSON.parse(JSON.stringify(result));
-            console.log('>>>>here2',data);
             data.forEach(res=>{
                 res.nameLink = '/' + res.Id;
             });
@@ -176,7 +197,35 @@ export default class TabVisitsTrainings extends NavigationMixin(LightningElement
           this.showToast('Error','Error While fetching the Training Records'+error.message,'error');
         })
       }
+  
+  getAccountBrand(){
+    getAccBrand({receivedId : this.receivedId})
+    .then(result =>{
+        if(result){
+          let AccBrand = JSON.parse(JSON.stringify(result));
+          this.AccountBrand = AccBrand;
+        }
+    }).catch(error=>{
+        this.showToast('Error', error, 'error');
+    });
+  }
 
+  ECPTranings(){
+    getECPTrainings({accountId : this.receivedId})
+      .then(response=>{
+          if(response){
+              for(const eachTraining of response){
+                  const option = {
+                      label : eachTraining.Name,
+                      value : eachTraining.Id
+                  };
+                  this.selectedOption = [...this.selectedOption, option];
+              }
+          }
+    }).catch(error=>{
+        this.showToast('Error', JSON.stringify(error), 'error');
+    });
+  }
   @wire(getElearningRecords, {accountId:'$receivedId'}) trainingRec({error, data}){
     if(data){
       data = JSON.parse(JSON.stringify(data));
@@ -239,7 +288,6 @@ export default class TabVisitsTrainings extends NavigationMixin(LightningElement
       const defaultValues = encodeDefaultFieldValues({
         Account__c : this.receivedId
       });
-      console.log(defaultValues);
       this[ NavigationMixin.Navigate]({
           type : 'standard__objectPage',
           attributes : {
@@ -256,6 +304,135 @@ export default class TabVisitsTrainings extends NavigationMixin(LightningElement
     disconnectedCallback() {
       unsubscribe(this.subscription, () => {
       });   
-  } 
+    }
+
+    handleTrainingChange(event){
+      //this.reset();
+      this.selectedAttendees = [];
+      this.showAttendees = false;
+      this.showMissingError = false;
+
+      setTimeout(() => {
+        this.value1 = 'All';
+      }, 0);
+      
+      this.value1 = undefined;
+      this.disabledRadio = false;
+      this.disabledButton = false;
+      this.selectedTrainingId = event.detail.value;
+      this.getAttendeeNums();
+    }
+
+    handleRadioChange(event){
+        this.selectedCertificateOption = event.detail.value;
+        if(this.selectedCertificateOption != null && this.selectedCertificateOption != undefined){
+            if(this.selectedCertificateOption === 'Individual'){
+                this.disabledButton = true;
+                this.showMissingError = false;
+                this.loadAttendees();
+            }else{
+                this.showMissingError = false;
+                this.showAttendees = false;
+                this.disabledButton = false;
+            }
+        }else{
+            this.showMissingError = true;
+            this.showAttendees = false;
+            this.disabledButton = false;
+        }
+    }
+
+    getAttendeeNums(){
+      attendeeNums({trainingId : this.selectedTrainingId})
+      .then(response=>{
+          if(response){
+            this.NumOfAttendee = response.getAttendeeNum;
+            if(this.NumOfAttendee > 0){
+                this.disabledButton = false;
+                this.disabledRadio = false;
+            }else{
+                this.disabledButton = true;
+                this.disabledRadio = true;
+            }
+          }
+      }).catch(error=>{
+          this.showToast('Error', JSON.stringify(error), 'error');
+      })
+    }
+
+    loadAttendees(){
+      this.selectedAttendees = [];
+      getAttendees({trainingId : this.selectedTrainingId})
+      .then(response =>{
+          if(response){
+              for(const eachAttendee of response){
+                  var key = eachAttendee.Contact__r.Name.concat('-', eachAttendee.Contact__r.RecordType.Name);
+                  const option ={
+                      label : key,
+                      value : eachAttendee.Id
+                  };
+                  this.selectedAttendees = [...this.selectedAttendees, option];
+
+              }
+              if(this.selectedAttendees != undefined && this.selectedAttendees!=0){
+                  this.showAttendees = true;
+              }else{
+                  this.showMissingError = true;
+              }
+          }
+      }).catch(error =>{
+        this.showToast('Error', error, 'error');
+      });
+    }
+
+    handleAttendeeChange(event) {
+      this.disabledButton = false;
+      this.selectedAttendeeId = event.detail.value;
+    }
+
+    processCertificateGeneration(){
+        this.disabledButton = true;
+        this.showLoading = true;
+        this.isModalOpen = false;
+        processCertificate({trainingId:this.selectedTrainingId, attendeeId:this.selectedAttendeeId, brand:this.AccountBrand})
+            .then(response=>{
+                if(response === 'Success'){
+                    this.showToast('Success', this.label.emailSent, 'success');
+                }else if(response === 'AttendeeError'){
+                    this.showToast('Error', this.label.noAttendeeError, 'error');
+
+                }else if(response === 'templateError'){
+                    this.showToast('Error', this.label.noTemplateError, 'error');
+                }else{
+                    this.showToast('Error', response, 'error');
+                }
+                this.showLoading = false;
+                this.closeModal();
+            }).catch(error =>{
+                this.showToast('Error', JSON.stringify(error), 'error');
+                this.closeModal();
+            });
+    }
+
+    openModal(){
+      this.isModalOpen = true;
+      this.disabledRadio = true;
+    }
+
+    closeModal(){
+      this.isModalOpen = false;
+      this.showMissingError = false;
+      this.showAttendees = false;
+      this.selectedTrainingId = null;
+      this.selectedAttendeeId = null;
+      this.selectedAttendees = [];
+      this.disabledButton = true;
+    }
+
+    reset(){
+      this.showMissingError = false;
+      this.showAttendees = false;
+      this.selectAttendees = [];
+    }
 
 }

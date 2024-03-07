@@ -18,7 +18,7 @@ public class TabActivationAIIndicatorController {
       @AuraEnabled(cacheable=true)
      public static IndicatorWrapper getAIIndicators(Id receivedId) {
          String userLanguage = UserInfo.getLanguage();
-         Account currAcc = [Select id,Lenses_Net_Sales_Last_12Mo__c,Account_Status__c,Seiko_Network__c,Segmentation_Box__c,
+         Account currAcc = [Select id,Lenses_Net_Sales_Last_12Mo__c,Account_Status__c,Seiko_Network__c,Segmentation_Net__c,
                             CHCUSTCLASSIFICATIONID__c,Brand__c,Visionary_Alliance__c From Account where Id =:receivedId];
           List<Last_Sales_Statistics__c> statsList = [Select Id,Other_Digital_Orders_L3Mo__c,Remote_Edging_L3Mo__c,
                                                       Mounting_L3Mo__c,HVC_Systems_L3Mo__c, Lenses_Net_Sales_Last_12Mo__c, Lenses_Gross_Sales_Last_12Mo__c,
@@ -47,7 +47,6 @@ public class TabActivationAIIndicatorController {
                 wrapper.MountingFlag='GREY';
                 wrapper.MountingFlagMeaning=System.Label.get('', 'Mounting01', userLanguage);
                 
-                system.debug('>>>daaoders'+wrapper.DataOrdersFlag);
             }
             else{
  
@@ -107,7 +106,6 @@ public class TabActivationAIIndicatorController {
                 //Mounting Flag End
                 //Portal Flag Start
                 if(currAcc.Lenses_Net_Sales_Last_12Mo__c>0){
-                    System.debug('Portal Sales');
                     if(currAcc.CHCUSTCLASSIFICATIONID__c == 'Ind'){
                         if(conObj.size()>0){
                             wrapper.PortalFlag='GREEN';     
@@ -129,20 +127,16 @@ public class TabActivationAIIndicatorController {
                     }
                 }    
                 else if(conObj.size()>0){
-                    System.debug('Portal second');
                 	wrapper.PortalFlag='GREENALERT'; 
                      wrapper.PortalFlagMeaning=System.Label.get('', 'Portal06', userLanguage);
                 }
                 else{
-                    System.debug('Portal third');
                  	wrapper.PortalFlag='GREEN';  
                      wrapper.PortalFlagMeaning=System.Label.get('', 'Portal07', userLanguage);
                 }
                 //Portal flag end
                 //HVC flag start
                 if(currAcc.Lenses_Net_Sales_Last_12Mo__c>0){
-                    system.debug('>>>'+currAcc.Brand__c + '>>>>'+currAcc.CHCUSTCLASSIFICATIONID__c+'>>Seiko_Network__c'+currAcc.Seiko_Network__c);
-                     system.debug('>>>currAcc'+currAcc);
                     if(currAcc.Brand__c == 'HOYA'){
                         if(currAcc.CHCUSTCLASSIFICATIONID__c == 'Ind'){
                             if(currAcc.Seiko_Network__c == 'Hoya Vision Center'){
@@ -172,20 +166,17 @@ public class TabActivationAIIndicatorController {
                             }
                     } 
                     else if(currAcc.Brand__c == 'SEIKO'){
-                        system.debug('>>>currAcc'+currAcc);
                         if(currAcc.CHCUSTCLASSIFICATIONID__c == 'Ind'){
                             if(currAcc.Seiko_Network__c == 'Seiko Vision Specialist'){
-                                system.debug('>>>>>her12');
                             	wrapper.HVCProgramFlag='GREEN'; 
                                 wrapper.HVCProgramFlagMeaning=System.Label.get('', 'MKG10', userLanguage);
                             }   
-                            else if(currAcc.Segmentation_Box__c == 'C1' || currAcc.Segmentation_Box__c == 'C2' ||
-                                   currAcc.Segmentation_Box__c == 'C1' || currAcc.Segmentation_Box__c == 'UNCATEGORIZED'){
+                            else if(currAcc.Segmentation_Net__c == 'C1' || currAcc.Segmentation_Net__c == 'C2' ||
+                                   currAcc.Segmentation_Net__c == 'C1' || currAcc.Segmentation_Net__c == 'UNCATEGORIZED'){
                              	wrapper.HVCProgramFlag='GREEN'; 
                                 wrapper.HVCProgramFlagMeaning=System.Label.get('', 'MKG08', userLanguage);        
                             }
                             else{
-                                 system.debug('>>>>>her12else');
                              	wrapper.HVCProgramFlag='REDALERT'; 
                                 wrapper.HVCProgramFlagMeaning=System.Label.get('', 'MKG09', userLanguage);
                             }
@@ -217,9 +208,8 @@ public class TabActivationAIIndicatorController {
                     wrapper.HVCProgramFlagMeaning=System.Label.get('', 'MKG16', userLanguage);
                 }
 				// digital flag	
-				system.debug('>>>DataOrdersFlag');
-                system.debug('>>>>'+statsList[0].HVC_Systems_L3Mo__c+'>>>>statsList[0].Other_Digital_Orders_L3Mo__c'+statsList[0].Other_Digital_Orders_L3Mo__c);
 				 if(currAcc.Lenses_Net_Sales_Last_12Mo__c>0){
+                     if(statsList.size()>0){
 					 if(statsList[0].HVC_Systems_L3Mo__c + statsList[0].Other_Digital_Orders_L3Mo__c>0){
 						 if(statsList[0].HVC_Systems_L3Mo__c + statsList[0].Other_Digital_Orders_L3Mo__c>50){
 							 if(statsList[0].HVC_Systems_L3Mo__c + statsList[0].Other_Digital_Orders_L3Mo__c>70){
@@ -236,6 +226,7 @@ public class TabActivationAIIndicatorController {
                             wrapper.DataOrdersFlagMeaning=System.Label.get('', 'DigitalOrders04', userLanguage); 
 						 }
 					 }
+                     }    
 					 else{
 						wrapper.DataOrdersFlag='REDALERT';
                         wrapper.DataOrdersFlagMeaning=System.Label.get('', 'DigitalOrders05', userLanguage);  
@@ -248,7 +239,6 @@ public class TabActivationAIIndicatorController {
 				 }
 		    }
         }			
-         System.debug(wrapper);    
         return wrapper;
         }      
 

@@ -14,6 +14,7 @@ import Office_Visits_Frequency from '@salesforce/label/c.Office_Visits_Frequency
 import Digital_Visits_Frequency from '@salesforce/label/c.Digital_Visits_Frequency';
 import Visit_Frequency from '@salesforce/label/c.Visit_Frequency';
 import ViewAll from '@salesforce/label/c.ViewAllRelatedList';
+import VisitAssignedTo from '@salesforce/label/c.Visit_assigned_to';
 import getVisits from '@salesforce/apex/TabMVAVisitsController.getVisitsBasedOnContacts';
 import getVisitFrequency from '@salesforce/apex/TabMVAVisitsController.getVisitFrequency';
 
@@ -35,7 +36,7 @@ export default class TabMVAVisitsReports extends NavigationMixin(LightningElemen
     lables={
         visits, contact, visitType, visit_Objective, visit_ID ,date,
         Last_Visit_Date, Total_Visits_Achieved, Office_Visits_Frequency, Digital_Visits_Frequency,
-        Visit_Frequency, ViewAll
+        Visit_Frequency, ViewAll, VisitAssignedTo
     }
 
     navigateToRelatedList(){
@@ -92,7 +93,6 @@ export default class TabMVAVisitsReports extends NavigationMixin(LightningElemen
 
     let allVisitsFrequency=data;
     this.visitFrequencyData = allVisitsFrequency;
-    console.log('Visits-->'+JSON.stringify(this.visitFrequencyData));
     }
     else if(error){
     this.showToast('Error',error,'error');

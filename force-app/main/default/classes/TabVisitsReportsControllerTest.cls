@@ -8,7 +8,7 @@ public class TabVisitsReportsControllerTest {
     @TestSetup
     static void makeData(){
         Account hvnaAcc = new Account();
-        hvnaAcc.Hoya_Account_ID__c = 'US1234512';
+        hvnaAcc.Hoya_Account_ID__c = 'TE1234512';
         hvnaAcc.CurrencyIsoCode = 'EUR';
         hvnaAcc.Name = 'HVNA Test';
         insert hvnaAcc;
@@ -92,11 +92,12 @@ public class TabVisitsReportsControllerTest {
     
     @isTest
     static void visitTest(){
+        Test.StartTest();
         Account a=[Select Id from account Limit 1];
         TabVisitsReportsController.getReportVisits(a.Id);
         TabVisitsReportsController.getTaskRecord(a.Id);
         TabVisitsReportsController.getVisitCompleted(a.Id);
-        
+        Test.StopTest();       
     }
     
 }

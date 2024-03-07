@@ -213,7 +213,7 @@
                                 options={AccTemplateOptions}
                                 onchange={handleAccTemplate}
                                 label={labelAccTemplate}
-                                disabled={IsDisabled}>
+								disabled={IsDisabled}>
                             </lightning-combobox>
                         </div>
                         <div class="slds-col slds-size_1-of-3">
@@ -228,7 +228,7 @@
                             ></lightning-combobox>
                         </div>
                     </div>
-                    <template lwc:if={IsAccountTemplate}>
+					<template lwc:if={IsAccountTemplate}>
                         <div class="slds-grid slds-gutters slds-m-top_medium">
                             <div class="slds-col slds-size_1-of-2 slds-m-left_small">
                                 <p style="color: #F70606">{labelNoAccountTemplate}</p>

@@ -4,33 +4,8 @@
         helper.doInit(component, event, helper);
         component.set("v.selectedSubSubject", component.find("SubSubject").get("v.value"));        
     },
-    EndChatClicked: function(component, event, helper) {
-        component.set("v.isEndChatClicked", false);
-    },
     createCase: function (component, event, helper) {
         helper.validateInputFields(component, event, helper, "Case");
-    },
-    createTask: function (component, event, helper) {
-        helper.validateInputFields(component, event, helper, "Task");        
-    },
-    createCall: function (component, event, helper) {
-        helper.createCall(component, event, helper, false);
-        component.set("v.isLoading",true);
-    },
-    validateCall: function (component, event, helper) {
-        helper.validateInputFields(component, event, helper, "Call");
-    },
-    handleCloseModal: function (component, event, helper) {
-        helper.handleToggleModal(component, event, helper, false, false);
-    },
-    handleOpenModal: function (component, event, helper) {
-        helper.handleToggleModal(component, event, helper, true, false);
-    },
-    handleChange: function (component, event, helper) {
-        helper.handleChange(component, event, helper, event.getParam("value"));
-    },
-    handleChangeStatus: function (component, event, helper) {
-        helper.handleChangeStatus(component, event, helper, event.getParam("value"));
     },
     handleComponentEvent: function (component, event, helper) {
         helper.handleToggleModal(component, event, helper, false, false);
@@ -40,9 +15,6 @@
     },
     invokeTempPicklists: function (component, event, helper) {
         helper.invokeTempPicklists(component, event, helper);        
-    },
-    hoyaReferenceNumber : function (component, event, helper) {
-        console.log(event.getParam("value"));
     },
     UploadFinished : function(component, event, helper) {  
         let uploadedFiles = event.getParam("files");  

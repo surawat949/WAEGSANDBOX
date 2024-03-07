@@ -1,7 +1,7 @@
 public with sharing class tabMVCContactController {
     
     private static final String ACCOUNT_CLINIC_RT = Schema.SObjectType.ACCOUNT.getRecordTypeInfosByDeveloperName().get('Clinic').getRecordTypeId();
-
+    
      //Took code from ContactRelatedClinicsController as part of Azure 701
     @AuraEnabled
     public static List<AccountContactRelation> getRelatedClinicsByContactId(Id contactId){
@@ -11,5 +11,5 @@ public with sharing class tabMVCContactController {
                 from AccountContactRelation where contactId =:contactId AND Account.RecordTypeId=:ACCOUNT_CLINIC_RT AND IsActive = true];
             return acList;
     } 
-
+ 
 }

@@ -28,16 +28,14 @@ public with sharing class UserLogic {
             Messaging.SingleEmailMessage mail =  new Messaging.SingleEmailMessage();
             // EMAIL: send reset password
             //      Template Name: Reset_Password
-            if(usr.Reset_Password_Token__c != oldObjectsMap.get(usr.Id).Reset_Password_Token__c && usr.Reset_Password_Token__c != null){
+        
+            if(usr.Reset_Password_Token__c != oldObjectsMap.get(usr.Id).Reset_Password_Token__c && usr.Reset_Password_Token__c != null){    
                 System.debug('#### Send Reset Password');
                 String template = usr.Contact.Account_Portal__c !='Seiko Pro' ? 'Reset_Password': 'SEIKO_Password_reset';
                 if(usr.Contact.Account_Portal__c!=null && usr.Contact.Account_Portal__c.contains('seiko')){
                     template = 'SEIKO_Password_reset';
                 }else if(usr.Contact.Invite_Portal_Email__c.contains('Contact Lenses')){
                     template = 'Contact_Lenses_Reset_Password';
-                }//Mohan added
-                else if(usr.Contact.Invite_Portal_Email__c.contains('Costco')){
-                    template = 'COSTCO_Password_reset';
                 }
 
                 mail = Utility.buildMailMessage(template, usr.Id, usr.Contact.Account_Portal__c != null ? mapCommunicationEmail.get(usr.Contact.Account_Portal__c).From_Email_Address__c : mapCommunicationEmail.get('usportal').From_Email_Address__c);
@@ -65,16 +63,16 @@ public with sharing class UserLogic {
                     template = 'SEIKO_Registration_confirmation_employee';
                 }else if(usr.Contact.Invite_Portal_Email__c.contains('Contact Lenses')){
                     template = 'CL_Registration_Confirmation';//'Contact_Lenses_Reset_Password_Confirm';
+                }else if(usr.Contact.Account_Portal__c == 'exportportal' && usr.Contact.Invite_Portal_Email__c == 'HOYA Learning Center')
+                {
+                    template = 'HLC_Export_New_ECP_Confirmation';                
                 }
                 mail = Utility.buildMailMessage(template, usr.Id, usr.Contact.Account_Portal__c != null ? mapCommunicationEmail.get(usr.Contact.Account_Portal__c).From_Email_Address__c : mapCommunicationEmail.get('usportal').From_Email_Address__c);
                 shoulAddEmail = true;
             }
             // EMAIL: Portal registration welcome
             //      Template Name: Registration_Confirmation
-            /*if(usr.Profile.Name == 'Customer Community Plus User' && usr.Contact.Contact_Record_Type__c == 'Shop Owner' && !usr.Contact.Created_on_portal__c){
-                System.debug('#### Portal Registration Confirmation');
-                mail = Utility.buildMailMessage('Registration_Confirmation', usr.Id, mapCommunicationEmail.get(usr.Contact.Account_Portal__c).From_Email_Address__c);
-            }*/
+           
             if(shoulAddEmail)
                 list_mails.add(mail);
         }
@@ -94,7 +92,7 @@ public with sharing class UserLogic {
         for(Assign_default_permissions__mdt comm : [SELECT Id, Account_Portal__c,From_Email_Address__c FROM Assign_default_permissions__mdt]){
             mapCommunicationEmail.put(comm.Account_Portal__c,comm);
         }
-        Map<Id, User> userMap = new Map<Id, User>([SELECT id, Profile.Name,Reset_Password_Token__c,Reset_Password_Context__c, Username, ContactId,
+        Map<Id, User> userMap = new Map<Id, User>([SELECT id, Profile.Name,Reset_Password_Token__c,Reset_Password_Context__c,ContactId,
                                                             Contact.Created_on_portal__c,Contact.Contact_Record_Type__c, 
                                                             Contact.Account_Portal__c, Contact.Invite_Portal_Email__c, Contact_Language__c
                                                     FROM User WHERE Id in :userID]);
@@ -106,8 +104,6 @@ public with sharing class UserLogic {
             //EMAIL: Portal registration welcome
             //      Template Name: Registration_Confirmation
             if((usr.Profile.Name == 'Customer Community Plus User'||usr.Profile.Name == 'Customer Community Plus User + API') && usr.Contact.Contact_Record_Type__c == 'Shop Owner' && !usr.Contact.Created_on_portal__c){
-                System.debug('#### Portal Registration Confirmation');
-                System.debug('usr.Contact.Invite_Portal_Email__c='+usr.Contact.Invite_Portal_Email__c);
                 String template;
                 if(usr.Contact.Account_Portal__c!=null && usr.Contact.Account_Portal__c.contains('seiko')){
                     template = 'SEIKO_Registration_confirmation'; 
@@ -119,24 +115,22 @@ public with sharing class UserLogic {
                     template = 'VI_New_Employee_Confirmation';
                 }
                  //Canada Hub -- Employee confirmation End
-                 
-                 //Costco Portal -- Employee confirmation start
-                else if(usr.Contact.Invite_Portal_Email__c == 'Costco Portal'){
-                    template = 'Costco_New_Employee_Confirmation';
-                }
-                 //Costco Portal -- Employee confirmation End
+
                 else if(usr.Contact.Invite_Portal_Email__c == 'HOYA Contact Lenses'){
                     template = 'CL_Registration_Confirmation';
                 }else if(usr.Contact.Invite_Portal_Email__c == 'HHP Canada'){
                     
-                   /* if (usr.Contact_Language__c == 'fr-ca' || usr.Contact_Language__c == 'fr-fr')
-                         template = 'Shop_owner_reg_confirmation_email_HHP_Fr';
-                    else*/
+                  
                     /* CDU 26/08/2021: language is now a parameter in template call, template is now using custom labels */
                         template = 'Shop_owner_reg_confirmation_email_HHP';
                 }
+                else if(usr.Contact.Account_Portal__c == 'exportportal' && usr.Contact.Invite_Portal_Email__c == 'HOYA Learning Center')
+                {
+                        template = 'HLC_Confirmation_Export_Portal';
+                
+                }
                 else{
-                    template = 'Registration_Confirmation';
+                        template = 'Registration_Confirmation';
                 }
                 
                 mail = Utility.buildMailMessage(template, usr.Id, usr.Contact.Account_Portal__c != null ? mapCommunicationEmail.get(usr.Contact.Account_Portal__c).From_Email_Address__c : mapCommunicationEmail.get('usportal').From_Email_Address__c);

@@ -70,6 +70,17 @@ public class serviceFlow_AgentNavigatorCtrl {
             throw new AuraHandledException(ex.getMessage());
         }
     }
+    @AuraEnabled
+    public static Case createCaseUtility(Case caseRec) {
+        try {
+            //caseRec.RecordTypeId = Schema.getGlobalDescribe().get('Case').getDescribe().getRecordTypeInfosByName().get('serviceFlow_Chat').getRecordTypeId();
+            insert caseRec;
+            return caseRec;
+            
+        } catch (Exception ex) {
+            throw new AuraHandledException(ex.getMessage());
+        }
+    }
 
     public class serviceFlowAgentNavWrapper{
         @AuraEnabled

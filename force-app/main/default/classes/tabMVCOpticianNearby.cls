@@ -87,10 +87,10 @@ public with sharing class tabMVCOpticianNearby {
                                                                 Account.Phone , Account.RecordType.DeveloperName , Account.First_Competitor_global_name__c , 
                                                                 Account.First_Competitor_local_name__c , Account.First_Competitor_SOW__c ,
                                                                 Account.Myo_Smart_AuthorizeDealer__c, Account.ShippingLatitude, Account.ShippingLongitude, Account.Clinic_Name__c, 
-                                                                Account.Brand__c, Account.Segmentation_box__c  FROM AccountContactRelation 
+                                                                Account.Brand__c, Account.Segmentation_Net__c  FROM AccountContactRelation
                                                                 WHERE ContactId=:recordId AND Account.RecordType.DeveloperName='Clinic' AND IsActive=true];
 
-            //System.debug(' 1 workingPlacesList----------- '+workingPlacesList);
+            
             List<ContactNearby> dataList = new List<ContactNearby>();
             for (AccountContactRelation eachRelation : workingPlacesList) {
                 ContactNearby wrapper = new ContactNearby();
@@ -101,7 +101,7 @@ public with sharing class tabMVCOpticianNearby {
                 wrapper.workingId = eachRelation.Id;
                 wrapper.ClinicName = eachRelation.Account.Clinic_Name__c;
                 wrapper.accountBrand = eachRelation.Account.Brand__c;
-                wrapper.accountSegmentation = eachRelation.Account.Segmentation_box__c;
+                wrapper.accountSegmentation = eachRelation.Account.Segmentation_Net__c;
                 wrapper.FirstCompetitorGlobal = eachRelation.Account.First_Competitor_global_name__c;
                 wrapper.FirstCompetitorLocal = eachRelation.Account.First_Competitor_local_name__c;
                 wrapper.FirstCompetitorSOW = eachRelation.Account.First_Competitor_SOW__c;
@@ -143,7 +143,7 @@ public with sharing class tabMVCOpticianNearby {
                 uniqueIds.add(eachRelation.Accountid);
                 dataList.add(wrapper);
             }
-            //System.debug(' 2 dataList----------- '+dataList);
+
 
             if(VisionAll!=null && VisionAll!='' && VisionAll!='No Filter'){
                 VisionAll = ' AND Visionary_Alliance__c LIKE \'%'+VisionAll+'%\' ';
@@ -152,7 +152,7 @@ public with sharing class tabMVCOpticianNearby {
             }
 
             if(Segmentation!=null && Segmentation!='' && Segmentation!='No Filter'){
-                Segmentation = ' AND Segmentation_box__c LIKE \''+Segmentation+'\' ';
+                Segmentation = ' AND Segmentation_Net__c LIKE \''+Segmentation+'\' ';
             }else{
                 Segmentation = '';
             }
@@ -186,7 +186,7 @@ public with sharing class tabMVCOpticianNearby {
                 String soql = 'SELECT Id, Name, Hoya_Account_ID__c, Record_Type_Name__c, Shop_Name__c, '
                             + 'ShippingLatitude, ShippingLongitude, ShippingStreet, ShippingCity, '
                             + 'ShippingState, ShippingCountry, ShippingPostalCode, Phone, Shop_City__c, Shop_Country__c, Shop_Postal_Code__c, Shop_State__c, Shop_Street__c, '
-                            + 'RecordType.DeveloperName, Clinic_Name__c, Brand__c, Segmentation_box__c, First_Competitor_global_name__c, First_Competitor_local_name__c, First_Competitor_SOW__c, Myo_Smart_AuthorizeDealer__c FROM Account WHERE ('
+                            + 'RecordType.DeveloperName, Clinic_Name__c, Brand__c, Segmentation_Net__c, First_Competitor_global_name__c, First_Competitor_local_name__c, First_Competitor_SOW__c, Myo_Smart_AuthorizeDealer__c FROM Account WHERE ('
                             + 'DISTANCE(ShippingAddress, GEOLOCATION('+shippingLatitude+', '+shippingLongitude+'), \'km\')<'+distance + VisionAll + miyoSmart + Segmentation + ' AND RecordType.DeveloperName != \'Clinic\')'+ HoyaVisionCenter + ' ORDER BY CreatedDate DESC LIMIT 500';
 
                 // There can be max 4 to 6 working places per individual functionally. So considering this, the SOQL in loop here is never supposed to reach governor limits.
@@ -204,7 +204,7 @@ public with sharing class tabMVCOpticianNearby {
                     wrapper.workingId = eachRec.workingId;
                     wrapper.ClinicName = eachAcc.Clinic_Name__c;
                     wrapper.accountBrand = eachAcc.Brand__c;
-                    wrapper.accountSegmentation = eachAcc.Segmentation_box__c;
+                    wrapper.accountSegmentation = eachAcc.Segmentation_Net__c;
                     wrapper.FirstCompetitorGlobal = eachAcc.First_Competitor_global_name__c;
                     wrapper.FirstCompetitorLocal = eachAcc.First_Competitor_local_name__c;
                     wrapper.FirstCompetitorSOW = eachAcc.First_Competitor_SOW__c;
@@ -243,9 +243,7 @@ public with sharing class tabMVCOpticianNearby {
                     tempList.add(wrapper);
                 }
             }
-            
             dataList.addAll(tempList);
-            //System.debug(' 3 dataList----------- '+dataList);
             return dataList;
 
 

@@ -374,7 +374,7 @@
             if(String.isNotEmpty(filter) && hasCampaign==false && targetList==null){
             	String filter2 = '%'+filter+'%';
              	for(AccountShare sh : [select accountId from accountShare where UserOrGroupId in :relatedGroups and account.owner.id<> :UserInfo.getUserId()
-                                    and (account.Hoya_Account_ID__c like :filter2 or account.name like :filter2 or account.Segmentation_box__c like :filter2
+                                    and (account.Hoya_Account_ID__c like :filter2 or account.name like :filter2 or account.Segmentation_Box__c like :filter2
                                          or account.shop_postal_code__c like :filter2 or account.shop_city__c like :filter2
                                          or account.shop_name__c like :filter2 or account.shop_state__c like :filter2 )
                                     and account.Account_Status__c<>'Closed'
@@ -391,7 +391,7 @@
             		accountList.addAll([select account.Id, account.Name, account.Hoya_Account_ID__c, account.recordtype.name, account.Account_Status__c, account.shop_city__c, phone, Segmentation_Box__c, account.Financial_Status_Identifier__c, recordtypeid
                                     FROM Account Where Id in :accountShareList
                                     and ownerId!=:UserInfo.getUserId()
-                                    and (Hoya_Account_ID__c like :filter2 or name like :filter2 or Segmentation_box__c like :filter2
+                                    and (Hoya_Account_ID__c like :filter2 or name like :filter2 or Segmentation_Box__c like :filter2
                                          or shop_postal_code__c like :filter2 or shop_city__c like :filter2
                                          or shop_name__c like :filter2 or shop_state__c like :filter2 )
                                     and account.Account_Status__c<>'Closed'
@@ -466,6 +466,8 @@
             }
             accountList.addAll(tmpAccList);
             System.debug('List size:' + accountList.size());
+            System.debug('List size:' + query);
+            System.debug('List size:' + ownerAccountList);
             //Cache.Session.put('vpm.account.list', accountList);
             return accountList;
         }
@@ -494,7 +496,7 @@
         System.debug('call getOpportunityByAccountList -' + accountId);
 
         List<SelectOption> options = new List<SelectOption>();
-        for (Opportunity o : [Select Id, Name, StageName from Opportunity where (AccountId =: accountId) and (IsClosed=false) and (Account.Target_List__c=true) and (Account.Segmentation_box__c='A3' or Account.Segmentation_box__c='B3' or Account.Manual_Segment__c='A3' or Account.Manual_Segment__c='B3') order by CreatedDate desc limit 1])
+        for (Opportunity o : [Select Id, Name, StageName from Opportunity where (AccountId =: accountId) and (IsClosed=false) and (Account.Target_List__c=true) and (Account.Segmentation_Box__c='A3' or Account.Segmentation_Box__c='B3' or Account.Manual_Segment__c='A3' or Account.Manual_Segment__c='B3') order by CreatedDate desc limit 1])
         {
             options.add(new SelectOption(o.Id, o.Name));
 
@@ -530,7 +532,7 @@
         System.debug('call getOpportunityByAccountList -' + accountId);
 
         List<SelectOption> options = new List<SelectOption>();
-        for (Opportunity o : [Select Id, StageName from Opportunity where (AccountId =: accountId) and (IsClosed=false) and (Account.Target_List__c=true) and (Account.Segmentation_box__c='A3' or Account.Segmentation_box__c='B3' or Account.Manual_Segment__c='A3' or Account.Manual_Segment__c='B3') order by CreatedDate desc limit 1])
+        for (Opportunity o : [Select Id, StageName from Opportunity where (AccountId =: accountId) and (IsClosed=false) and (Account.Target_List__c=true) and (Account.Segmentation_Box__c='A3' or Account.Segmentation_Box__c='B3' or Account.Manual_Segment__c='A3' or Account.Manual_Segment__c='B3') order by CreatedDate desc limit 1])
         {
             options.add(new SelectOption(o.Id, o.StageName));
 
@@ -545,7 +547,7 @@
         System.debug('call getOpportunityByAccountList -' + accountId);
 
         List<SelectOption> options = new List<SelectOption>();
-        for (Opportunity o : [Select Id, CloseDate from Opportunity where (AccountId =: accountId) and (IsClosed=false) and (Account.Target_List__c=true) and (Account.Segmentation_box__c='A3' or Account.Segmentation_box__c='B3' or Account.Manual_Segment__c='A3' or Account.Manual_Segment__c='B3') order by CreatedDate desc limit 1])
+        for (Opportunity o : [Select Id, CloseDate from Opportunity where (AccountId =: accountId) and (IsClosed=false) and (Account.Target_List__c=true) and (Account.Segmentation_Box__c='A3' or Account.Segmentation_Box__c='B3' or Account.Manual_Segment__c='A3' or Account.Manual_Segment__c='B3') order by CreatedDate desc limit 1])
         {
             options.add(new SelectOption(o.Id, string.valueof(o.CloseDate)));
 

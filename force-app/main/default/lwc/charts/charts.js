@@ -11,21 +11,12 @@ export default class Charts extends LightningElement {
     @api chartLabels
     @api totalCount=0;
     displayText='Total'
-
+    pieChartDataTemp = [];
+    pieChartLablesTemp = [];
     renderedCallback(){
         if(this.isChartJsInitialized){
             return;
         }
-       
-
-        /*
-        loadScript(this, chartJs+'/chartJs/Chart.js').then(()=>{
-            console.log("chartJs loaded succesfully")
-            this.isChartJsInitialized = true
-            this.loadCharts()
-        }).catch(error=>{
-            console.error(error)
-        })*/
 
         Promise.all([
             loadScript(this, chartJs+'/chartJs/Chart.js'),
@@ -36,6 +27,10 @@ export default class Charts extends LightningElement {
         ]).then(()=>{
             console.log("chartJs loaded succesfully")
             this.isChartJsInitialized = true
+            this.pieChartDataTemp = this.chartData;
+            this.pieChartLablesTemp = this.chartLabels;
+            this.chartData= JSON.parse(JSON.stringify(this.pieChartDataTemp));
+            this.chartLabels= JSON.parse(JSON.stringify(this.pieChartLablesTemp));
             this.loadCharts()
         }).catch(error=>{
             console.error('Error while loading the chartJS'+error);
@@ -55,7 +50,7 @@ export default class Charts extends LightningElement {
         return {
             type: this.type,
             data: {
-               labels: this.chartLabels ? this.chartLabels:[],
+                labels: this.chartLabels ? this.chartLabels:[],
                 datasets: [{
                     label: this.chartHeading,
                     data: this.chartData ? this.chartData:[],
@@ -75,16 +70,12 @@ export default class Charts extends LightningElement {
             //DoughnutLabel  - plugin to dsiplay text inside the chart
             //outlabels - plugin used to display the data outside in the percentage
 
-            plugins: [ChartDataLabels], //registring plugin
+            plugins: [ChartDataLabels],
             options: {
                 responsive: true,
                 legend: {
                     position: 'bottom'
-                },/*
-                animation: {
-                    animateScale: true,
-                    animateRotate: true
-                },*/
+                },
 
                 plugins: {
                  datalabels: {
@@ -104,25 +95,13 @@ export default class Charts extends LightningElement {
                             text: this.totalCount,
                             font: {
                               size: 20,
-                             // weight: 'bold',
                             },
                           },
-                         /* {
-                            text: this.displayText,
-                          },*/
                         ],
                       },
-                      
-                 /*     outlabels: {
-                        text: '%l %p', //text: '%l %p',
-                        color: 'white',
-                        stretch: 10,
-                        font: {
-                          resizable: true,
-                          minSize: 12,
-                          maxSize: 18,
-                        },
-                      }*/
+                    outlabels: {
+                        display : false
+                    }
                 }
             }
         }

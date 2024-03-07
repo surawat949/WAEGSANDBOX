@@ -7,19 +7,23 @@
 **/
 public class serviceFlow_EndChatController {
     @AuraEnabled
-    public static serviceFlowAgentNavWrapper getUserData(string recTypeName, string accId) {
+    public static serviceFlowAgentNavWrapper getUserData(string recTypeName, string recordId) {
         try {
             serviceFlowAgentNavWrapper returnWrapper = New serviceFlowAgentNavWrapper();
             User userObj = [Select Id, Name, UserName, Country__c, Country_for_Customer_Support__c 
                             FROM User WHERE Id = :userInfo.getUserId()];
-            Account accObj = null;
-            if(String.isNotBlank(accId)){               
+            Account accObj = new Account();
+            List<Case> openCases = new List<Case>();
+            if(String.isNotBlank(recordId)){  
+                LiveChatTranscript liveChatTrascriptRec = new LiveChatTranscript();
+                liveChatTrascriptRec = [Select Id,AccountId,Account.Hoya_Account_ID__c,Hoya_Account_ID__c From LiveChatTranscript Where Id=:recordId];       
                 accObj = [SELECT Id, Name, Shop_email_address__c, Phone,Brand__c
-                                  FROM Account WHERE Id = :accId];
+                                  FROM Account WHERE (Id = :liveChatTrascriptRec.AccountId OR Hoya_Account_ID__c = :liveChatTrascriptRec.Hoya_Account_ID__c) Limit 1];
+                openCases = [Select Id,User_Country__c,CaseNumber,serviceFlow_Hoya_reference_number__c,Description,SFlow_Subject__c,SFlow_Sub_Subject__c,Subject,serviceFlow_ECP_patient_order_number__c,Status,serviceFlow_Origin__c,AccountId,Account.Name,Account.Hoya_Account_ID__c From Case Where Account.Hoya_Account_ID__c = :liveChatTrascriptRec.Hoya_Account_ID__c AND Status Not IN ('Closed') AND serviceFlow_Origin__c = 'Chat'];
             }
             returnWrapper.UserData = userObj;
             returnWrapper.accountData = accObj;
-            
+            returnWrapper.openCases = openCases;
             if(String.isNotBlank(userObj.Country_for_Customer_Support__c))
             returnWrapper.recordTypeId = Schema.getGlobalDescribe().get('Case').getDescribe().getRecordTypeInfosByName().get(recTypeName).getRecordTypeId();
             system.debug('returnWrapper -- '+returnWrapper);
@@ -35,10 +39,9 @@ public class serviceFlow_EndChatController {
         string caseRecId = '';
         try {
             if(String.isNotBlank(caseDetails)) {
-                system.debug('caseDetails-- '+caseDetails);
                 Case caseRec = (Case)JSON.deserialize(caseDetails, Case.class);
                 if(caseRec != NULL){
-                    insert caseRec;
+                    upsert caseRec;
                     caseRecId = caseRec.Id;
                 }
             }
@@ -56,5 +59,7 @@ public class serviceFlow_EndChatController {
         public string recordTypeId{set;get;}
         @AuraEnabled
         public Account accountData{set;get;}
+        @AuraEnabled
+        public List<Case> openCases{set;get;}
     }
 }

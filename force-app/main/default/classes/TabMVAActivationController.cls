@@ -5,12 +5,12 @@ public WITH SHARING class TabMVAActivationController {
     @AuraEnabled(cacheable=true)
     public static List<AccountContactRelation> getAccConRelatedListByAccId(String receivedId){
    
-            
+			
             List<Id> conId = new List<Id>();
             for(Contact c : [SELECT Id FROM Contact WHERE AccountId=:receivedId]){
                 conId.add(c.Id);
             }
-           
+		   
             List<AccountContactRelation> conListRelated = [SELECT id, contact.Id, Contact.name, Account.name, Account.id, 
                                                             Account.brand__c, AccountId, Account.shippingStreet, isdirect
                                                             ,Account.shippingPostalCode, Account.shippingCity, Account.Shop_Street__c,

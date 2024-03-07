@@ -6,7 +6,7 @@ import getContactNearby from '@salesforce/apex/tabMVCOpticianNearby.getContactNe
 import getVisionaryAlliance from '@salesforce/apex/tabMVCOpticianNearby.getPicklistVisionaryAlliance';
 
 import getCustVisionaryAlliance from '@salesforce/label/c.SFDC_V_2_MVC_ContactRef_HVC';
-import getlblMyoSmartAuthorize from '@salesforce/label/c.SFDC_V_2_MVC_ContactRef_MyoSmart';
+import getlblMyoSmartAuthorize from '@salesforce/label/c.SFDC_V_2_tabMVAVisitsClinicNearBy_MyoSmart';
 import getlblSegment from '@salesforce/label/c.SFDC_V_2_MVC_ContactRef_Segment';
 import getlblHoyaVisionCenter from '@salesforce/label/c.SFDC_V_2_MVC_ContactRef_HCenter';
 import getlblDistance from '@salesforce/label/c.SFDC_V_2_MVC_ContactRef_Distance';
@@ -62,69 +62,74 @@ export default class TabMVCVisitsOpticianNearby extends LightningElement {
         getContactNearby({recordId : this.receivedId, distance : Math.floor(this.distanceValue), VisionAll : this.VSValues, IsMyoSmart : this.isMyoSmart, IsHvCenter : this.isHoyaVisionCenter, IsSeikoNetwork : this.isSeikoSpecialist, Segmentation : this.segmentation})
         .then(result=>{
             this.mapMarker = [];
-            for(var i=0; i<result.length; i++){
-                if(result[i].accountRecType=='Clinic'){
-                    //show star on map
-                    this.mapMarker = [...this.mapMarker, 
-                        {
-                            location : {
-                                Latitude : result[i].accountShippingLatitude,
-                                Longitude : result[i].accountShippingLongitude,
-                                Street : result[i].accountShippingStreet,
-                                City : result[i].accountShippingCity,
-                                State : result[i].accountShippingState,
-                                Country : result[i].accountShippingCountry,
-                                PostalCode : result[i].accountShippingPostalCode
-                            },
-                            mapIcon : {
-                                path: 'M 125,5 155,90 245,90 175,145 200,230 125,180 50,230 75,145 5,90 95,90 z',
-                                fillColor: '#3338FF',
-                                fillOpacity: .7,
-                                strokeWeight: 1,
-                                scale: .15,             
-                            },
-                            icon : 'standard:account',
-                            title : result[i].ClinicName,
-                            value : result[i].accountId,
-                            description : 'Hoya Account ID : '+result[i].accountHoyaAccId+'<br>'+result[i].accountShippingStreet+'&nbsp;'+result[i].accountShippingCity+'&nbsp;'+result[i].accountShippingState+'<br>Phone : '+result[i].accountPhone,
-                        }
-                    ];
-                }else{
-                    // show red pin on map
-                    this.mapMarker = [...this.mapMarker, 
-                        {
-                            location : {
-                                Latitude : result[i].accountShippingLatitude,
-                                Longitude : result[i].accountShippingLongitude,
-                                Street : result[i].accountShippingStreet,
-                                City : result[i].accountShippingCity,
-                                State : result[i].accountShippingState,
-                                Country : result[i].accountShippingCountry,
-                                PostalCode : result[i].accountShippingPostalCode
-                            },
-                            icon : 'standard:account',
-                            title : result[i].accountName,
-                            value : result[i].accountId,
-                            description : 'Hoya Account ID : '+result[i].accountHoyaAccId+'<br>Brand :'+result[i].accountBrand+'<br>Segmentation : '+result[i].accountSegmentation+'<br>1st Competitor Global : '+result[i].FirstCompetitorGlobal+'<br>1st Competitor Local : '+result[i].FirstCompetitorLocal+'<br>1st Competitor SOW : '+result[i].FirstCompetitorSOW+'<br>MiyoSmart Authorize Dealer : '+result[i].accountMyoSmart+'<br>Street : '+result[i].accountShippingStreet+'&nbsp;'+result[i].accountShippingCity+'&nbsp;'+result[i].accountShippingState,
-                        }
-                    ];
-                } 
-            }
-            this.vCenter = {
-                location : {
-                    Latitude : result[0].accountShippingLatitude,
-                    Longitude : result[0].accountShippingLongitude,
-                    Street : result[0].accountShippingStreet,
-                    City : result[0].accountShippingCity,
-                    State : result[0].accountShippingState,
-                    Country : result[0].accountShippingCountry,
-                    PostalCode : result[0].accountShippingPostalCode
-                },
+            if(result.lenght > 0){
+                for(var i=0; i<result.length; i++){
+                    if(result[i].accountRecType=='Clinic'){
+                        //show star on map
+                        this.mapMarker = [...this.mapMarker, 
+                            {
+                                location : {
+                                    Latitude : result[i].accountShippingLatitude,
+                                    Longitude : result[i].accountShippingLongitude,
+                                    Street : result[i].accountShippingStreet,
+                                    City : result[i].accountShippingCity,
+                                    State : result[i].accountShippingState,
+                                    Country : result[i].accountShippingCountry,
+                                    PostalCode : result[i].accountShippingPostalCode
+                                },
+                                mapIcon : {
+                                    path: 'M 125,5 155,90 245,90 175,145 200,230 125,180 50,230 75,145 5,90 95,90 z',
+                                    fillColor: '#3338FF',
+                                    fillOpacity: .7,
+                                    strokeWeight: 1,
+                                    scale: .15,             
+                                },
+                                icon : 'standard:account',
+                                title : result[i].ClinicName,
+                                value : result[i].accountId,
+                                description : 'Hoya Account ID : '+result[i].accountHoyaAccId+'<br>'+result[i].accountShippingStreet+'&nbsp;'+result[i].accountShippingCity+'&nbsp;'+result[i].accountShippingState+'<br>Phone : '+result[i].accountPhone,
+                            }
+                        ];
+                    }else{
+                        // show red pin on map
+                        this.mapMarker = [...this.mapMarker, 
+                            {
+                                location : {
+                                    Latitude : result[i].accountShippingLatitude,
+                                    Longitude : result[i].accountShippingLongitude,
+                                    Street : result[i].accountShippingStreet,
+                                    City : result[i].accountShippingCity,
+                                    State : result[i].accountShippingState,
+                                    Country : result[i].accountShippingCountry,
+                                    PostalCode : result[i].accountShippingPostalCode
+                                },
+                                icon : 'standard:account',
+                                title : result[i].accountName,
+                                value : result[i].accountId,
+                                description : 'Hoya Account ID : '+result[i].accountHoyaAccId+'<br>Brand :'+result[i].accountBrand+'<br>Segmentation : '+result[i].accountSegmentation+'<br>1st Competitor Global : '+result[i].FirstCompetitorGlobal+'<br>1st Competitor Local : '+result[i].FirstCompetitorLocal+'<br>1st Competitor SOW : '+result[i].FirstCompetitorSOW+'<br>MiyoSmart Authorize Dealer : '+result[i].accountMyoSmart+'<br>Street : '+result[i].accountShippingStreet+'&nbsp;'+result[i].accountShippingCity+'&nbsp;'+result[i].accountShippingState,
+                            }
+                        ];
+                    } 
+                }
+                this.vCenter = {
+                    location : {
+                        Latitude : result[0].accountShippingLatitude,
+                        Longitude : result[0].accountShippingLongitude,
+                        Street : result[0].accountShippingStreet,
+                        City : result[0].accountShippingCity,
+                        State : result[0].accountShippingState,
+                        Country : result[0].accountShippingCountry,
+                        PostalCode : result[0].accountShippingPostalCode
+                    },
+                }
+            }else{
+                this.showToast('Warning', 'Warning', 'Address details missing');
             }
         })
         .catch(error=>{
             this.errors = error;
-            this.showToast('Error', 'error', this.errors);
+            console.log('Error was occured == > '+JSON.stringify(this.error));
+            this.showToast('Error', 'error', JSON.stringify(this.errors));
         });
     }
 

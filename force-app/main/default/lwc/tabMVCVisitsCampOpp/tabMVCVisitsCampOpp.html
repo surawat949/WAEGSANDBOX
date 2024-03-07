@@ -63,6 +63,7 @@
                             value={value}
                             placeholder="Select Category"
                             options={categoryOptions}
+                            required="true"
                             onchange={categoryCH}></lightning-combobox>                    
                         </div>             
                     </div>
@@ -87,6 +88,7 @@
                             value={value}
                             placeholder="Select Status"
                             options={statusOptions}
+                            required="true"
                             onchange={statusCH}></lightning-combobox>                    
                         </div> 
                         <div class="slds-form-element slds-form-element_stacked slds-size_1-of-2">
@@ -102,7 +104,7 @@
                    
                         <div class="slds-grid slds-var-m-left_medium">
                             <div class="slds-form-element slds-form-element_stacked slds-size_1-of-1">
-                                <lightning-input type="text" label={Subject_Label} value={subject} onchange={subjectCH}></lightning-input>
+                                <lightning-input type="text" label={Subject_Label} value={subject} onchange={subjectCH} required="true"></lightning-input>
                             </div>              
                         </div>
 

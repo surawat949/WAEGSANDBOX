@@ -45,7 +45,7 @@ export default class TabMVCVisitsTacticom extends LightningElement {
         // passed parameters are not yet received here
     }
     connectedCallback() {
-        
+
     }
 
     @wire(getRecord, { recordId:'$receivedId', fields: [OWNER_NAME,OWNER_FIELD,TACTICOM_SOF]})
@@ -73,17 +73,21 @@ export default class TabMVCVisitsTacticom extends LightningElement {
     totalCount=0;
     pieChartLabels=[]
     pieChartData=[]
+    pieChartDataTemp = [];
+    pieChartLablesTemp = [];
     @wire(getAccountsByZone,{conOwner:'$ownerId'})
     AccountHandler({data, error}){
         if(data){
-            const arrayObj=data;
+            const Obj=Object.assign({}, data);
+            const arrayObj = Object.values(Obj);           
             arrayObj.forEach(acc => {
-                this.pieChartLabels.push(acc.TACTICOM_SOF__c);
-                this.pieChartData.push(acc.cnt);
+                this.pieChartLablesTemp.push(acc.Contact_Tacticom__c);
+                this.pieChartDataTemp.push(acc.cnt);
                 this.totalCount=this.totalCount+acc.cnt;
             });
-            console.log(pieChartData);
-         this.isDoughnutChartDataReceived=true;
+            this.pieChartData= JSON.parse(JSON.stringify(this.pieChartDataTemp));
+            this.pieChartLabels= JSON.parse(JSON.stringify(this.pieChartLablesTemp));
+            this.isDoughnutChartDataReceived=true;
         }
         if(error){
             this.showToast('Error','Error while getting the Visits','error')

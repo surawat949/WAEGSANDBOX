@@ -126,6 +126,7 @@ export default class TabStatisticsReturns extends LightningElement {
                 }                    
                 if(result[1] != null && result[1].length > 0 ){
                     this.isNonAdap12MoRetsExist = true;
+																			 
                     this.nonAdaptationRets12Mo = JSON.parse(JSON.stringify(mon12));
                 }              
             }

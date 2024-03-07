@@ -19,7 +19,6 @@ public class MarketAverageDiscountUpdaterBatch implements Database.Batchable<SOb
     }
     public void execute(Database.BatchableContext context, List<sObject> scope) {
         try {
-            System.debug(scope);
             List<Account> accUpdateLst = new List<Account>();
             Map<String,Sales> netAndGrossSalesMap = new Map<String,Sales>();  
             if(scope.size() > 0){

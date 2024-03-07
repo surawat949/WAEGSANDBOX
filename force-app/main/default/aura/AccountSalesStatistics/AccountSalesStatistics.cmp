@@ -3,12 +3,12 @@
                 controller="AccountSalesStatisticsController">
    
         <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
-        <aura:attribute name="accountFields" type="String[]" default="['Potential__c', 'AnnualRevenue', 'Share_of_Wallet__c','First_Competitor_global_name__c', 'First_Competitor_local_name__c', 'First_Competitor_SOW__c', 'Second_Competitor_global_name__c', 'Second_Competitor_Local_Name__c', 'Second_Competitor_SOW__c']"/>
-        <aura:attribute name="accountFieldsSeiko" type="String[]" default="['Potential__c','First_Competitor_global_name__c', 'First_Competitor_local_name__c', 'First_Competitor_SOW__c', 'Second_Competitor_global_name__c', 'Second_Competitor_Local_Name__c', 'Second_Competitor_SOW__c']"/>
-    	<aura:attribute name="currency" type="String"/>
+        <!--<aura:attribute name="accountFields" type="String[]" default="['Potential__c', 'AnnualRevenue', 'Share_of_Wallet__c','First_Competitor_global_name__c', 'First_Competitor_local_name__c', 'First_Competitor_SOW__c', 'Second_Competitor_global_name__c', 'Second_Competitor_Local_Name__c', 'Second_Competitor_SOW__c']"/>-->
+        <!--<aura:attribute name="accountFieldsSeiko" type="String[]" default="['Potential__c','First_Competitor_global_name__c', 'First_Competitor_local_name__c', 'First_Competitor_SOW__c', 'Second_Competitor_global_name__c', 'Second_Competitor_Local_Name__c', 'Second_Competitor_SOW__c']"/>-->
+    
         <aura:attribute name="account" type="Account"/>
         <aura:attribute name="sales" type="Object" />
-        <aura:attribute name="recordId" type="String" />
+        <aura:attribute name="recordId" type="String" />		
         <aura:attribute name="conLensNetLst" type="Integer[]"/>
     	<aura:attribute name="conLensGrossLst" type="Integer[]"/>
    		<aura:attribute name="conLensQtyLst" type="Integer[]"/>
@@ -64,7 +64,7 @@
                 fields="{!v.accountFieldsSeiko}" columns="3" mode="view"
                 density="auto"/>
                 -->
-          <lightning:recordEditForm recordId="{!v.recordId}" objectApiName="Account">
+          <lightning:recordEditForm recordId="{!v.recordId}" objectApiName="Account" onsuccess="{!c.handleSuccess}">
                <div class="slds-grid slds-grid_align-space ">
                    <div class="slds-col slds-size_4-of-12 slds-p-horizontal_medium">                
                        <lightning:inputField fieldName="Potential__c" />
@@ -88,7 +88,7 @@
                </div>
                <div class="slds-grid slds-grid_align-space ">                  
                    <div class="slds-col slds-size_4-of-12 slds-p-horizontal_medium">  
-                       <lightning:inputField  fieldName="First_Competitor_global_name__c" />
+                       <lightning:outputField  fieldName="First_Competitor_global_name__c" />
                    </div>
                    <div class="slds-col slds-size_4-of-12 slds-p-horizontal_medium">  
                        <lightning:inputField  fieldName="First_Competitor_local_name__c"/>
@@ -99,7 +99,7 @@
                </div>
               <div class="slds-grid slds-grid_align-space ">
                   <div class="slds-col slds-size_4-of-12 slds-p-horizontal_medium">  
-                      <lightning:inputField  fieldName="Second_Competitor_global_name__c" />
+                      <lightning:outputField  fieldName="Second_Competitor_global_name__c" />
                   </div>
                   <div class="slds-col slds-size_4-of-12 slds-p-horizontal_medium">  
                       <lightning:inputField  fieldName="Second_Competitor_Local_Name__c" /></div>
@@ -120,7 +120,7 @@
                         <span class="test-id__section-header-title slds-truncate" title="{!v.InputTitle}">{!$Label.c.AccountVisitTabSalesTarget}</span>
                 </button>
             </h3>                        
-            <lightning:recordEditForm aura:id="accountRecordSalesTargetForm" recordId="{!v.recordId}" objectApiName="Account">
+            <lightning:recordEditForm aura:id="accountRecordSalesTargetForm" recordId="{!v.recordId}" objectApiName="Account" onsuccess="{!c.handleSuccess}">
                 <div class="slds-grid">
                     <div class="slds-col slds-size_5-of-12"><lightning:inputField fieldName="Seiko_objective_ECP_agr__c" /></div>&nbsp;	
                     <div class="slds-form-element slds-form-element_stacked slds-size_3-of-12">
@@ -146,9 +146,51 @@
                             <span class="test-id__section-header-title slds-truncate" title="{!v.InputTitle}">{!$Label.c.AccountVisitTabLensSupplier}</span>
                     </button>
                 </h3>
-                <lightning:recordForm aura:id="accountRecordForm" recordId="{!v.recordId}" objectApiName="Account"
+                <!--<lightning:recordForm aura:id="accountRecordForm" recordId="{!v.recordId}" objectApiName="Account"
                     fields="{!v.accountFields}" columns="3" mode="view"
-                    density="auto"/>
+                    density="auto"/>-->
+                <!--Below code amend for V.1.0 SFDC, not allow to edit in Global Competitors fields | Surawat Add : 2024-02-21 -->
+                <lightning:recordEditForm recordId="{!v.recordId}" objectApiName="Account" onsuccess="{!c.handleSuccess}">
+                    <div class="slds-grid slds-grid_align-space">
+                        <div class="slds-col slds-size_1-of-3">
+                            <lightning:inputField fieldName="Potential__c" />
+                        </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <lightning:outputField fieldName="AnnualRevenue" />
+                        </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <lightning:outputField fieldName="Share_of_Wallet__c" />
+                        </div>
+                    </div>
+                    <div class="slds-grid slds-gird_align-space">
+                        <div class="slds-col slds-size_1-of-3">
+                            <lightning:outputField fieldName="First_Competitor_global_name__c" />
+                        </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <lightning:inputField fieldName="First_Competitor_local_name__c" />
+                        </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <lightning:inputField fieldName="First_Competitor_SOW__c" />
+                        </div>
+                    </div>
+                    <div class="slds-grid slds-grid_align-space">
+                        <div class="slds-col slds-size_1-of-3">
+                            <lightning:outputField fieldName="Second_Competitor_global_name__c" />
+                        </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <lightning:inputField fieldName="Second_Competitor_Local_Name__c" />
+                        </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <lightning:inputField fieldName="Second_Competitor_SOW__c" />
+                        </div>
+                    </div>
+                    <div class="slds-grid slds-grid_align-space">
+                        <div class="slds-col slds-size_1-of-3">&nbsp;</div>
+                        <div class="slds-col slds-size_2-of-3">
+                            <lightning:button variant="brand" type="submit" label="Save" />
+                        </div>
+                    </div>
+                </lightning:recordEditForm>
             </div>
         </aura:set>
     </aura:if>      
@@ -217,7 +259,7 @@
                       <td class="alignRight"><lightning:formattedNumber currencyCode="{!v.sales.account.CurrencyIsoCode}" value="{!v.sales.marFramesNetSales}" maximumFractionDigits="0"/></td>
                       <td class="alignRight"><lightning:formattedNumber currencyCode="{!v.sales.account.CurrencyIsoCode}" value="{!v.sales.totalFramesNetSales}" maximumFractionDigits="0"/></td>
                   </tr>
-                  <tr class="slds-text-title_caps">
+				  <tr class="slds-text-title_caps">
                       <th>{!$Label.c.AccountContactLenses}</th>
                       <aura:iteration items="{!v.conLensNetLst}" var="netSale">
                       <td class="alignRight"><lightning:formattedNumber currencyCode="{!v.sales.account.CurrencyIsoCode}" value="{!netSale}" maximumFractionDigits="0"/></td>
@@ -238,7 +280,7 @@
                       <td class="alignRight"><lightning:formattedNumber currencyCode="{!v.sales.account.CurrencyIsoCode}" value="{!v.sales.febInstNetSales}" maximumFractionDigits="0"/></td>
                       <td class="alignRight"><lightning:formattedNumber currencyCode="{!v.sales.account.CurrencyIsoCode}" value="{!v.sales.marInstNetSales}" maximumFractionDigits="0"/></td>
                       <td class="alignRight"><lightning:formattedNumber currencyCode="{!v.sales.account.CurrencyIsoCode}" value="{!v.sales.totalInstNetSales}" maximumFractionDigits="0"/></td>
-                  </tr>                 
+                  </tr>
                   <tr class="slds-text-title_caps">
                       <th>{!$Label.c.AccountOther}</th>
                       <td class="alignRight"><lightning:formattedNumber currencyCode="{!v.sales.account.CurrencyIsoCode}" value="{!v.sales.aprOtherNetSales}" maximumFractionDigits="0"/></td>
@@ -397,7 +439,7 @@
                       <td class="alignRight"><lightning:formattedNumber value="{!v.sales.marFramesQty}" maximumFractionDigits="0"/></td>
                       <td class="alignRight"><lightning:formattedNumber value="{!v.sales.totalFramesQty}" maximumFractionDigits="0"/></td>
                   </tr>
-                  <tr class="slds-text-title_caps">
+				  <tr class="slds-text-title_caps">
                     <th>{!$Label.c.AccountContactLenses}</th>
                       <aura:iteration items="{!v.conLensQtyLst}" var="netQty">
                       <td class="alignRight"><lightning:formattedNumber currencyCode="{!v.sales.account.CurrencyIsoCode}" value="{!netQty}" maximumFractionDigits="0"/></td>
@@ -494,7 +536,7 @@
                   </tr>
                   <tr class="slds-text-title_caps">
                       <th>{!$Label.c.AccountLensesSalesLFY}</th>
-                      <td class="alignRight"><lightning:formattedNumber value="{!v.sales.aprLensesQtyLY}" maximumFractionDigits="0"/> </td>
+                       <td class="alignRight"><lightning:formattedNumber value="{!v.sales.aprLensesQtyLY}" maximumFractionDigits="0"/> </td>
                       <td class="alignRight"><lightning:formattedNumber value="{!v.sales.mayLensesQtyLY}" maximumFractionDigits="0"/> </td>
                       <td class="alignRight"><lightning:formattedNumber value="{!v.sales.junLensesQtyLY}" maximumFractionDigits="0"/> </td>
                       <td class="alignRight"><lightning:formattedNumber value="{!v.sales.julLensesQtyLY}" maximumFractionDigits="0"/> </td>
@@ -593,7 +635,7 @@
                         <td class="alignRight"><lightning:formattedNumber currencyCode="{!v.sales.account.CurrencyIsoCode}" value="{!v.sales.marFramesSales}" maximumFractionDigits="0"/></td>
                         <td class="alignRight"><lightning:formattedNumber currencyCode="{!v.sales.account.CurrencyIsoCode}" value="{!v.sales.totalFramesSales}" maximumFractionDigits="0"/></td>
                     </tr>
-                    <tr class="slds-text-title_caps">
+					<tr class="slds-text-title_caps">
                         <th>{!$Label.c.AccountContactLenses}</th>
                         <aura:iteration items="{!v.conLensGrossLst}" var="grossSale">
                             <td class="alignRight"><lightning:formattedNumber currencyCode="{!v.sales.account.CurrencyIsoCode}" value="{!grossSale}" maximumFractionDigits="0"/></td>
@@ -773,7 +815,7 @@
                         <td class="alignRight"><lightning:formattedNumber value="{!v.sales.marFramesQty}" maximumFractionDigits="0"/></td>
                         <td class="alignRight"><lightning:formattedNumber value="{!v.sales.totalFramesQty}" maximumFractionDigits="0"/></td>
                     </tr>
-                    <tr class="slds-text-title_caps">
+					<tr class="slds-text-title_caps">
                         <th>{!$Label.c.AccountContactLenses}</th>
                         <aura:iteration items="{!v.conLensQtyLst}" var="netQty">
                             <td class="alignRight"><lightning:formattedNumber currencyCode="{!v.sales.account.CurrencyIsoCode}" value="{!netQty}" maximumFractionDigits="0"/></td>
@@ -969,7 +1011,7 @@
                       <td class="alignRight"><lightning:formattedNumber currencyCode="{!v.sales.account.CurrencyIsoCode}" value="{!v.sales.marFramesSales}" maximumFractionDigits="0"/></td>
                       <td class="alignRight"><lightning:formattedNumber currencyCode="{!v.sales.account.CurrencyIsoCode}" value="{!v.sales.totalFramesSales}" maximumFractionDigits="0"/></td>
                   </tr>
-                  <tr class="slds-text-title_caps">
+				  <tr class="slds-text-title_caps">
                       <th>{!$Label.c.AccountContactLenses}</th>
                       <aura:iteration items="{!v.conLensGrossLst}" var="grossSale">
                           <td class="alignRight"><lightning:formattedNumber currencyCode="{!v.sales.account.CurrencyIsoCode}" value="{!grossSale}" maximumFractionDigits="0"/></td>
@@ -1163,7 +1205,7 @@
                       <td class="alignRight"><lightning:formattedNumber currencyCode="{!v.sales.account.CurrencyIsoCode}" value="{!v.sales.marFramesNetSales}" maximumFractionDigits="0"/></td>
                       <td class="alignRight"><lightning:formattedNumber currencyCode="{!v.sales.account.CurrencyIsoCode}" value="{!v.sales.totalFramesNetSales}" maximumFractionDigits="0"/></td>
                   </tr>
-                  <tr class="slds-text-title_caps">
+				  <tr class="slds-text-title_caps">
                       <th>{!$Label.c.AccountContactLenses}</th>
                       <aura:iteration items="{!v.conLensNetLst}" var="netSale">
                           <td class="alignRight"><lightning:formattedNumber currencyCode="{!v.sales.account.CurrencyIsoCode}" value="{!netSale}" maximumFractionDigits="0"/></td>
@@ -1327,6 +1369,12 @@
                       <td class="alignRight"><lightning:formattedNumber value="{!v.sales.marLensQty}" maximumFractionDigits="0"/></td>
                       <td class="alignRight"><lightning:formattedNumber value="{!v.sales.totalLensQty}" maximumFractionDigits="0"/></td>
                   </tr>
+				  <tr class="slds-text-title_caps">
+                      <th>{!$Label.c.AccountContactLenses}</th>
+                      <aura:iteration items="{!v.conLensQtyLst}" var="netQty">
+                          <td class="alignRight"><lightning:formattedNumber currencyCode="{!v.sales.account.CurrencyIsoCode}" value="{!netQty}" maximumFractionDigits="0"/></td>
+                      </aura:iteration>
+                  </tr>
                   <tr class="slds-text-title_caps">
                       <th>{!$Label.c.AccountFrames}</th>
                       <td class="alignRight"><lightning:formattedNumber value="{!v.sales.aprFramesQty}" maximumFractionDigits="0"/></td>
@@ -1342,12 +1390,6 @@
                       <td class="alignRight"><lightning:formattedNumber value="{!v.sales.febFramesQty}" maximumFractionDigits="0"/></td>
                       <td class="alignRight"><lightning:formattedNumber value="{!v.sales.marFramesQty}" maximumFractionDigits="0"/></td>
                       <td class="alignRight"><lightning:formattedNumber value="{!v.sales.totalFramesQty}" maximumFractionDigits="0"/></td>
-                  </tr>
-                  <tr class="slds-text-title_caps">
-                      <th>{!$Label.c.AccountContactLenses}</th>
-                      <aura:iteration items="{!v.conLensQtyLst}" var="netQty">
-                          <td class="alignRight"><lightning:formattedNumber currencyCode="{!v.sales.account.CurrencyIsoCode}" value="{!netQty}" maximumFractionDigits="0"/></td>
-                      </aura:iteration>
                   </tr>
                   <tr class="slds-text-title_caps">
                       <th>{!$Label.c.AccountInstruments}</th>
@@ -1490,7 +1532,7 @@
 
 <div class="slds-grid slds-gutters">
     <div class="slds-col slds-size_4-of-12"><span><label class="slds-form-element__label">Lenses Sales Last 12Mo</label></span></div>
-    <div class="slds-col slds-size_2-of-12"><span><lightning:formattedNumber  value="{!v.sales.lensesAnnualSales}" maximumFractionDigits="0" style="currency" currencyCode="{!v.sales.account.CurrencyIsoCode}"/></span></div>
+    <div class="slds-col slds-size_2-of-12"><span><lightning:formattedNumber style="currency" currencyCode="{!v.sales.account.CurrencyIsoCode}" value="{!v.sales.lensesAnnualSales}" maximumFractionDigits="0"/></span></div>
  
     <div class="slds-col slds-size_4-of-12"><span>Lenses Qty Last 12Mo</span></div>
     <div class="slds-col slds-size_2-of-12"><span><lightning:formattedNumber value="{!v.sales.lensesAnnualQty}" maximumFractionDigits="0"/></span></div>

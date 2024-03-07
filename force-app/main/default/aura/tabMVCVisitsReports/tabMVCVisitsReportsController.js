@@ -40,9 +40,9 @@
                 
             });
 
-           /* helper.getNextVisit(component, recordId, function(err,result){
+            helper.getNextVisit(component, recordId, function(err,result){
                 
-            });*/
+            });
   
         }
         

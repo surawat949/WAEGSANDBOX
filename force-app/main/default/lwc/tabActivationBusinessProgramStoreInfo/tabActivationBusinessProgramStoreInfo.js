@@ -29,7 +29,7 @@ import label_mirgrateSucessfully from '@salesforce/label/c.MirgateSucessfully';
 import { NavigationMixin } from 'lightning/navigation';
 import { subscribe, unsubscribe, onError } from 'lightning/empApi';
 import { encodeDefaultFieldValues } from "lightning/pageReferenceUtils";
-
+import { updateRecord } from 'lightning/uiRecordApi';
 
 
 export default class TabActivationBusinessProgramStoreInfo extends  NavigationMixin(LightningElement) {
@@ -93,9 +93,11 @@ export default class TabActivationBusinessProgramStoreInfo extends  NavigationMi
         this.handleIsLoading(true);
         mirgrateLastYearToPrev({recordID: this.receivedId})
         .then(result =>{
+           updateRecord({ fields: { Id: this.recordId }})
            this.handleRerender();
         })
         .catch(error =>{
+        this.handleIsLoading(false);    
         this.showToast('Success', 'Success', error.body.message);
 
         })
@@ -106,12 +108,11 @@ export default class TabActivationBusinessProgramStoreInfo extends  NavigationMi
     }
     handleRerender(){
         setTimeout(() => {
-            eval("$A.get('e.force:refreshView').fire();");
             this.isLoadAfterUpdate = true; 
             this.showLoading = false;  
-            this.showToast('Success', 'Success', 'Mirgate Sucessfully');
+            this.showToast('Success', 'Success', 'Store Performance Migrated Sucessfully');
          
-        },25000);
+        },5000);
 
     }
     

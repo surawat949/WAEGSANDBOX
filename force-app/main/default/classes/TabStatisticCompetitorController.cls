@@ -64,98 +64,17 @@ public with sharing class TabStatisticCompetitorController {
     public static void UpdateCompetitor(String recordId, String firstCompetitorName, String secondCompetitorName){
         try {
             List<Account> updateList = new List<Account>();
-            List<Account> acc = new List<Account>([SELECT Id, Hoya_Account_ID__c, First_Competitor_local_name__c, First_Competitor_Global_Name__c, Second_Competitor_Local_Name__c, Second_Competitor_global_name__c FROM Account WHERE Id=:recordId]);
-            for(Account a : acc){
-                if((String.isNotBlank(firstCompetitorName)) || (String.isNotBlank(secondCompetitorName))){
-                    a.First_Competitor_local_name__c = String.valueOf(firstCompetitorName);
-                    a.Second_Competitor_Local_Name__c = String.valueOf(secondCompetitorName);
-                    updateList.add(a);
-                    
-                }else{
-                    a.First_Competitor_Local_Name__c = '';
-                    a.First_Competitor_Global_Name__c = '';
-                    a.Second_Competitor_global_name__c = '';
-                    a.Second_Competitor_Local_Name__c = '';
-                    updateList.add(a);
-                    
-                }
-
+            Id recordIdValue = recordId;
+            SObject recordToUpdate = Schema.getGlobalDescribe().get('Account').newSObject(recordIdValue); 
+            if((String.isNotBlank(firstCompetitorName)) || (String.isNotBlank(secondCompetitorName))){
+                recordToUpdate.put('First_Competitor_local_name__c', String.valueOf(firstCompetitorName)); 
+                recordToUpdate.put('Second_Competitor_Local_Name__c', String.valueOf(secondCompetitorName)); 
+            }else{
+                recordToUpdate.put('First_Competitor_local_name__c', ''); 
+                recordToUpdate.put('Second_Competitor_Local_Name__c', ''); 
             }
-            if(updateList.size()>0){
-                update updateList;
-
-                List<Global_Competitor_Entity__mdt> comp_mdt = new List<Global_Competitor_Entity__mdt>([SELECT Id, 	Competitor_Entity_Name__c, 
-                                                                        First_Competitor_Local_Name__c, First_Competitor_Global_Name__c 
-                                                                        FROM Global_Competitor_Entity__mdt WHERE Competitor_Entity_Name__c=:firstCompetitorName]);
-                Map<String, String> MapGlobalCompetitor = new Map<String, String>();
-                for(Global_Competitor_Entity__mdt eachEntity : comp_mdt){
-                    if(String.isNotBlank(eachEntity.Competitor_Entity_Name__c) && String.isNotBlank(firstCompetitorName)){
-                        String key = eachEntity.Competitor_Entity_Name__c;
-                        MapGlobalCompetitor.put(key, eachEntity.First_Competitor_Global_Name__c);
-                    }
-                }
-                List<Account> updGlobalCompetitor = new List<Account>();
-                List<Account> updSecondCompetitor = new List<Account>();
-                List<Account> newGlobalCompetitor = new List<Account>([SELECT First_Competitor_Local_Name__c, First_Competitor_Global_Name__c, Second_Competitor_global_name__c, Second_Competitor_Local_Name__c FROM Account WHERE Id=:recordId]);
-                for(Account a : newGlobalCompetitor){
-                    //System.debug('Key = > '+MapGlobalCompetitor);
-                    if(!MapGlobalCompetitor.isEmpty() && String.isNotBlank(a.First_Competitor_Local_Name__c)){
-                        String key = a.First_Competitor_Local_Name__c;
-                        String FirstGlobalCompetitor = MapGlobalCompetitor.get(key);
-                        if(FirstGlobalCompetitor!=null){
-                            a.First_Competitor_Global_Name__c = FirstGlobalCompetitor;
-                            updGlobalCompetitor.add(a);
-                            
-                        }
-
-                    }else if(String.isBlank(a.First_Competitor_Local_Name__c) || a.First_Competitor_Local_Name__c==''){
-                        a.First_Competitor_Global_Name__c = '';
-                        updGlobalCompetitor.add(a);
-                        
-                    }else{
-                        a.First_Competitor_Global_Name__c = 'Other';
-                        updGlobalCompetitor.add(a);
-                        
-
-                    }
-                }
-                if(updGlobalCompetitor.size()>0){
-                    update updGlobalCompetitor;
-                }
-
-                //update 2nd competitor
-                List<Global_Competitor_Entity__mdt> comp2_mdt = new List<Global_Competitor_Entity__mdt>([SELECT Id, Competitor_Entity_Name__c, 
-                                                                                                        First_Competitor_Local_Name__c, First_Competitor_Global_Name__c 
-                                                                                                        FROM Global_Competitor_Entity__mdt 
-                                                                                                        WHERE Competitor_Entity_Name__c=:secondCompetitorName]);
-                Map<String, String> MapSecondCompetitor = new Map<String, String>();
-                for(Global_Competitor_Entity__mdt eachEntity : comp2_mdt){
-                    if(String.isNotBlank(eachEntity.Competitor_Entity_Name__c) && String.isNotBlank(secondCompetitorName)){
-                        String key = eachEntity.Competitor_Entity_Name__c;
-                        MapSecondCompetitor.put(key, eachEntity.First_Competitor_Global_Name__c);
-                    }
-                }
-
-                for(Account a : newGlobalCompetitor){
-                    //System.debug('2nd key=>'+MapSecondCompetitor);
-                    if(!MapSecondCompetitor.isEmpty() && String.isNotBlank(a.Second_Competitor_Local_Name__c)){
-                        String key = a.Second_Competitor_Local_Name__c;
-                        String SecondCompetitor = MapSecondCompetitor.get(key);
-                        if(SecondCompetitor!=null){
-                            a.Second_Competitor_global_name__c = SecondCompetitor;
-                            updSecondCompetitor.add(a);
-                        }
-                    }else if(String.isBlank(a.Second_Competitor_Local_Name__c) || a.Second_Competitor_Local_Name__c == ''){
-                        a.Second_Competitor_global_name__c = '';
-                        updSecondCompetitor.add(a);
-                    }else{
-                        a.Second_Competitor_global_name__c = 'Other';
-                        updSecondCompetitor.add(a);
-                    }
-                }
-                if(updSecondCompetitor.size()>0){
-                    update updSecondCompetitor;
-                }
+            if(recordToUpdate != null){
+                update recordToUpdate;
             }
 
         } catch (Exception e) {

@@ -3,6 +3,7 @@ import chartjs from '@salesforce/resourceUrl/chartjs2';
 import { loadScript } from 'lightning/platformResourceLoader';
 import ACCOUNT_OBJ from '@salesforce/schema/Account';
 import LOYALTY_POINT_STATUS from '@salesforce/schema/Account.Loyalty_Point_Status__c';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 //Apex
 import getLastTrainingDate from '@salesforce/apex/tabActivationEquipmentsController.getLastTrainingDate';

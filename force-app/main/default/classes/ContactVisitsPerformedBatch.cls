@@ -1,8 +1,6 @@
 /*****************************************************************************************************
 * Name            :  ContactVisitsPerformedBatch
-* Description     :  Batch Class to be used to update the total Direct and Contact Visits performed by the user, 
-                     this is syntax to run schedule apex twice in a day at 8AM and 8PM from Dev Console
-                     String cronexpression = '0 00 08,20 * * ?';
+* Description     :  Batch Class to be used to update the total Direct and Contact Visits performed by the user
                      System.schedule('Visits Contacts Sync Schedule Job', cronexpression, new ContactVisitsPerformedBatch());
 * Usage           :  ContactVisitsPerformedBatch                                                          
 * Created By      :  Encora                                                     

@@ -24,6 +24,7 @@ public  class TabActivationMedicalProgramControllTest {
         insert acc;
         Account acc2 = new Account(
             Name = 'Test AccTESR',
+            Hoya_Account_ID__c = 'TE-12312',
             phone='0103030408',
             Account_Status__c='Closed',
             ShippingPostalCode=null,
@@ -32,6 +33,7 @@ public  class TabActivationMedicalProgramControllTest {
         insert acc2;
         Account acc3 = new Account(
             Name = 'Test AccTESR1',
+            Hoya_Account_ID__c = 'TE-12313',
             phone='0103030408',
             Account_Status__c='Closed'
             /*ShippingPostalCode = '12345',
@@ -41,7 +43,7 @@ public  class TabActivationMedicalProgramControllTest {
         insert acc3;
         Account accAddress = new Account();
         accAddress.Name = 'TestAddress';
-        accAddress.hoya_account_id__c = '123456';
+        accAddress.hoya_account_id__c = 'TE123456';
         accAddress.RecordTypeId = '012b00000000P38';
         accAddress.shippingCity='Victoria';
         accAddress.ShippingStreet='SH B045 Chatswood Chase S/C 245';
@@ -103,7 +105,7 @@ public  class TabActivationMedicalProgramControllTest {
         Test.startTest();
         account act = [Select id,Name from Account where name = 'Test AccTESR' limit 1];
         
-        account actAddress = [Select id,Name from Account where Hoya_Account_ID__c = '123456' limit 1];    
+        account actAddress = [Select id,Name from Account where Hoya_Account_ID__c = 'TE123456' limit 1];    
         account act2 = [Select id,Name from Account where ShippingPostalCode != null and ShippingLatitude !=null limit 1];
         Contact conId = [SELECT Id,Name,accountId From contact where accountId =:act2.id];
         AccountContactRelation a = [Select ID , AccountId From AccountContactRelation where Account.Name = 'Test Acc' LIMIT 1];

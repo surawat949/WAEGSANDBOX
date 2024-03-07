@@ -41,7 +41,7 @@ export default class TabAccountAddressToCreateNewTaskModal extends LightningModa
     //@api fields;
     @api receivedId;
     errors;
-    @track value='New';
+    @track value='In Progress';
     labelRelatedTo = label_relatedTo;
     labelNewTask = label_newTask;
     labelAccContact = label_AccContact;
@@ -68,16 +68,16 @@ export default class TabAccountAddressToCreateNewTaskModal extends LightningModa
     ContactName;
     CopyTo = this.copiedtoId;
     AccountId = this.receivedId;
-
-    @track StatusOptions;
+	
+	@track StatusOptions;
     TaskRecordTypeId;
 
-    @wire(SFDC_V2_StandardTask)
+	@wire(SFDC_V2_StandardTask)
     standard_sfdcv2_task({data,error}){
         if(data){
             data = JSON.parse(JSON.stringify(data));
             this.TaskRecordTypeId = data;
-            console.log('Task Record Type Id ==>'+this.TaskRecordTypeId);
+            
         }else if(error){
             this.showToast('Error', JSON.stringify(error.message), 'error');
         }
@@ -195,11 +195,11 @@ export default class TabAccountAddressToCreateNewTaskModal extends LightningModa
     }
     updateRecordView(){
         setTimeout(() => {
-            //eval("$A.get('e.force:refreshView').fire();");
+            
         },1000);
     }
-
-    showToast(title, message, variant){
+	
+	showToast(title, message, variant){
         const event = new ShowToastEvent({
             title : title,
             message : message,
@@ -207,5 +207,4 @@ export default class TabAccountAddressToCreateNewTaskModal extends LightningModa
         });
         this.dispatchEvent(event);
     }
-
 }

@@ -87,5 +87,19 @@
                 ></lightning-record-form>
             </div>
         </div>
+		<div class="slds-grid slds-m-left_medium">
+            <div class="slds-col slds-size_1-of-2">
+                <lightning-record-form
+                    name="CreditRisk"
+                    id="CreditRisk"
+                    object-api-name="Account"
+                    record-id={receivedId}
+                    fields={Credit_Risk}
+                    columns="2"
+                    density="comfy"
+                    mode="View"
+                ></lightning-record-form>
+            </div>
+        </div>
     </div>
 </template>

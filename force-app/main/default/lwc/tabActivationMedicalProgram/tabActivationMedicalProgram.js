@@ -1,4 +1,5 @@
 import { LightningElement, api, wire } from 'lwc';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 //Apex
 //import getContactList from '@salesforce/apex/TabActivationController.getContactList';
@@ -20,10 +21,19 @@ export default class TabActivationMedicalProgram extends LightningElement {
     @wire(getMainMyopiaControlField, {recordId : '$receivedId'})
     getMyopiaControl({error, data}){
         if(error){
-            console.log('Error '+error);
+            this.showToast('Error', 'Error', error.message);
         }else if(data){
             this.MainMyopiaControl = data;
         }
     }
+    showToast(title, variant, message) {
+        this.dispatchEvent(
+            new ShowToastEvent({
+                title: title,
+                message: message,
+                variant: variant,
+            }),
+        );
+    } 
   
 }

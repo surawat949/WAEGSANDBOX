@@ -52,14 +52,24 @@ public class UserLogic_Test {
         c.AccountId = a.Id;
         c.Email = 'test@hotmail.com';
         c.Created_on_portal__c=true;
-        c.Invite_Portal_Email__c='	VI, HLC, Hoya Hub';
+        c.Invite_Portal_Email__c='  VI, HLC, Hoya Hub';
         c.Language_Pick__c='en-us';
-       // c.Account_Portal__c='Seiko Pro';
         c.RecordTypeId = RecTypeId;
         insert c;
+        
+        Contact c1 = new Contact();
+        c1.FirstName = 'testl';
+        c1.LastName = 'lastl';
+        c1.Account_Template__c = copy.Id;
+        c1.AccountId = a.Id;
+        c1.Email = 'test1@hotmail.com';
+        c1.Created_on_portal__c=false;
+        c1.Invite_Portal_Email__c='HOYA Learning Center';
+        c1.Language_Pick__c='en-us';
+        c1.RecordTypeId = RecTypeId;
+        insert c1;
 
         Profile p = [select Id from Profile where Name = 'Customer Community Plus User' limit 1];
-       // Profile license = [select Id from profile where profile.userlicense.name = 'Customer Community Plus' limit 1];
 
         User u = new User();
         u.FirstName = 'Testcommunity1';
@@ -77,33 +87,141 @@ public class UserLogic_Test {
         u.Reset_Password_Token__c='KJWHE7346873';
         insert u;
 
- 	    System.debug('User-->99'+u);
+        System.debug('User-->99'+u);
 
     }
 
     
     @isTest
     public static void sendEmailHandlerTest(){
-        
-        Contact c=[Select id,Created_on_portal__c,Account.name,Account.Portal__c,Contact_Record_Type__c,Legacy_Account_Number__c,Account_Template__c,Account_Portal__c,Invite_Portal_Email__c from contact where FirstName = 'testh'];
+                
+        User u1 = [Select id,Reset_Password_Token__c,Reset_Password_Context__c from user WHERE UserName='testyyy@tradeportal.hoya.com.waeg' LIMIT 1];
+        u1.Reset_Password_Token__c='LJWHE7346875';
+        update u1;
+                
+        Contact c=[Select id,Created_on_portal__c,Account.name,Account.Portal__c,Contact_Record_Type__c,Account_Template__c,Account_Portal__c,Invite_Portal_Email__c from contact where FirstName = 'testh'];
         System.debug('Contact Details-->'+c);
         
         List<User> newList=[SELECT Id, Profile.Name, Reset_Password_Token__c, 
                             Reset_Password_Context__c, Username, ContactId, Contact.Id, 
                             Contact.Created_on_portal__c, Contact.Contact_Record_Type__c, 
                             Contact.Account_Template__c, Contact.Account_Portal__c, 
-                            Contact.Invite_Portal_Email__c, Contact.Legacy_Account_Number__c, 
+                            Contact.Invite_Portal_Email__c, 
                             Contact_Language__c FROM User WHERE ContactId =: c.Id];
        
        System.debug('newLIST-->'+newList);
        
        Map<Id, User> oldObjectsMap=new  Map<Id, User>([Select Id,Profile.Name,Reset_Password_Token__c,Reset_Password_Context__c, Username, ContactId,
                             Contact.Created_on_portal__c,Contact.Contact_Record_Type__c, Contact.Account_Template__c,
-                            Contact.Account_Portal__c, Contact.Invite_Portal_Email__c, Contact_Language__c from user where UserName='testyyy@tradeportal.hoya.com.waeg']);
-
+                            Contact.Account_Portal__c, Contact.Invite_Portal_Email__c, Contact_Language__c from user where UserName='testyyy@tradeportal.hoya.com.waeg']); 
        Test.startTest();
-          UserLogic.sendEmailHandler(newList,oldObjectsMap);
+
+       UserLogic.sendEmailHandler(newList,oldObjectsMap);
+       
+       u1.Reset_Password_Context__c = 'PasswordReset';
+       u1.Reset_Password_Token__c = null;
+       update u1;
+
+       UserLogic.sendEmailHandler(newList,oldObjectsMap);
+       
+       
+       u1.Reset_Password_Context__c = 'NewEmployee';
+       u1.Reset_Password_Token__c = null;
+       update u1;
+       
+       UserLogic.sendEmailHandler(newList,oldObjectsMap);
+      
+
        Test.stopTest();
     }
+    
+    
+    @isTest
+    public static void sendEmailHandlerResetPasswordTest(){
+       
+       Test.startTest();                     
+             
+       Account a=[SELECT Id,Portal__c,Hoya_Account_Id__c FROM Account WHERE Hoya_Account_Id__c='SK1112'];
+       a.Portal__c ='exportportal';
+       update a;
+       
+       Contact c=[Select id,Created_on_portal__c,Account.name,Account.Portal__c,Contact_Record_Type__c,Account_Template__c,Account_Portal__c,Invite_Portal_Email__c from contact where FirstName = 'testh'];
+       c.Invite_Portal_Email__c = 'HOYA Contact Lenses ';
+       update c;
+
+       User thisUser = [SELECT Id FROM User WHERE Id = :UserInfo.getUserId()];
+       System.runAs (thisUser) {
+        User u1 = [Select id,Reset_Password_Token__c,Reset_Password_Context__c from user WHERE UserName='testyyy@tradeportal.hoya.com.waeg' LIMIT 1];
+        u1.Reset_Password_Token__c='LJWHE7346875';
+        update u1;
+       }
+
+        c.Invite_Portal_Email__c = 'Costco Portal';
+        update c;
+        System.runAs (thisUser) {
+        User u1 = [Select id,Reset_Password_Token__c,Reset_Password_Context__c from user WHERE UserName='testyyy@tradeportal.hoya.com.waeg' LIMIT 1];
+        u1.Reset_Password_Token__c='MJWHE7346875';
+        update u1;
+       }
+       
+       Test.stopTest();
+
+    
+    }
+    
+    
+     @isTest
+    public static void sendEmailHandlerNewEmployeeTest(){
+       Test.startTest();                     
+      
+       Account a=[SELECT Id,Portal__c,Hoya_Account_Id__c FROM Account WHERE Hoya_Account_Id__c='SK1112'];
+       a.Portal__c ='exportportal';
+       update a;
+       
+       Contact c=[Select id,Created_on_portal__c,Account.name,Account.Portal__c,Contact_Record_Type__c,Account_Template__c,Account_Portal__c,Invite_Portal_Email__c from contact where FirstName = 'testh'];
+       c.Invite_Portal_Email__c = 'HOYA Learning Center';
+       update c;
+       
+       User thisUser = [SELECT Id FROM User WHERE Id = :UserInfo.getUserId()];
+
+       System.runAs (thisUser) {
+        User u1 = [Select id,Reset_Password_Token__c,Reset_Password_Context__c from user WHERE UserName='testyyy@tradeportal.hoya.com.waeg' LIMIT 1];
+        u1.Reset_Password_Token__c=null;
+        u1.Reset_Password_Context__c='NewEmployee';
+        update u1;
+       }
+       
+       Test.stopTest();
+
+    
+    }
+    
+    
+    @isTest
+    public static void sendEmailAfterInsertNewEmployeeTest(){
+       Test.startTest();                     
+      
+       
+       Contact c1=[Select id,Created_on_portal__c,Account.name,Account.Portal__c,Contact_Record_Type__c,Account_Template__c,Account_Portal__c,Invite_Portal_Email__c from contact where FirstName = 'testl'];
+        
+        Profile p1 = [select Id from Profile where Name = 'Customer Community Plus User' limit 1];
+
+        User u = new User();
+        u.FirstName = 'Testcommunity2';
+        u.LastName = 'Testlastcomm2';
+        u.Email = 'test@gmail.com.invalid';
+        u.UserName = 'test@tradeportal.hoya.com.waeg';
+        u.profileid = p1.Id;
+        u.LocaleSidkey = 'en_US';
+        u.LanguageLocaleKey = 'en_US';
+        u.TimeZoneSidKey = 'America/Los_Angeles';
+        u.CompanyName = 'HVC';
+        u.Alias = 'testzxcv';
+        u.EmailEncodingKey = 'UTF-8';
+        u.ContactId = c1.Id;
+        u.Reset_Password_Token__c='TJWHE7346876';
+        insert u;       
+       Test.stopTest();
+ }   
 
 }

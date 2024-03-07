@@ -19,7 +19,7 @@ public class TabMVCVisitsController_Test {
         con.recordTypeId = CONTACT_OPTHO_RT;
         
         insert con;
-    
+    	List<Visits__c> visitsData = new List<Visits__c>();
         Visits__c visit11 = new Visits__c();
         visit11.Account__c = acc.Id;
         visit11.Visit_Type__c = 'Visit';
@@ -32,7 +32,7 @@ public class TabMVCVisitsController_Test {
         visit11.Visitfreqchk_c__c = '1';
         visit11.contact__c = con.Id;
         visit11.MKT_No_campaign_presented__c=true;
-        insert visit11;
+		visitsData.add(visit11);
         
         Visits__c visit2 = new Visits__c();
         visit2.Account__c = acc.Id;
@@ -46,7 +46,7 @@ public class TabMVCVisitsController_Test {
         visit2.Visitfreqchk_c__c = '1';
         visit2.contact__c = con.Id;
         visit2.MKT_No_campaign_presented__c=true;
-        insert visit2;
+		visitsData.add(visit2);
         
         Visits__c visit12 = new Visits__c();
         visit12.Account__c = acc.Id;
@@ -60,7 +60,7 @@ public class TabMVCVisitsController_Test {
         visit12.Visitfreqchk_c__c = '1';
         visit12.contact__c = con.Id;
         visit12.MKT_No_campaign_presented__c=true;
-        insert visit12;
+		visitsData.add(visit12);
         
         Visits__c visit13 = new Visits__c();
         visit13.Account__c = acc.Id;
@@ -74,7 +74,9 @@ public class TabMVCVisitsController_Test {
         visit13.Visitfreqchk_c__c = '1';
         visit13.contact__c = con.Id;
         visit13.MKT_No_campaign_presented__c =true;
-        insert visit13;    
+		visitsData.add(visit13);
+        
+        insert visitsData;
     }
     
     @IsTest
@@ -89,6 +91,7 @@ public class TabMVCVisitsController_Test {
         
         Contact con = new Contact();
         con.LastName = 'Rep';
+        con.FirstName = 'Tes';
         con.AccountId = acc.Id;        
         insert con;          
         
@@ -114,8 +117,22 @@ public class TabMVCVisitsController_Test {
         Test.startTest();
         Contact con=[Select Id,Name,ownerId from Contact LIMIT 1];
         TabMVCVisitsController.getInStoreTrainingRelatedList(con.Id);
+        Test.stopTest();
+    }
+    
+    @isTest
+    static void visitTestOne(){
+        Test.startTest();
+        Contact con=[Select Id,Name,ownerId from Contact LIMIT 1];
         TabMVCVisitsController.getContactLastVisitCompleted(con.Id);
         TabMVCVisitsController.getNextVisitPlanned(con.Id);
+        Test.stopTest();
+    }
+    
+    @isTest
+    static void visitTestTwo(){
+        Test.startTest();
+        Contact con=[Select Id,Name,ownerId from Contact LIMIT 1];
         TabMVCVisitsController.getVisits(con.Id);
 		TabMVCVisitsController.getVisitCompleted(con.Id);
         Test.stopTest();

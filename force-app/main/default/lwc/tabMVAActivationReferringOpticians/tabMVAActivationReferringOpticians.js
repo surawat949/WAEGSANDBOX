@@ -54,6 +54,7 @@ export default class TabMVAActivationReferringOpticians extends LightningElement
                 res.SeikoNetwork = res.Account.Seiko_Network__c
 
             });
+            console.log('ddata'+this.data);
             this.error = undefined;
         }else if(result.error){
             this.error = result.error;

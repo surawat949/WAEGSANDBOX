@@ -16,7 +16,9 @@ import Frames from '@salesforce/label/c.AccountFrames';
 import ContactLenses from '@salesforce/label/c.AccountContactLenses';
 import Instruments from '@salesforce/label/c.AccountInstruments';
 import Others from '@salesforce/label/c.AccountOther';
-import NetSales from '@salesforce/label/c.AccountNetSalesHeader';
+import CurrencyIn from '@salesforce/label/c.Currency_In';
+import NetSales from '@salesforce/label/c.Net_Sales';
+import FiscalYear from '@salesforce/label/c.Fiscal_Year';
 import TotalFY from '@salesforce/label/c.AccountTotalFy';
 import TotalLFY from '@salesforce/label/c.AccountTotalLfy';
 import Variation from '@salesforce/label/c.AccountVariation';
@@ -86,14 +88,14 @@ export default class TabStatisticsNetSales extends LightningElement {
     lensesQtyLFYYTD = 0;
     AccountRec;
     CurrencyCode;    
-    field = AnnualObjEcpAgreement;
+    field = [AnnualObjEcpAgreement];
     forecastCFY = [];
     CFYvsForecastVariation =[];
     ForecastvsLFY = [];
     maxMonth;
     Revenue;
     custLabel = {
-        SalesTarget,MonthlyNetSales,LensesNetSales,ParentNetSales,Volumes,
+        SalesTarget,MonthlyNetSales,LensesNetSales,ParentNetSales,Volumes,FiscalYear,CurrencyIn,
         MonthlyObjective,Last12MoVsObjective,Save,LensSalesForecast,
         Lenses,Frames,ContactLenses,Instruments,Others,NetSales,TotalFY,TotalLFY,Variation,LensesLFY,LensesVariation
     }

@@ -33,7 +33,7 @@ public without sharing class tabAIIndicatorsController {
     }
      @AuraEnabled(cacheable=true)
     public static IndicatorWrapper getAIIndicators(Id receivedId,String tabName) {
-        Account currAcc = [Select Id,Hoya_Account_ID__c,Strategic_Value_Gross_Sales__c,Account_Status__c,First_Competitor_local_name__c,Second_Competitor_Local_Name__c,Lenses_Net_Sales_Last_12Mo__c,Net_Promoter_Score__c,Payment_issue__c,Segmentation_Box__c,Seiko_objective_ECP_agr__c,Seiko_Network__c,Visionary_Alliance__c,
+        Account currAcc = [Select Id,Hoya_Account_ID__c,Strategic_Value_Gross_Sales__c,Account_Status__c,First_Competitor_local_name__c,Second_Competitor_Local_Name__c,Lenses_Net_Sales_Last_12Mo__c,Net_Promoter_Score__c,Payment_issue__c,Segmentation_Net__c,Seiko_objective_ECP_agr__c,Seiko_Network__c,Visionary_Alliance__c,
                            Strategic_Value_Net_Sales__c,Owner.CompanyName From Account WHERE id =: receivedId limit 1];
         List<Last_Sales_Statistics__c> statsList = [Select Id, Lenses_Net_Sales_Last_12Mo_vs_LFY__c,Lenses_Gross_Sales_LFY__c,Lenses_Gross_Sales_Last_12Mo__c, Lenses_Net_Sales_Last_3Mo_CFY_vs_LFY__c, Lenses_Net_Sales_Last_12Mo__c, Lenses_Net_Sales_Forecast_CFY__c, 
                                                     Total_Returns_L12Mo__c,Total_Production_Returns_L12Mo__c,Lenses_Shipment_RX_Average_Delay_3Mo__c,Uncut_Lenses_L3Mo__c,Remote_Edging_L3Mo__c,Mounting_L3Mo__c,
@@ -192,10 +192,10 @@ public without sharing class tabAIIndicatorsController {
                 }
                 else{
                     if(currAcc.Seiko_objective_ECP_agr__c == null || currAcc.Seiko_objective_ECP_agr__c == 0){
-                        wrapper.commitmentsFlag = 'GREY';
+                        wrapper.commitmentsFlag = 'GREEN';
                         wrapper.CommitmentsFlagMeaning = System.Label.get('', 'Commitment10', userLanguage);
                     }else{
-                         wrapper.commitmentsFlag = 'GREYALERT';
+                         wrapper.commitmentsFlag = 'REDALERT';
                         wrapper.CommitmentsFlagMeaning = System.Label.get('', 'Commitment11', userLanguage);
                     }
                 }
@@ -337,17 +337,22 @@ public without sharing class tabAIIndicatorsController {
                             }
                         }
                         else{
-                            if(!statsList.isEmpty() && statsList[0].Lenses_Net_Sales_Last_3Mo_CFY_vs_LFY__c < 0){
-                                wrapper.salesFlag = 'RED';
-                                wrapper.salesFlagMeaning = System.Label.get('', 'Sales09', userLanguage);
-                                  
+                            if(!statsList.isEmpty()){
+                                if(statsList[0].Lenses_Net_Sales_Last_3Mo_CFY_vs_LFY__c < 0){
+                                    wrapper.salesFlag = 'RED';
+                                    wrapper.salesFlagMeaning = System.Label.get('', 'Sales09', userLanguage);
+                                    
+                                }
+                                else{
+                                    wrapper.salesFlag = 'GREEN';
+                                    wrapper.salesFlagMeaning = System.Label.get('', 'Sales10', userLanguage);
+                                    
+                                }
                             }
                             else{
-                                wrapper.salesFlag = 'GREEN';
-                                wrapper.salesFlagMeaning = System.Label.get('', 'Sales10', userLanguage);
-                               
-                            }
-                                
+                                wrapper.salesFlag = 'GREY';
+                         		wrapper.salesFlagMeaning = System.Label.get('', 'Sales02', userLanguage);
+                            }                                
                         }
                     }
                 }

@@ -83,6 +83,7 @@
                         <th>{lables.contact}</th>
                         <th>{lables.visitType}</th>
                         <th>{lables.visit_Objective}</th>
+                        <th>{lables.VisitAssignedTo}</th>
                         <th>{lables.visit_ID}</th>
                     </thead>
                     <tbody>
@@ -103,6 +104,7 @@
                                     <td class="slds-truncate"><div class="slds-truncate slds-cell-wrap"><lightning-formatted-url value={visit.contactLink} tooltip={visit.contactName} label={visit.contactName} target="_top"></lightning-formatted-url></div></td>
                                     <td class="slds-truncate"><div class="slds-truncate slds-cell-wrap">{visit.Visit_Type__c}</div></td>
                                     <td class="slds-truncate"><div class="slds-truncate slds-cell-wrap">{visit.Visit_Reason__c}</div></td>
+                                    <td class="slds-truncate"><div class="slds-truncate slds-cell-wrap">{visit.Visit_assigned_to__c}</div></td>
                                     <td class="slds-truncate"><div class="slds-truncate slds-cell-wrap"><lightning-formatted-url value={visit.nameLink} tooltip={visit.Name} label={visit.Name} target="_top"></lightning-formatted-url></div></td>
                                     </tr>
                             </template>

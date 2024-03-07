@@ -16,7 +16,7 @@ public class TabVisitsControllerTest {
         con.accountId = acc.Id;
         con.ownerId=userInfo.getUserId();
         insert con;
-        
+        List<Visits__c> visitsData = new List<Visits__c>();
         Visits__c visit11 = new Visits__c();
         visit11.Account__c = acc.Id;
         visit11.Visit_Type__c = 'Visit';
@@ -29,7 +29,7 @@ public class TabVisitsControllerTest {
         visit11.Visitfreqchk_c__c = '1';
         visit11.contact__c = con.Id;
         visit11.MKT_No_campaign_presented__c=true;
-        insert visit11;
+        visitsData.add(visit11);
         
         Visits__c visit2 = new Visits__c();
         visit2.Account__c = acc.Id;
@@ -43,7 +43,7 @@ public class TabVisitsControllerTest {
         visit2.Visitfreqchk_c__c = '1';
         visit2.contact__c = con.Id;
         visit2.MKT_No_campaign_presented__c=true;
-        insert visit2;
+        visitsData.add(visit2);
         
         Visits__c visit12 = new Visits__c();
         visit12.Account__c = acc.Id;
@@ -57,7 +57,7 @@ public class TabVisitsControllerTest {
         visit12.Visitfreqchk_c__c = '1';
         visit12.contact__c = con.Id;
         visit12.MKT_No_campaign_presented__c=true;
-        insert visit12;
+        visitsData.add(visit12);
         
         Visits__c visit13 = new Visits__c();
         visit13.Account__c = acc.Id;
@@ -71,7 +71,8 @@ public class TabVisitsControllerTest {
         visit13.Visitfreqchk_c__c = '1';
         visit13.contact__c = con.Id;
         visit13.MKT_No_campaign_presented__c =true;
-        insert visit13;  
+        visitsData.add(visit13); 
+        insert visitsData;
         
         Task task = new Task();
         task.WhatId = acc.Id;
@@ -87,12 +88,12 @@ public class TabVisitsControllerTest {
         campaign.Campaign_Description__c = 'Test Campaign Description';
         campaign.company_code__c='EMEA';
         insert Campaign;
-        
+        /*
         Account_Campaing_Member__c acm = new Account_Campaing_Member__c();
         acm.Account_Name__c = acc.Id;
         acm.Central_Campaign__c = campaign.Id;
         insert acm;
-        
+        */
         String oppRecId = Schema.SobjectType.Opportunity.getRecordTypeInfosByDeveloperName().get('Hunting_Opportunities').getRecordTypeId();
         Opportunity o = new Opportunity();
         o.Name = 'Hunting-HVNA';
@@ -110,7 +111,7 @@ public class TabVisitsControllerTest {
         acc1.Zonal__c = 'Sub-area 1';
         acc1.TACTICOM_SOF__c = 'Sub-area 1';
         acc1.Agreed_Visits__c= 44;
-        acc1.Agreed_No_of_Digital_Visits__c=44;
+        acc1.Agreed_No_of_Digital_Visits__c=24;
         insert acc1;
         
         Account acc3 = new Account(
@@ -152,14 +153,6 @@ public class TabVisitsControllerTest {
         TabVisitsController.TacticomDetails(acc.Id);
         TabVisitsController.Aggregate(acc.Id);
         
-        /*
-        TabVisitsController.getVisits(acc.Id);
-        TabVisitsController.getVisitList(acc.Id);
-        TabVisitsController.getVisitsBasedOnContacts(acc.Id);
-        TabVisitsController.getTaskData(acc.Id);
-        TabVisitsController.getCampaignMembership(acc.Id);
-        TabVisitsController.getOpportunity(acc.Id);
-       */
         
         Account acc1=[Select Id,Name,ownerId from Account where Hoya_Account_Id__c='SO0v1234' LIMIT 1];
         TabVisitsController.TacticomDetails(acc1.Id);

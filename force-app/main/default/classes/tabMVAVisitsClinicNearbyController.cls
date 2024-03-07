@@ -8,7 +8,7 @@ public with sharing class tabMVAVisitsClinicNearbyController {
             List<Account> result = new List<Account>();
 
             Account acc = [select Id, Hoya_Account_ID__c, Name, ShippingLatitude, ShippingLongitude, ShippingStreet, ShippingCity, ShippingState, ShippingPostalCode, 
-                            ShippingCountry, Phone, Record_Type_Name__c, Brand__c, Segmentation_Box__c, Myo_Smart_AuthorizeDealer__c,
+                            ShippingCountry, Phone, Record_Type_Name__c, Brand__c, Segmentation_Net__c, Myo_Smart_AuthorizeDealer__c,
                             First_Competitor_global_name__c, First_Competitor_local_name__c, First_Competitor_SOW__c, RecordType.DeveloperName, Clinic_Name__c, (select Id, Name from Contacts where recordtype.DeveloperName='Opthalmologist') from account where Id=:recordId];
             result.add(acc);
 
@@ -34,7 +34,7 @@ public with sharing class tabMVAVisitsClinicNearbyController {
             }
 
             String soql = 'SELECT Id, Hoya_Account_ID__c, Name, ShippingStreet, ShippingCity, ShippingState, ShippingCountry, ShippingPostalCode, Clinic_Name__c, '
-                        + 'ShippingLatitude, ShippingLongitude, Record_Type_Name__c, Phone, Segmentation_Box__c, Brand__c, Myo_Smart_AuthorizeDealer__c, First_Competitor_global_name__c, First_Competitor_local_name__c, First_Competitor_SOW__c, RecordType.DeveloperName, (SELECT Id, Name FROM Contacts WHERE RecordType.DeveloperName=\'Opthalmologist\') FROM Account WHERE '
+                        + 'ShippingLatitude, ShippingLongitude, Record_Type_Name__c, Phone, Segmentation_Net__c, Brand__c, Myo_Smart_AuthorizeDealer__c, First_Competitor_global_name__c, First_Competitor_local_name__c, First_Competitor_SOW__c, RecordType.DeveloperName, (SELECT Id, Name FROM Contacts WHERE RecordType.DeveloperName=\'Opthalmologist\') FROM Account WHERE '
                         + 'DISTANCE(ShippingAddress, GEOLOCATION('+latitude+', '+longitude+'), \'km\')<'+distance + AccType + IsMyoSmart +' AND Hoya_Account_ID__c <> \''+HoyaAccountId+'\' ORDER BY CreatedDate DESC LIMIT 500';
             
 

@@ -79,7 +79,7 @@
         v.Visit_Reason__c = null;
         v.Call_To_Action__c = null;
         v.Campaign_name__c = component.get('v.campaignId');
-
+        v.Visit_Planning_Tracker__c = 'Visit Planning';
         var user = $A.get("$SObjectType.CurrentUser");
 
         v.Assigned_to__c = user.Id;

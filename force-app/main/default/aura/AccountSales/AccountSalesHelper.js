@@ -15,6 +15,7 @@
         $A.enqueueAction(action);
 
     },
+    
     initAccount : function(component, accountId, callback) {
         var action= component.get('c.getAccount');
         

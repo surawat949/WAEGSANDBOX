@@ -80,7 +80,7 @@ export default class TabAccountMemberships extends LightningElement {
     @track currentStep = '1';
     @track defaultSubjectValue = 'Request To Change Parent Account Value';
     @track defaultComment;
-    @track value='New';
+    @track value='In Progress';
 
     Subject = this.defaultSubjectValue;
     Status = this.value;
@@ -103,9 +103,9 @@ export default class TabAccountMemberships extends LightningElement {
     CopyTo = this.copiedtoId;
 
     buyingGrpFields = [Acc_PrimaryBuyingGrp, Acc_BuyingGrpName];
-    byuingGrpFields2 = [Acc_HVC_InterCode, Acc_Membership];   
-
-    @track StatusOptions;
+    byuingGrpFields2 = [Acc_HVC_InterCode, Acc_Membership];
+	
+	@track StatusOptions;
     TaskStatusRecordTypeId;
 
     constructor() {
@@ -115,8 +115,8 @@ export default class TabAccountMemberships extends LightningElement {
     connectedCallback() {
         //console.log('child connected call-' + this.receivedId);
     }
-
-    @wire(SFDC_V2_StandardTask)
+	
+	@wire(SFDC_V2_StandardTask)
     standard_sfdcv2_task({data,error}){
         if(data){
             data = JSON.parse(JSON.stringify(data));
@@ -353,7 +353,7 @@ export default class TabAccountMemberships extends LightningElement {
 
     updateRecordView(){
         setTimeout(() => {
-            //eval("$A.get('e.force:refreshView').fire();");
+            
         },1000);
         this.dispatchEvent(new RefreshEvent());
     }

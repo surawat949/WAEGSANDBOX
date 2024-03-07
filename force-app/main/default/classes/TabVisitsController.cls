@@ -1,29 +1,26 @@
 public class TabVisitsController {
     
     public static final String EC_ACCOUNT_RT = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('End_Consumer_Account').getRecordTypeId();
-    public static map<id,account> accountDetailsMap = new map<id,account>();
-    public static Map<id,list<account>> parentChildLinkedListMap = new map<id,list<account>>();
+    Public static map<id,account> accountDetailsMap = new map<id,account>();
+    Public static Map<id,list<account>> parentChildLinkedListMap = new map<id,list<account>>();
     
     // logic took from TacticomAccountPageController
     @AuraEnabled(cacheable=true)
     public static String TacticomDetails(String recordId){
         
-        Account acc=[select Id, hoya_account_id__c, door__c, Potential__c, TACTICOM_HLFR__c, TACTICOM_SOF__c, Brand__c, Zonal__c, annualRevenue, Sales_Total_Current_Year__c
+        Account acc=[select Id, hoya_account_id__c, door__c, Strategic_Value_Net_Sales__c, TACTICOM_HLFR__c, TACTICOM_SOF__c, Brand__c, Zonal__c, annualRevenue, Sales_Total_Current_Year__c
                      from Account where Id =:recordId WITH SECURITY_ENFORCED];
-        
         List<Account> sameDoorAcc = new List<Account>();
+        if(acc.door__c != null)
+           sameDoorAcc = [select Id,TACTICOM_SOF__c, Brand__c,Owner.Name from Account where Door__c =:acc.door__c and id !=: acc.Id];
 
-        if(acc.door__c != null){
-            sameDoorAcc = [select Id,TACTICOM_SOF__c, Brand__c,Owner.Name from Account where Door__c =:acc.door__c and id !=: acc.Id];
-        }
-        
         String isSeiko='NO';
         String isHoya='NO';
         
         //Current account is Seiko
         if(acc.hoya_account_id__c.substring(0,2)=='SO' || acc.Brand__c == 'SEIKO'){
             //it has a door Acc 
-            if(sameDoorAcc.size()>0 && (sameDoorAcc[0].Brand__c != 'PENTAX' || acc.Brand__c != 'OEM')){
+            if((!sameDoorAcc.isEmpty()) && (sameDoorAcc[0].Brand__c != 'PENTAX' || acc.Brand__c != 'OEM')){
                 if(sameDoorAcc[0].TACTICOM_SOF__c != null && sameDoorAcc[0].TACTICOM_SOF__c != 'None')
                 	isHoya ='YES';
             }
@@ -42,7 +39,7 @@ public class TabVisitsController {
             }
         }     
         String buddyPartner='';
-        if(sameDoorAcc.size()>0){
+        if(!sameDoorAcc.isEmpty()){
             buddyPartner = sameDoorAcc[0].Owner.Name;
         }
         //Frame data to send to LWC
@@ -63,7 +60,7 @@ public class TabVisitsController {
         @TestVisible    
         @AuraEnabled(cacheable=true)
         public static List<AggregateResult> getAccountsByZone(String accOwner){
-            List<AggregateResult> result =  [Select SUM(Total_Visits_Per_Year__c ) cnt,TACTICOM_SOF__c from Account where TACTICOM_SOF__c !=null AND ownerId=:accOwner group by TACTICOM_SOF__c ]; 
+            List<AggregateResult> result =  [Select SUM(Estimated_Planned_Visits__c ) cnt,TACTICOM_SOF__c from Account where TACTICOM_SOF__c !=null AND ownerId=:accOwner group by TACTICOM_SOF__c ]; 
             return result;
         }
     
@@ -87,9 +84,7 @@ public class TabVisitsController {
         decimal parentChildSOW = 0;
         
         if(parentId!=null){
-            try{
-                //Map<Id,Account> accMap = New Map<Id,Account>([Select Id, parentId , AnnualRevenue, Strategic_Value_Net_Sales__c from Account Where Id=:parentId  OR parentId=:parentId ]);
-                
+            try{                
                 //calculating parentChildTotalPotential               
                 List<AccountDetail> accList = getAllAccountRecordsInHierarchy(parentId);
                 
@@ -112,10 +107,8 @@ public class TabVisitsController {
                 //calculating Parent & Child SOW
                 if(parentChildTotalSales!=0 && parentChildTotalPotential!=0){
                     decimal sowData = parentChildTotalSales/parentChildTotalPotential;
-                    System.debug('sowData'+sowData);
                     //if percenatge is greater than 100 then round of to 100
                     parentChildSOW  = sowData.setScale(2) > 1.0 ? 1.0 : sowData.setScale(2);
-                    System.debug('parentChildSOW'+parentChildSOW);
                 }
                 
                 //calculating parentAccountSegmentation
@@ -145,9 +138,6 @@ public class TabVisitsController {
                     parentAccountSegmentationTemp = parentAccountSegmentationTemp + '1';
                 }
                 //HOYA account Id of parent account
-                //BUG 1014 fix
-                //Account parentAcc = [select Id, hoya_account_id__c, name, Strategic_Value_Net_Sales__c, parentId from Account where id=:accList[0].parentId];
-                
                 //Passing as a wrapper to pass to LWC
                 sales.totalAnualRevenue = parentChildTotalSales ;
                 sales.totalPotential = parentChildTotalPotential;  
@@ -157,62 +147,17 @@ public class TabVisitsController {
                 
             }
             catch(Exception ex){
-                System.debug('Error occurred while calculating-->'+ex);
             }
         }
         Return sales!= Null ? sales : null ;
     }
     
-    /*
-    
-   //Method to get Last 5 completed visits
-    @AuraEnabled(cacheable=true)
-    public static List<Visits__c> getVisits(String accountId){
-        List<Visits__c> visits=[Select Id, Name, Account__c,Visit_Status__c, toLabel(Visit_Reason__c), toLabel(Visit_Type__c), Call_To_Action_Notes__c
-        ,Visit_Notes__c, Start_Time__c, End_Time__c, Assigned_to__r.Name from Visits__c where Account__c=:accountId AND Visit_Status__c='Complete' order by CreatedDate desc limit 5];
-        return visits;
-    } 
-    
-   //Method to get Last 5 Tasks
-   @AuraEnabled(cacheable=true)
-   public static List<Task> getTaskData(String accountId){
-       List<Task> task = [select Id, subject, OwnerId, Owner.Name, ActivityDate, Task_Notes__c, 
-                            description, CreatedDate, toLabel(Status)
-                            from Task where whatid =: accountId order by LastModifiedDate desc limit 5];
-        return task;
-   }
-    
-    //Method to get all visits
-    @AuraEnabled(cacheable=true)
-    public static List<Visits__c> getVisitList(String accountId){
-        List<Visits__c> visits=[Select Id, Name, Account__c,Visit_Status__c, toLabel(Visit_Reason__c), toLabel(Visit_Type__c), Call_To_Action_Notes__c
-        ,Visit_Notes__c, Start_Time__c, End_Time__c, Assigned_to__r.Name from Visits__c where Account__c=:accountId order by CreatedDate desc];
-        return visits;
-    } 
-    
-     //Method to get all Campaign Membership
-    @AuraEnabled(cacheable=true)
-    public static List<Account_Campaing_Member__c> getCampaignMembership(String accountId){
-        List<Account_Campaing_Member__c> campaigns=[Select  id,Name, Campaign_Start_Date_t__c,Campaign_Name_t__c,  Campaign_End_Date_t__c, Date_of_presentation__c,Campaign_Interested__c,Account_Name__c 
-                                from Account_Campaing_Member__c where Account_Name__c=:accountId];
-                                System.debug('Get campaigns == > '+campaigns);
-        return campaigns;
-    } 
-    
-     //Method to get all Opportunities
-    @AuraEnabled
-    public static List<Opportunity> getOpportunity(String accountId){
-        List<Opportunity> opportunities=[Select  id,Name, AccountId,StageName,CloseDate,Days_Remain_To_Close__c
-                                from Opportunity where AccountId=:accountId];
-        return opportunities;
-    }
-    */
     
     @TestVisible    
     @AuraEnabled(cacheable=true)
     public static List<recomendedVisitDetails> recommendedAccountsByZone(String accOwner){
      
-        List<AggregateResult> result =  [Select SUM(Total_Visits_Per_Year__c ) cnt,TACTICOM_SOF__c from Account  where TACTICOM_SOF__c !=null AND ownerId=:accOwner AND AnnualRevenue > 0 group by TACTICOM_SOF__c ];//where OwnerId =:userId 
+        List<AggregateResult> result =  [Select SUM(Estimated_Planned_Visits__c ) cnt,TACTICOM_SOF__c from Account  where TACTICOM_SOF__c !=null AND ownerId=:accOwner AND Lenses_Net_Sales_Last_12Mo__c > 0 group by TACTICOM_SOF__c ];//where OwnerId =:userId
         List<recomendedVisitDetails> recomList=new List<recomendedVisitDetails>();
         recomendedVisitDetails recomVisit=new recomendedVisitDetails(); 
         decimal recommendedVisit=0;
@@ -225,11 +170,11 @@ public class TabVisitsController {
                      else if((recommendedVisit + 80)>750){
                       recomVisit.recommendedVisit = 750;
                      }
-                     if((recommendedVisit + 80)<=720){
+                     if((recommendedVisit + 80)<=750){
                       recomVisit.recommendedVisitPerSubArea= ((recommendedVisit + 80)/5);
                         }
-                      else if((recommendedVisit + 80)>720){
-                            recomVisit.recommendedVisitPerSubArea= (720/5);
+                      else if((recommendedVisit + 80)>750){
+                            recomVisit.recommendedVisitPerSubArea= (750/5);
                        }
              recomList.add(recomVisit);      
              return recomList;
@@ -249,7 +194,7 @@ public class TabVisitsController {
         List<AccountDetail> resultList = new List<AccountDetail>();
         List<Account> item;
         //BUG 1014 fix - added parent.Hoya_account_id__c in the query
-        item = [select Id, hoya_account_id__c, name, Strategic_Value_Net_Sales__c,parent.Hoya_account_id__c, parentId, Owner.Segment_C_Potential_Less_Than__c, 
+        item = [select Id, hoya_account_id__c, name, Strategic_Value_Net_Sales__c,parent.Hoya_account_id__c, parentId, Owner.Segment_C_Potential_Less_Than__c,
                 Owner.Segment_A_Potential_Higher_Than__c, Owner.Segment_C3_SOW_Less_Than__c, Owner.Segment_A1_SOW_HigherThan__c 
                 from Account where id=:accId AND recordTypeId != :EC_ACCOUNT_RT];   
         
@@ -274,7 +219,6 @@ public class TabVisitsController {
             accIdSet.add(item[0].Id);
             //will return all the child accounts and adds to the list
             resultList.addAll(getRecursiveAccountList(accIdSet));
-            system.debug('resultList'+resultList);
         } 
         return resultList != Null ? resultList : Null;
     }
@@ -283,7 +227,7 @@ public class TabVisitsController {
          public Id accountId{get;set;}
          public String hoya_account_id{get;set;}
          public String name{get;set;}
-         public String parentHoyaId{get;set;}//BUG 1014 fix
+         public String parentHoyaId{get;set;}
          public Id parentId{get;set;}
          public Decimal netSales{get;set;}
          public Decimal ownerSegmentC{get;set;}
@@ -320,42 +264,4 @@ public class TabVisitsController {
          return result;
      }
     
-
-/*    
-  @AuraEnabled(cacheable=true)
-  public static List<Visits__c> getVisitsBasedOnContacts(String accountId){
-  List<Visits__c> visits=[Select Id,Name,Contact__c,Contact__r.Name,Visit_Type__c,Visit_Reason__c,Visit_completed_date__c from visits__c where Contact__c IN ( select id from Contact where AccountId=:accountId) order by Contact__r.Name];
-  return visits;
- }   
-    
-    
-   @AuraEnabled(cacheable=true)
-   public static List<Identified_Business_Opportunity__c> getOppCount(String accountId){
-       List<Identified_Business_Opportunity__c> opp = [SELECT Id FROM Identified_Business_Opportunity__c WHERE Account__c=:accountId];
-       return opp;
-   }
-
-
- //Report Visits
-   @AuraEnabled(cacheable=true)
-   public static List<Visits__c> getReportVisits(String accountId){
-       List<Visits__c> visits=[select Id,Name,Start_Date_Time__c, Visit_Type__c, HVNA_Visit_Objectives__c,  Visit_Status__c from Visits__c where Account__c=:accountId limit 5];
-       return visits;
-   } 
-
-    //Method to get Last 3 Tasks
-    @AuraEnabled(cacheable=true)
-    public static List<Task> getTaskRecord(String accountId){
-        List<Task> task = [select Id,CompletedDateTime,toLabel(CreatedBy.Name),Created_Date__c, Subject, Owner.Name, ActivityDate, toLabel(Status) from Task
-         where whatid =: accountId order by LastModifiedDate desc limit 3];
-         return task;
-    }
-  //Method to get Last 5 Visit Completed
-  @AuraEnabled(cacheable=true)
-  public static List<Visits__c> getVisitCompleted(String accountId){
-    List<Visits__c> visits=[select Id,Name,Visit_Notes__c,Visit_completed_date__c, Call_To_Action__c, Visit_assigned_to__c from Visits__c
-    where Account__c=:accountId limit 3];
-    return visits;
-} 
-*/
 }

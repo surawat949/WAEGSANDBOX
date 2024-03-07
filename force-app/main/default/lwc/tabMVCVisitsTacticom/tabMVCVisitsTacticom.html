@@ -66,7 +66,7 @@
                 object-api-name={objectApiName}
                 fields={visits_medical_field}
                 mode="view" 
-                columns = "1">
+                columns = "1" >
             </lightning-record-form>
         </lightning-layout-item>
   
@@ -74,13 +74,13 @@
         <template lwc:if ={isDoughnutChartDataReceived}>
         <h2 style="text-align: center;"><b>{label.My_Tacticom_Total_Visits}</b></h2>
 
-        <c-charts type="doughnut" 
+        <c-pie-chart-renderer type="doughnut" 
         chart-heading="Visits"
         chart-data={pieChartData} 
         chart-labels={pieChartLabels}
         total-count={totalCount}
-        ></c-charts>
-        </template>
+        ></c-pie-chart-renderer>
+    </template>
 
     <template lwc:else>
         <h3>{label.ChartMessage} </h3>

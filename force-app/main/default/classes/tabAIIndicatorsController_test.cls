@@ -1,18 +1,21 @@
 @isTest
 public class tabAIIndicatorsController_test {
+
  	@IsTest
     static void runTestCtrl(){
+        String Account_Ind_RecType = [select Id from RecordType where DeveloperName='Independents' and SObjectType='Account'].Id;
+        String Contact_Emp_RecType = [select Id from RecordType where DeveloperName='Employee' and SObjectType='Contact'].Id;
         Account acc = new Account();
         acc.Name='sales test account';
         acc.hoya_account_id__c='SO3399999xx';
-        acc.RecordTypeId='012b00000000P38';  
+        acc.RecordTypeId=Account_Ind_RecType; 
         acc.Account_Status__c = 'Closed';
         insert acc;
         
         Account acc1 = new Account();
         acc1.Name='sales test Germany account';
         acc1.hoya_account_id__c='SO4900999xx';
-        acc1.RecordTypeId='012b00000000P38';
+        acc1.RecordTypeId=Account_Ind_RecType;
         acc1.Local_Consolidation_Key__c='123';
         acc1.Account_Status__c = 'Open';
         acc1.Payment_issue__c = true;
@@ -29,47 +32,76 @@ public class tabAIIndicatorsController_test {
         Account acc2 = new Account();
         acc2.Name='sales test account';
         acc2.hoya_account_id__c='SO4950999xx';
-        acc2.RecordTypeId='012b00000000P38';
+        acc2.RecordTypeId=Account_Ind_RecType;
         acc2.Account_Status__c = 'Open';
         acc2.Payment_issue__c = false;
         acc2.Net_Promoter_Score__c = 5;   
         acc2.Seiko_objective_ECP_agr__c = 340;
-        acc2.Second_Competitor_Local_Name__c ='SEIKO';
+        acc2.Second_Competitor_Local_Name__c ='Essilor';
         insert acc2;
+
+        Contact con2 = new Contact();
+        con2.Salutation = '';
+        con2.FirstName = null;
+        con2.LastName = 'Testcon2';
+        con2.AccountId = acc2.Id;
+        con2.RecordTypeId = Contact_Emp_RecType;
+        insert con2;
         
         Account acc3 = new Account();
         acc3.Name='sales test account2';
         acc3.hoya_account_id__c='SO4950998xx';
-        acc3.RecordTypeId='012b00000000P38';
+        acc3.RecordTypeId=Account_Ind_RecType;
         acc3.Account_Status__c = 'Open';
         acc3.Payment_issue__c = true;
         acc3.Seiko_objective_ECP_agr__c = 0;
         acc3.Seiko_Network__c = 'Hoya Vision Center';
         insert acc3;
+
+        Contact con3 = new Contact();
+        con3.Salutation = 'Mr.';
+        con3.FirstName = 'Testcon3';
+        con3.LastName = 'Lastcon3';
+        con3.AccountId = acc3.Id;
+        con3.RecordTypeId = Contact_Emp_RecType;
+        insert con3;
         
         Account acc4 = new Account();
         acc4.Name='sales test account4';
         acc4.hoya_account_id__c='SO4950997xx';
-        acc4.RecordTypeId='012b00000000P38';
+        acc4.RecordTypeId=Account_Ind_RecType;
         acc4.Account_Status__c = 'Open';
         acc4.Payment_issue__c = true;
-        acc4.First_Competitor_local_name__c = 'SEIKO';
+        acc4.First_Competitor_global_name__c = 'Essilor';
+        acc4.First_Competitor_local_name__c = 'Essilor';
         acc4.Strategic_Value_Gross_Sales__c =100;
         insert acc4;
         
+        Contact con4 = new Contact();
+        con4.Salutation = 'Mr.';
+        con4.FirstName = 'Test';
+        con4.LastName = 'Testcon4';
+        con4.AccountId = acc4.Id;
+        insert con4;
         
         Account acc5 = new Account();
         acc5.Name='sales test account';
         acc5.hoya_account_id__c='SO4950989xx';
-        acc5.RecordTypeId='012b00000000P38';
+        acc5.RecordTypeId=Account_Ind_RecType;
         acc5.Account_Status__c = 'Open';
         acc5.Seiko_objective_ECP_agr__c = 340;
         insert acc5;
+
+        Contact con5 = new Contact();
+        con5.FirstName = 'Testcon5';
+        con5.LastName = 'Contest5';
+        con5.RecordTypeId = Contact_Emp_RecType;
+        insert con5;
         
         Account acc6 = new Account();
         acc6.Name='sales test account';
         acc6.hoya_account_id__c='SO4900889xx';
-        acc6.RecordTypeId='012b00000000P38';
+        acc6.RecordTypeId=Account_Ind_RecType;
         acc6.Account_Status__c = 'Open';
         acc6.Strategic_Value_Gross_Sales__c = 50;
         insert acc6;
@@ -77,7 +109,7 @@ public class tabAIIndicatorsController_test {
         Account acc7 = new Account();
         acc7.Name='sales test account';
         acc7.hoya_account_id__c='SO3350889xx';
-        acc7.RecordTypeId='012b00000000P38';
+        acc7.RecordTypeId=Account_Ind_RecType;
         acc7.Account_Status__c = 'Open';
         acc7.Strategic_Value_Net_Sales__c = 50;
         insert acc7;
@@ -85,7 +117,7 @@ public class tabAIIndicatorsController_test {
         Account acc8 = new Account();
         acc8.Name='sales test account8';
         acc8.hoya_account_id__c='SO49009991x';
-        acc8.RecordTypeId='012b00000000P38';
+        acc8.RecordTypeId=Account_Ind_RecType;
         acc8.Account_Status__c = 'Open';
         acc8.Strategic_Value_Gross_Sales__c = 90;
         insert acc8;
@@ -99,7 +131,7 @@ public class tabAIIndicatorsController_test {
         Account acc9 = new Account();
         acc9.Name='sales test account8';
         acc9.hoya_account_id__c='SO49009992x';
-        acc9.RecordTypeId='012b00000000P38';
+        acc9.RecordTypeId=Account_Ind_RecType;
         acc9.Account_Status__c = 'Open';
         acc9.Strategic_Value_Gross_Sales__c = 90;
         insert acc9;
@@ -113,7 +145,7 @@ public class tabAIIndicatorsController_test {
         Account acc10 = new Account();
         acc10.Name='sales test account8';
         acc10.hoya_account_id__c='SO33008991x';
-        acc10.RecordTypeId='012b00000000P38';
+        acc10.RecordTypeId=Account_Ind_RecType;
         acc10.Account_Status__c = 'Blocked';
         acc10.Payment_issue__c = false;
         acc10.Strategic_Value_Net_Sales__c = 90;
@@ -129,7 +161,7 @@ public class tabAIIndicatorsController_test {
         Account acc11 = new Account();
         acc11.Name='sales test account8';
         acc11.hoya_account_id__c='SO33008992x';
-        acc11.RecordTypeId='012b00000000P38';
+        acc11.RecordTypeId=Account_Ind_RecType;
         acc11.Account_Status__c = 'Blocked';
         acc11.Payment_issue__c = true;
         acc11.Strategic_Value_Net_Sales__c = 90;
@@ -145,7 +177,7 @@ public class tabAIIndicatorsController_test {
         Account acc12 = new Account();
         acc12.Name='sales test account12';
         acc12.hoya_account_id__c='SO33008891x';
-        acc12.RecordTypeId='012b00000000P38';
+        acc12.RecordTypeId=Account_Ind_RecType;
         acc12.Account_Status__c = 'Blocked';
         acc12.Payment_issue__c = false;
         insert acc12;
@@ -159,10 +191,18 @@ public class tabAIIndicatorsController_test {
         Account acc13 = new Account();
         acc13.Name='sales test account13';
         acc13.hoya_account_id__c='SO33008892x';
-        acc13.RecordTypeId='012b00000000P38';
+        acc13.RecordTypeId=Account_Ind_RecType;
         acc13.Account_Status__c = 'Blocked';
         acc13.Payment_issue__c = true;
         insert acc13;
+
+        Account acc14 = new Account();
+        acc14.Name = 'test no competitor';
+        acc14.Hoya_Account_ID__c = 'SO3300987654';
+        acc14.RecordTypeId = Account_Ind_RecType;
+        acc14.First_Competitor_local_name__c = null;
+        acc14.Second_Competitor_Local_Name__c = null;
+        insert acc14;
         
         Last_Sales_Statistics__c lastSales13 = new Last_Sales_Statistics__c();
         lastSales13.Account__c = acc13.Id;
@@ -275,6 +315,8 @@ public class tabAIIndicatorsController_test {
         tabAIIndicatorsController.getAIIndicators(acc11.Id,'Address');
         tabAIIndicatorsController.getAIIndicators(acc12.Id,'Address');
         tabAIIndicatorsController.getAIIndicators(acc13.Id,'Address');
+        tabAIIndicatorsController.getAIIndicators(acc14.Id, 'Address');
+        tabAIIndicatorsController.getAIIndicators(acc14.Id, 'Statistics');
         acc13.Payment_issue__c = true;
         update acc13;
         tabAIIndicatorsController.getAIIndicators(acc13.Id,'Address');

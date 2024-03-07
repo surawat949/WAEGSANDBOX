@@ -24,6 +24,7 @@ import Report_Status from '@salesforce/label/c.Report_Status';
 import visits from '@salesforce/label/c.visits';
 import Reports_Visit_ID from '@salesforce/label/c.Reports_Visit_ID';
 import Reports_Start from '@salesforce/label/c.Reports_Start';
+import VisitType from '@salesforce/label/c.VisitType';
 import VisitObj from '@salesforce/label/c.VisitObj';
 import VisitStatus from '@salesforce/label/c.VisitStatus';
 import label_viewall from '@salesforce/label/c.ViewAllRelatedList';
@@ -47,7 +48,7 @@ export default class TabMVCVisitsReports extends NavigationMixin(LightningElemen
   label = {Last_Visit_Completed,Report_Visit_Id,Report_Visit_Type,Assigned_To,
           Report_Start,Report_Visit_Objective,Report_Contact,label_viewall,label_new,
           Report_Call_To_Action_Notes,Last_Three_Visit_Completed,Reports_Date,Visit_Notes,Call_To_Action,Last_Three_Tasks,
-          Reports_Created_By,Reports_Subject,Report_Due_Date,Report_Status,visits,Reports_Visit_ID, Reports_Start,VisitObj,
+          Reports_Created_By,Reports_Subject,Report_Due_Date,Report_Status,visits,Reports_Visit_ID, Reports_Start, VisitType,VisitObj,
           VisitStatus}
 
           @track visitcolumns = [
@@ -147,10 +148,9 @@ export default class TabMVCVisitsReports extends NavigationMixin(LightningElemen
           sortable: true
       } 
     ];
-    connectedCallback() {
+  connectedCallback() {
       this.getReportVisit();
       subscribe(this.CHANNEL_NAME, -1, this.refreshList).then(response => {
-        console.log('>>>test2');
           this.subscription = response;
       });
       onError(error => {
@@ -184,7 +184,7 @@ export default class TabMVCVisitsReports extends NavigationMixin(LightningElemen
   refreshList = ()=> {
     console.log('>>>test4');
     this.getReportVisit();
-} 
+  }
 
   @wire(getTaskReport, {accountId:'$receivedId'}) taskRec({error, data}){
     if(data && data.length > 0){
@@ -200,7 +200,7 @@ export default class TabMVCVisitsReports extends NavigationMixin(LightningElemen
         this.showToast('Error','Error While fetching the Tasks'+error.message,'error');
       }
   }
- 
+
 
 
   @wire(getVisitCompleted, {accountId:'$receivedId'}) visData({error, data}){
@@ -263,12 +263,12 @@ navigateToNewPage(objectName){
            useRecordTypeCheck : 1,
            navigationLocation: 'RELATED_LIST'  //to avoid prevention of moving to newly created record
        }
-   });
+});
 }
 disconnectedCallback() {
   console.log('>>>test1');
   unsubscribe(this.subscription, () => {
-  });   
-}  
+   });
+}
 
 }

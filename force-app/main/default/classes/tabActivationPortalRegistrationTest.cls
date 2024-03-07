@@ -6,11 +6,11 @@
 public class tabActivationPortalRegistrationTest {
      @TestSetup
     static void makeData(){
-
-        String contactRecordTypeId = [SELECT Id FROM RecordType WHERE SObjectType='Contact' AND DeveloperName='Consultant'].Id;
-        String AccTemplateRecordTypeCopy = Schema.SObjectType.Account_Template__c.getRecordTypeInfosByDeveloperName().get('Copy').getRecordTypeId();
+	
+        String contactRecordTypeId = Schema.SObjectType.Contact.getRecordTypeInfosByDeveloperName().get('Consultant').getRecordTypeId();
+		String AccTemplateRecordTypeCopy = Schema.SObjectType.Account_Template__c.getRecordTypeInfosByDeveloperName().get('Copy').getRecordTypeId();
         String AccTemplateRecordTypeMaster = Schema.SObjectType.Account_Template__c.getRecordTypeInfosByDeveloperName().get('MasterRT').getRecordTypeId();
-
+		
         Account a1 = new Account();
         a1.Hoya_Account_ID__c = 'TEST001';
         a1.Name = 'Test Account';
@@ -38,8 +38,8 @@ public class tabActivationPortalRegistrationTest {
         c1.RecordTypeId=contactRecordTypeId;
         c1.Portal_User_Name__c='test';
         insert c1;
-
-        Account_Template__c accTemplateMaster = new Account_Template__c();
+		
+		Account_Template__c accTemplateMaster = new Account_Template__c();
         accTemplateMaster.Name = 'Account Template Master';
         accTemplateMaster.RecordTypeId = AccTemplateRecordTypeMaster;
         insert accTemplateMaster;
@@ -50,30 +50,28 @@ public class tabActivationPortalRegistrationTest {
         accTemplate.RecordTypeId = AccTemplateRecordTypeCopy;
         accTemplate.Master_Template__c = accTemplateMaster.Id;
         insert accTemplate;
-
+		
     }
     @IsTest
     static void testmultipleClass1(){
-
         Test.StartTest();
-
         Account acc = [SELECT Id, Hoya_Account_ID__c, Name, Shop_Name__c, CurrencyIsoCode, OwnerId
                         FROM Account
                         WHERE Hoya_Account_ID__c = 'TEST001' LIMIT 1];
         Contact con = [SELECT Id, FirstName, LastName FROM Contact WHERE FirstName = 'test-TEST001' LIMIT 1];
-        Account_Template__c Account_Template = [SELECT Id, Name FROM Account_Template__c WHERE Account__c=:acc.Id];
-
+		Account_Template__c Account_Template = [SELECT Id, Name FROM Account_Template__c WHERE Account__c=:acc.Id];
+		
         tabActivationPortalRegistration.getRegistratedContact(acc.id);
-        tabActivationPortalRegistration.getAccountTemplateIdFromAccount(acc.Id);
+		tabActivationPortalRegistration.getAccountTemplateIdFromAccount(acc.Id);
+		 
+        Test.stopTest();
         
-        Test.StopTest();
-
-        try{
+		try{
             tabActivationPortalRegistration.getAccountTemplateIdFromAccount(null);
         }catch(Exception e){
             System.assertEquals(e.getMessage(), e.getMessage());
         }
-    }    
-    
+
+    }
 
 }

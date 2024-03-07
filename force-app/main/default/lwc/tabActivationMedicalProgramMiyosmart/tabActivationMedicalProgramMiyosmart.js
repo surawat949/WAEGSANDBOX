@@ -1,6 +1,6 @@
 import { LightningElement, api, track, wire } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
-
+																													   
 import Myo_Smart_AuthorizeDealer__c from '@salesforce/schema/Account.Myo_Smart_AuthorizeDealer__c'; 
 import Myo_Smart_TrainingComplete__c from '@salesforce/schema/Account.Myo_Smart_TrainingComplete__c'; 
 import Myo_Kids_Corner__c from '@salesforce/schema/Account.Myo_Kids_Corner__c'; 
@@ -72,7 +72,7 @@ export default class TabActivationMedicalProgramMiyosmart extends LightningEleme
             this.LastTraningDate = response;
             if(this.LastTraningDate != null && this.LastTraningDate != undefined && this.LastTraningDate !='') 
                 this.isTrainingComplete = true;
-            else{this.isTrainingComplete = false;}                
+            else{this.isTrainingComplete = false;}
         })
         .catch(error => {
             this.showToast('Error', 'Error', error.message);

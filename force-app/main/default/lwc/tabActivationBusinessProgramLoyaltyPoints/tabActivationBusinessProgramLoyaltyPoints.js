@@ -60,13 +60,12 @@ export default class TabActivationBusinessProgramLoyaltyPoints extends  Navigati
         // passed parameters are not yet received here
     }
     connectedCallback() {
-        console.log('child connected call-' + this.receivedId);
         this.getRelatedLoyaltyPoints();
         subscribe(this.CHANNEL_NAME, -1, this.refreshList).then(response => {
             this.subscription = response;
         });
         onError(error => {
-            console.error('Server Error--->'+error);
+            this.showToast('Error', 'Error', error.body.message);
         });
     }
 
@@ -103,8 +102,6 @@ export default class TabActivationBusinessProgramLoyaltyPoints extends  Navigati
         const defaultValues = encodeDefaultFieldValues({
             Account__c : this.receivedId
          });
- 
-         console.log(defaultValues);
  
          this[ NavigationMixin.Navigate]({
              type : 'standard__objectPage',

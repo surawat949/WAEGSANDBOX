@@ -52,7 +52,6 @@ public  class TabActivationMedicalProgramController {
                     else{
                         result = 'Duplicate';
                     }
-                    system.debug(result);
                     return result;
                 
             
@@ -80,19 +79,19 @@ public  class TabActivationMedicalProgramController {
     public static List<ContactNearby> getContactNearby(String recordId, Double distance, String firstSpeciality, String miyosmartAttitude, String totalPrescribingSegmentation, String miyosmartSegmentation){
         try {
             List<ContactNearby> dataList = new List<ContactNearby>();
-            System.debug('recordId **************** '+recordId);
+            
             Set<Id> uniqueIds = new Set<Id>();
             Double shippingLatitude =0.0;
             Double shippingLongitude = 0.0;
 
             for (Account eachRelation : [SELECT Id, Name,ShippingCity,RecordType.DeveloperName,Hoya_Account_ID__c,ShippingCountry,ShippingLatitude,ShippingLongitude,ShippingPostalCode,ShippingState, ShippingStreet,Phone FROM Account  Where Id= :recordId]) {
                 ContactNearby wrapper = new ContactNearby();
-                System.debug('eachRelation  '+eachRelation);
+                
                 if (eachRelation.ShippingPostalCode == null && eachRelation.ShippingLatitude == null) {
                     // skip the account due to lack of proper address
                     continue;    
                 }
-                System.debug('eachRelation  '+eachRelation);
+               
                 wrapper.accountId = eachRelation.Id;
                 wrapper.accountName = eachRelation.Name;
                 wrapper.accountHoyaAccId = eachRelation.Hoya_Account_ID__c;
@@ -103,12 +102,12 @@ public  class TabActivationMedicalProgramController {
                 wrapper.accountShippingPostalCode = eachRelation.ShippingPostalCode;
                 wrapper.accountPhone = eachRelation.Phone;
                 wrapper.accountRecType = eachRelation.RecordType.DeveloperName;
-                System.debug('wrapper1  '+wrapper);
+                
                 if(eachRelation.ShippingLatitude == null) { 
                     //continue;
                     wrapper.accountShippingLatitude = 0;
                     shippingLatitude = 0;
-                    System.debug('-- shippingLatitude--'+shippingLatitude);
+                   
                 } else {
                     wrapper.accountShippingLatitude = eachRelation.ShippingLatitude;
                     shippingLatitude = eachRelation.ShippingLatitude;
@@ -116,14 +115,12 @@ public  class TabActivationMedicalProgramController {
                 if(eachRelation.ShippingLongitude == null) { 
                     wrapper.accountShippingLongitude = 0;
                     shippingLongitude = 0;
-                    System.debug('-- shippingLongitude--'+shippingLongitude);
+                    
                 } else {
                     wrapper.accountShippingLongitude =eachRelation.ShippingLongitude;
                     shippingLongitude = eachRelation.ShippingLongitude;
                 }
-                System.debug('-- shippingLatitude111--'+shippingLatitude);
-                System.debug('-- shippingLongitude111--'+shippingLongitude);
-                System.debug('wrapper  '+wrapper);
+                
 
                 // duplication check set
                 uniqueIds.add(eachRelation.Id);
@@ -133,18 +130,15 @@ public  class TabActivationMedicalProgramController {
            
           String queryRelatedContacts = 'SELECT Id,Name,AccountId,Phone,RecordType.DeveloperName, Account.Hoya_Account_ID__c, MailingStreet, MailingCity, MailingState, MailingPostalCode, MailingCountry, MailingLatitude, MailingLongitude FROM Contact where '
             + 'DISTANCE(MailingAddress, GEOLOCATION('+shippingLatitude+', '+shippingLongitude+'), \'km\')<'+distance+' AND RecordType.DeveloperName = \'Opthalmologist\' '+' ';
-            system.debug('Query ------------- '+queryRelatedContacts);
-            system.debug('firstSpeciality '+firstSpeciality);
+          
           
             if(firstSpeciality!=null && firstSpeciality!='No Filter'&& firstSpeciality!='' ){
                 queryRelatedContacts +=' AND First_Speciality__c LIKE \''+firstSpeciality+'\'';
             }
-            system.debug('miyosmartAttitude '+miyosmartAttitude);
             if(miyosmartAttitude!=null && miyosmartAttitude!='No Filter'&& miyosmartAttitude!=''){
                 queryRelatedContacts += ' AND  MiyoSmart_Attitude__c LIKE \''+miyosmartAttitude+'\'';
             }
            
-            system.debug('miyosmartSegmentation '+miyosmartSegmentation);
             if(miyosmartSegmentation!=null && miyosmartSegmentation!='No Filter' && miyosmartSegmentation!=''){
                 if(miyosmartSegmentation == 'A'){
                     queryRelatedContacts +=' AND MiyoSmart_Segmentation__c  LIKE \'A_\' ';
@@ -167,7 +161,6 @@ public  class TabActivationMedicalProgramController {
                
 
             }
-            system.debug('totalPrescribingSegmentation '+totalPrescribingSegmentation);
             if(totalPrescribingSegmentation!=null && totalPrescribingSegmentation!='No Filter'&& totalPrescribingSegmentation!='' ){
                 if(totalPrescribingSegmentation == 'A'){
                     queryRelatedContacts +=' AND Total_Prescribing_Segmentation__c LIKE \'A_\' ';
@@ -184,9 +177,7 @@ public  class TabActivationMedicalProgramController {
                 }
 
             }
-           system.debug('Query ------------- '+queryRelatedContacts);
            List<Contact> prescribersNearBy = database.query(queryRelatedContacts);
-           system.debug('prescribersNearBy ------------- '+prescribersNearBy);
 
            for (Contact eachRelation : prescribersNearBy) {
 
@@ -196,8 +187,7 @@ public  class TabActivationMedicalProgramController {
                 
                 continue;    
             }
-            system.debug('contactWrapper ------------- '+contactWrapper);
-            system.debug('eachRelation ------------- '+eachRelation);
+           
            
             contactWrapper.contactName = eachRelation.Name;
             contactWrapper.contactId = eachRelation.Id;
@@ -210,7 +200,6 @@ public  class TabActivationMedicalProgramController {
             contactWrapper.accountPhone = eachRelation.Phone;
             contactWrapper.accountRecType = eachRelation.RecordType.DeveloperName;
 
-            system.debug('contactWrapper ------------- '+contactWrapper);
 
             if(eachRelation.MailingLatitude == null) { 
                 //continue;
@@ -223,12 +212,10 @@ public  class TabActivationMedicalProgramController {
             } else {
                 contactWrapper.accountShippingLongitude = eachRelation.MailingLongitude;
             }
-            system.debug('contactWrapper ------------- '+contactWrapper);
             dataList.add(contactWrapper);
         }
            
 
-        system.debug('dataList ------------- '+dataList);
             return dataList;
             
 

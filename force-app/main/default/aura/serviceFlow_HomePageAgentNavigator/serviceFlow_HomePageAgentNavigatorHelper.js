@@ -8,7 +8,7 @@
         
         var action = component.get("c.getUserData");
         action.setParams({
-            "recTypeName": "ServiceFlow Case Create",
+            "recTypeName": "serviceFlow_Chat",
             "accId": component.get("v.recordId")
         })
         action.setCallback(this, function (response) {
@@ -35,27 +35,13 @@
                 }
                 
                 component.set("v.fieldMapping",fieldMapping);
-                console.log(JSON.stringify(component.get("v.fieldMapping")));
                 component.set("v.currentUser", data["UserData"]);
                 component.set("v.recTypeId", data["recordTypeId"]);
                 component.set("v.currentAccount", data["accountData"]);
                 component.set("v.taskRTId", data["taskRecTypeId"]);
-                
-                const callStatus = [
-                    {'label': $A.get("$Label.c.serviceFlow_Closed"), 'value': $A.get("$Label.c.serviceFlow_Closed") },                                         
-                    {'label': $A.get("$Label.c.serviceFlow_In_Progress"), 'value': $A.get("$Label.c.serviceFlow_In_Progress") }                    
-                ];
-                if((countryName && countryName === "United Kingdom")){
-                    //callStatus.push({'label': "Awaiting customer", 'value': "Awaiting customer"});
-                }else{
-                    callStatus.push({'label': $A.get("$Label.c.serviceFlow_New"), 'value': $A.get("$Label.c.serviceFlow_New")});                    
-                }
-                component.set('v.callStatus', callStatus);
-                
                 component.set("v.isLoading",false);
             } else {
                 component.set("v.isLoading",false);
-                console.log(response + ' -- ' + response.getState() + ' -- ' + response.getReturnValue());
             }
         });
         $A.enqueueAction(action);                
@@ -79,23 +65,8 @@
         }else if(bound === "Outbound"){
             subject     = component.find("UISubject").get("v.value");
             sub_subject = component.find("UISubSubject").get("v.value");
-        }else if(bound === "CaseTask"){
-            subject     = component.find("Subject").get("v.value");
-            sub_subject = component.find("SubSubject").get("v.value");
-        }
-        console.log(bound+"***"+subject+"****"+sub_subject);
-        var pageRef = {
-            type: "standard__objectPage",
-            attributes: {
-                objectApiName: "Case",
-                actionName: "new"
-            },
-            state: {
-                recordTypeId: component.get("v.recTypeId")
-            }
         }
         if (isTempPicklist) {
-            //alert(component.find("UISubject").get("v.value"));
             var defaultFieldValues = {
                 DocumentID__c : component.get("v.selectedDocumentId"),
                 Description: component.find("Description").get("v.value"),
@@ -112,11 +83,6 @@
                 serviceFlow_ECP_patient_order_number__c: component.find("ecpPatient").get("v.value"),
                 serviceFlow_Hoya_reference_number__c: component.find("hoyaRef").get("v.value")
             };
-            if(component.find("Country").get("v.value") === "South Africa"){
-                defaultFieldValues.Status = "Arrived";
-            }
-            
-            //alert(JSON.stringify(defaultFieldValues));
         } else {
             var defaultFieldValues = {
                 DocumentID__c : component.get("v.selectedDocumentId"),
@@ -134,15 +100,68 @@
                 serviceFlow_ECP_patient_order_number__c: component.find("ecpPatient").get("v.value"),
                 serviceFlow_Hoya_reference_number__c: component.find("hoyaRef").get("v.value")
             };
-            if(component.find("Country").get("v.value") === "South Africa"){
-                defaultFieldValues.Status = "Arrived";
-            }
         }
-        pageRef.state.defaultFieldValues = component.find("pageRefUtils").encodeDefaultFieldValues(defaultFieldValues);
-        component.set("v.pageReference", pageRef);
-        helper.blankUtility(component,event,helper);
-        event.preventDefault();
-        navService.navigate(pageRef);
+        defaultFieldValues.Status = component.find("Status").get("v.value");
+        if(defaultFieldValues.Status === "Closed" || defaultFieldValues.Status === "Waiting on Customer"){
+            defaultFieldValues.sobjectType = "Case";
+            defaultFieldValues.RecordTypeId = component.get("v.recTypeId");
+            component.set("v.isLoading",true);
+            var action = component.get("c.createCaseUtility");
+            action.setParams({
+                caseRec : defaultFieldValues
+            })
+            action.setCallback(this, function (response) {
+                var state = response.getState();
+                if (state === "SUCCESS") {
+                    var data = response.getReturnValue();
+                    
+                    var toastEvent = $A.get("e.force:showToast");
+                    toastEvent.setParams({
+                        mode: 'sticky',
+                        type : 'success',
+                        title: 'Case Alert!',
+                        message: 'Case Alert!',
+                        messageTemplate: '{0} was created! See it {1}!',
+                        messageTemplateData: ['Case', {
+                            url: '/lightning/r/Case/'+data.Id+'/view',
+                            label: 'here',
+                        }]
+                    });
+                    toastEvent.fire();
+                    $A.get('e.force:refreshView').fire();
+                    helper.blankUtility(component,event,helper);
+                    //window.location.reload(true);
+                    component.set("v.isLoading",false);
+                } else {
+                    var toastEvent = $A.get("e.force:showToast");
+                    toastEvent.setParams({
+                        "title": "Error!",
+                        "type" : "error",
+                        "message": "Error occured, please try again"
+                    });
+                    toastEvent.fire();
+                    component.set("v.isLoading",false);
+                }
+            });
+            $A.enqueueAction(action);  
+        }else{
+            var navService = component.find("navService");
+            var pageRef = {
+                type: "standard__objectPage",
+                attributes: {
+                    objectApiName: "Case",
+                    actionName: "new"
+                },
+                state: {
+                    recordTypeId: component.get("v.recTypeId")
+                }
+            }
+            pageRef.state.defaultFieldValues = component.find("pageRefUtils").encodeDefaultFieldValues(defaultFieldValues);
+            component.set("v.pageReference", pageRef);
+            helper.blankUtility(component,event,helper);
+            event.preventDefault();
+            navService.navigate(pageRef);
+        }
     },
     blankUtility : function(component,event,helper){
         component.find("accountLookupValue").set("v.selectRecordName","");
@@ -161,170 +180,11 @@
             component.find("Number_of_Jobs").set("v.value","");
         }        
     },
-    createTask: function (component, event, helper) {
-        console.log('creattetask helper');
-        var navService = component.find("navService");
-        var pageRef = {
-            type: "standard__objectPage",
-            attributes: {
-                objectApiName: "Task",
-                actionName: "new"
-            },
-            state: {
-                recordTypeId: component.get("v.taskRTId")
-            }
-        }        
-        console.log('pageRef : ' + JSON.stringify(pageRef));
-        let userCountry = component.find("Country").get("v.value");
-        let numberOfJobs = "";
-        if(userCountry === "USA"){
-            numberOfJobs = component.find("Number_of_Jobs").get("v.value");
-        }
-        var bound = component.get("v.selectedBound")
-        let subject = "";
-        let sub_subject = "";
-        if(bound === "Inbound"){
-            subject     = component.find("Subject").get("v.value");
-            sub_subject = component.find("SubSubject").get("v.value");
-        }else if(bound === "Outbound"){
-            subject     = component.find("UISubject").get("v.value");
-            sub_subject = component.find("UISubSubject").get("v.value");
-        }else if(bound === "CaseTask"){
-            subject     = component.find("Subject").get("v.value");
-            sub_subject = component.find("SubSubject").get("v.value");
-        }
-        console.log(bound+"***"+subject+"****"+sub_subject);
-        var defaultFieldValues = {
-            WhatId: component.get("v.selectRecordId"),
-            Actions_Needed__c : component.get("v.selectedDocumentId"),
-            Account__c: component.get("v.selectRecordId"),
-            serviceFlow_Origin__c: component.find("Origin").get("v.value"),
-            SFlow_Subject__c: subject,
-            SFlow_Sub_Subject__c: sub_subject,
-            serviceFlow_Number_of_Jobs__c : numberOfJobs,
-            Description: component.find("Description").get("v.value"),
-            serviceFlow_Origin__c: component.find("Origin").get("v.value"),
-            serviceFlow_User_Country__c: component.find("Country").get("v.value"),
-            Subject: subject,
-            serviceFlow_ECP_patient_order_number__c: component.find("ecpPatient").get("v.value"),
-            serviceFlow_Hoya_reference_number__c: component.find("hoyaRef").get("v.value") 
-        };
-        var action = component.get("c.createTaskUtility");
-        action.setParams({
-            "taskCallData": JSON.stringify(defaultFieldValues)
-        })
-        action.setCallback(this, function (response) {
-            var state = response.getState();
-            if (state === "SUCCESS") {
-                let callId = response.getReturnValue();
-                var editRecordEvent = $A.get("e.force:editRecord");
-                editRecordEvent.setParams({
-                    "recordId": callId
-                });
-                editRecordEvent.fire();
-                helper.blankUtility(component,event,helper);
-            } else {
-                console.log(response + ' -- ' + response.getState() + ' -- ' + response.getReturnValue());
-            }
-            component.set("v.isLoading",false);            
-            component.set("v.isCall",false);
-        });
-        $A.enqueueAction(action);    
-        
-    },
     handleChange: function (component, event, helper, callType) {
         component.set("v.selectedCallType", callType);
     },
     handleChangeStatus: function (component, event, helper, callStatus) {
         component.set("v.selectedCallStatus", callStatus);
-    },
-    createCall: function (component, event, helper, isCallTypeStatic) {
-        var callId;
-        if($A.util.isEmpty(component.get("v.selectedCallType"))){
-            component.set("v.selectedCallType", "Inbound");
-        }
-        let selectedCallStatus = component.get("v.selectedCallStatus");
-        if(isCallTypeStatic){
-            selectedCallStatus = "Closed";
-        }
-        
-        var bound = component.get("v.selectedBound");
-        let subject = "";
-        let sub_subject = "";
-        if(bound === "Inbound"){
-            subject     = component.find("Subject").get("v.value");
-            sub_subject = component.find("SubSubject").get("v.value");
-        }else if(bound === "Outbound"){
-            subject     = component.find("UISubject").get("v.value");
-            sub_subject = component.find("UISubSubject").get("v.value");
-        }else if(bound === "CaseTask"){
-            subject     = component.find("Subject").get("v.value");
-            sub_subject = component.find("SubSubject").get("v.value");
-        }
-        let userCountry = component.find("Country").get("v.value");
-        let numberOfJobs = "";
-        if(userCountry === "USA"){
-            numberOfJobs = component.find("Number_of_Jobs").get("v.value");
-        }
-        var callData = {
-            "WhatId": component.get("v.selectRecordId"),
-            Actions_Needed__c : component.get("v.selectedDocumentId"),
-            "Account__c": component.get("v.selectRecordId"),
-            "SFlow_Call_Type__c": component.find("radioGroup").get("v.value"),
-            "CallType": component.find("radioGroup").get("v.value"),
-            "SFlow_Subject__c": subject,
-            "SFlow_Sub_Subject__c": sub_subject,
-            "serviceFlow_Origin__c": component.find("Origin").get("v.value"),
-            "serviceFlow_Number_of_Jobs__c" : numberOfJobs,
-            "Description":component.find("Description").get("v.value"),
-            "serviceFlow_User_Country__c":component.find("Country").get("v.value"),
-            "Subject": subject,
-            "TaskSubtype": "Call",
-            "Status": selectedCallStatus,
-            "serviceFlow_ECP_patient_order_number__c": component.find("ecpPatient").get("v.value"),
-            "serviceFlow_Hoya_reference_number__c": component.find("hoyaRef").get("v.value")
-        };
-        var action = component.get("c.createTaskforCall");
-        action.setParams({
-            "taskCallData": JSON.stringify(callData)
-        })
-        action.setCallback(this, function (response) {
-            var state = response.getState();
-            if (state === "SUCCESS") {
-                callId = response.getReturnValue();
-                
-                if(component.get("v.selectedCallStatus") === "Closed"){
-                    var urlEvent = $A.get("e.force:navigateToURL");
-                    urlEvent.setParams({
-                        "url": "/lightning/page/home"
-                    });
-                    urlEvent.fire();
-                    window.location.reload(true);
-                }else{
-                    var navService = component.find("navService");
-                    var pageRef = {
-                        type: "standard__recordPage",
-                        attributes: {
-                            objectApiName: "Task",
-                            recordId: callId,
-                            actionName: "view"
-                        },
-                        state: {
-                        }
-                    };
-                    console.log(JSON.stringify(pageRef));
-                    component.set("v.pageReference", pageRef);
-                    helper.blankUtility(component,event,helper);
-                    event.preventDefault();
-                    navService.navigate(pageRef);
-                }
-            } else {
-                console.log(response + ' -- ' + response.getState() + ' -- ' + response.getReturnValue());
-            }
-            component.set("v.isLoading",false);            
-            component.set("v.isCall",false);
-        });
-        $A.enqueueAction(action);        
     },
     handleToggleModal: function (component, event, helper, isCallOpen, isCreateRecordOpen) {
         component.set("v.isCall", isCallOpen);
@@ -356,46 +216,7 @@
                     component.set("v.subjectRequired", false);
                 }), 5000
             );
-        } else if (buttonName == "Call" && bound == "Inbound" && $A.util.isEmpty(Subject)) {
-            console.log('subject not selected');
-            component.set("v.subjectRequired", true);
-            window.setTimeout(
-                $A.getCallback(function() {
-                    component.set("v.subjectRequired", false);
-                }), 5000
-            );
-        }else if (buttonName == "Call" && bound == "Outbound" && $A.util.isEmpty(UISubject)) {
-            console.log('subject not selected');
-            component.set("v.subjectRequired", true);
-            window.setTimeout(
-                $A.getCallback(function() {
-                    component.set("v.subjectRequired", false);
-                }), 5000
-            );
-        } else if (buttonName == "Call" && bound == "Outbound" && $A.util.isEmpty(UISubSubject) && UISubSubject != "Other" && userCountry === "United Kingdom") {
-            console.log('subject not selected');
-            component.set("v.subSubjectRequired", true);
-            window.setTimeout(
-                $A.getCallback(function() {
-                    component.set("v.subSubjectRequired", false);
-                }), 5000
-            );
-        }else if (buttonName == "Call" && bound == "Inbound" && $A.util.isEmpty(SubSubject) && Subject != "Other" && userCountry != "USA") {
-            console.log('subject not selected');
-            component.set("v.subSubjectRequired", true);
-            window.setTimeout(
-                $A.getCallback(function() {
-                    component.set("v.subSubjectRequired", false);
-                }), 5000
-            );
-        } else if (radio == "CaseTask" && $A.util.isEmpty(SubSubject) && userCountry != "USA") {
-            component.set("v.subSubjectRequired", true);
-            window.setTimeout(
-                $A.getCallback(function() {
-                    component.set("v.subSubjectRequired", false);
-                }), 5000
-            );
-        } else if ($A.util.isEmpty(CaseOrigin)) {
+        }else if ($A.util.isEmpty(CaseOrigin)) {
             component.set("v.originRequired", true);
             window.setTimeout(
                 $A.getCallback(function() {
@@ -403,19 +224,7 @@
                 }), 5000
             );
         } else {
-            if (buttonName == "Case") {
-                this.createCase(component, event, helper);
-                //this.handleToggleModal(component, event, helper, false, true);
-            } else if (buttonName == "Task") {
-                this.createTask(component, event, helper);
-            } else if (buttonName == "Call") {
-                let userCountry = component.find("Country").get("v.value");
-                if(userCountry === "South Africa"){
-                    helper.createCall(component, event, helper, true);
-                }else{
-                    this.handleToggleModal(component, event, helper, true, false);
-                }
-            }
+            this.createCase(component, event, helper);
         }
     },
     resetErrors:  function (component, event, helper) {

@@ -38,14 +38,12 @@ export default class TabActivation extends LightningElement {
         portalnameTab
     }
     connectedCallback() {
-        console.log('parent connected callback call' + this.recordId);
         getSeikoData({accountId : this.recordId})
         .then(response => {
             this.seikoData = response.Id;
-            console.log(this.seikoData);
         })
         .catch(error => {
-            console.log(error);
+            //console.log(error);
         })
     }
 

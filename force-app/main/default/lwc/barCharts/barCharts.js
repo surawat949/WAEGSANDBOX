@@ -12,7 +12,8 @@ export default class BarCharts extends LightningElement {
     @api recommendedVisitsPerSubArea;
     @api ownerName;
     myLabel;
-  
+    recommendedVisitsDataTemp = [];
+    recommendedVisitsPerSubAreaTemp = [];
     label={
         Recommended_Visits,Recommended_Visits_per_Sub_Area
     }
@@ -32,6 +33,10 @@ export default class BarCharts extends LightningElement {
         ]).then(()=>{
             console.log("chartJs loaded succesfully")
             this.isChartJsInitialized = true
+            this.recommendedVisitsDataTemp = this.recommendedVisitsData;
+            this.recommendedVisitsPerSubAreaTemp = this.recommendedVisitsPerSubArea;
+            this.recommendedVisitsData= JSON.parse(JSON.stringify(this.recommendedVisitsDataTemp));
+            this.recommendedVisitsPerSubArea= JSON.parse(JSON.stringify(this.recommendedVisitsPerSubAreaTemp));
             this.loadCharts()
         }).catch(error=>{
             console.error('Error while loading the chartJS'+error)

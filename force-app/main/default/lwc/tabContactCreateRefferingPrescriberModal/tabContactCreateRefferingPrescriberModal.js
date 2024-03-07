@@ -17,7 +17,6 @@ export default class TabContactCreateRefferingPrescriberModal extends LightningE
 
     handleLookupSelectionAccounContact(event) {
         if (event.detail.selectedRecord != undefined) {
-            console.log('Select Account Contact id value on parent component is ' + JSON.stringify(event.detail.selectedRecord.Id));
             this.contactId = event.detail.selectedRecord.Id;
             this.template.querySelector('lightning-input[data-my-id=form-input-2]').value = event.detail.selectedRecord.Id;
         }
@@ -25,12 +24,11 @@ export default class TabContactCreateRefferingPrescriberModal extends LightningE
     }
     contactCH(event) {
         this.contactId = event.target.value;
-        console.log('XXX Selected Contact Id == > ' + event.target.value);
+        
     }
     handleSave() {
         createAccountContactRel({accountId: this.receivedId, contactId: this.contactId}).then(result => {
             if (result == 'Success') {
-                console.log(' Created');
                 const evt = new ShowToastEvent({title: "Success", message: "New Prescriber added", variant: "success"});
                 this.dispatchEvent(evt);
                 let ev = new CustomEvent('savesuccess');
@@ -50,7 +48,7 @@ export default class TabContactCreateRefferingPrescriberModal extends LightningE
                 this.dispatchEvent(evt);
             }
             this.message = 'Error Creating ';
-            console.log('Error during  creation');
+			
         });
 
     }

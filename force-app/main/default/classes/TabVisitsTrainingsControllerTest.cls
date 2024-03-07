@@ -40,9 +40,11 @@ public class TabVisitsTrainingsControllerTest {
     
     @isTest
     static void campTest(){
+        Test.StartTest();
         Account a=[Select Id from account Limit 1];
         TabVisitsTrainingsController.getTrainingRecords(a.Id);
         TabVisitsTrainingsController.getElearningRecords(a.Id);
+        Test.StopTest();
     }
     
 }

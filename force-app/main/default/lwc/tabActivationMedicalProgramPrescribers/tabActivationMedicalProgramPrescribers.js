@@ -376,7 +376,7 @@ export default class TabActivationMedicalProgramPrescribers extends LightningEle
             miyosmartSegmentation: this.miyosmartSegmentationvalue
         }).then(result => { 
             this.mapMarker = [];
-            if (result != undefined) 
+            if (result.length > 0){ 
                 for (var i = 0; i < result.length; i++) {
                     if (i == 0) { // show star on map
                         this.mapMarker = [
@@ -428,16 +428,19 @@ export default class TabActivationMedicalProgramPrescribers extends LightningEle
                 }
             
 
-            this.vCenter = {
-                location: {
-                    Latitude: result[0].accountShippingLatitude,
-                    Longitude: result[0].accountShippingLongitude,
-                    Street: result[0].accountShippingStreet,
-                    City: result[0].accountShippingCity,
-                    State: result[0].accountShippingState,
-                    Country: result[0].accountShippingCountry,
-                    PostalCode: result[0].accountShippingPostalCode
-                }
+				this.vCenter = {
+					location: {
+						Latitude: result[0].accountShippingLatitude,
+						Longitude: result[0].accountShippingLongitude,
+						Street: result[0].accountShippingStreet,
+						City: result[0].accountShippingCity,
+						State: result[0].accountShippingState,
+						Country: result[0].accountShippingCountry,
+						PostalCode: result[0].accountShippingPostalCode
+					}
+				}
+			}else{
+                this.showToastMethod('Warning', 'Address details missing', 'Warning', 'dismissible');
             }
 
         }).catch(error => {

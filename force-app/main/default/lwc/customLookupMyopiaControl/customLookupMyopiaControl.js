@@ -1,4 +1,5 @@
 import { LightningElement, wire, api } from 'lwc';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 import { RefreshEvent } from 'lightning/refresh';
 import { refreshApex } from '@salesforce/apex';
@@ -52,7 +53,8 @@ export default class CustomLookupMyopiaControl extends LightningElement {
              //console.log(this.recordCriteria); 
          }
         else if (error) {
-            console.log('(error---> ' + JSON.stringify(error));
+            this.showToast('Error', 'Error', error.message);
+
          }
     };
         
@@ -105,7 +107,6 @@ export default class CustomLookupMyopiaControl extends LightningElement {
     }
     // send selected lookup record to parent component using custom event
     lookupUpdateParenthandler(value){
-        console.log(value);
         const oEvent = new CustomEvent('lookupupdate',
                                     {
                                         'detail': {selectedRecord: value}
@@ -116,11 +117,20 @@ export default class CustomLookupMyopiaControl extends LightningElement {
 
     updateRecordView(){
         setTimeout(() => {
-            //eval("$A.get('e.force:refreshView').fire();");
+            
             this.showLoading = false;
             this.isRender = true;            
         },30000);
         refreshApex(this.searchDefaultRecord);
         this.dispatchEvent(new RefreshEvent());
     }
+    showToast(title, variant, message) {
+        this.dispatchEvent(
+            new ShowToastEvent({
+                title: title,
+                message: message,
+                variant: variant,
+            }),
+        );
+    } 
 }

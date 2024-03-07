@@ -111,9 +111,9 @@ export default class TabMVCActivationMiyosmart extends NavigationMixin(Lightning
                 res.Brand = res.brand;
                 res.AccountId = '/' + res.accountId;
                 res.AccountName = res.accountName;
-                res.ShopStreet = res.shoppingStreet;
+                res.ShopStreet = res.shopStreet;
                 res.PostalCode = res.postalCode;
-                res.City = res.shoppingCity;
+                res.City = res.shopCity;
                 res.MiyoQtyL12Mo = res.miyo12MoQty;
                 res.MiyoQtylastMo = res.miyoLastMoQty;
             });

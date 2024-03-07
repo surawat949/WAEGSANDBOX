@@ -7,7 +7,8 @@ import { refreshApex } from '@salesforce/apex';
 //Custom Labels
 import SalesTarget from '@salesforce/label/c.AccountVisitTabSalesTarget';
 import MonthlyGrossSales from '@salesforce/label/c.AccountMonthlySalesFigures';
-import LensesGrossSales from '@salesforce/label/c.AccountGrossSalesHeader';
+import LensesGrossSales from '@salesforce/label/c.Gross_Sales';
+import FiscalYear from '@salesforce/label/c.Fiscal_Year';
 import MonthlyObjective from '@salesforce/label/c.AccountVisitTabMonthlyVsSeiko';
 import Last12MoVsObjective from '@salesforce/label/c.AccountVisitTabAnnualVsSeiko';
 import Lenses from '@salesforce/label/c.AccountLenses';
@@ -15,6 +16,7 @@ import Frames from '@salesforce/label/c.AccountFrames';
 import ContactLenses from '@salesforce/label/c.AccountContactLenses';
 import Instruments from '@salesforce/label/c.AccountInstruments';
 import Others from '@salesforce/label/c.AccountOther';
+import CurrencyIn from '@salesforce/label/c.Currency_In';
 import TotalFY from '@salesforce/label/c.AccountTotalFy';
 import TotalLFY from '@salesforce/label/c.AccountTotalLfy';
 import Variation from '@salesforce/label/c.AccountVariation';
@@ -86,13 +88,13 @@ export default class TabStatisticsGrossSales extends LightningElement {
     salesObjective;
     Revenue;
     CurrencyCode;    
-    field = AnnualObjEcpAgreement;
+    field = [AnnualObjEcpAgreement];
     forecastCFY = [];
     CFYvsForecastVariation =[];
     ForecastvsLFY = [];
     maxMonth;
     custLabel = {
-        SalesTarget,MonthlyGrossSales,LensesGrossSales,Volumes,
+        SalesTarget,MonthlyGrossSales,LensesGrossSales,Volumes,CurrencyIn,FiscalYear,
         MonthlyObjective,Last12MoVsObjective,Save,LensSalesForecast,
         Lenses,Frames,ContactLenses,Instruments,Others,TotalFY,TotalLFY,Variation,LensesLFY,LensesVariation
     }

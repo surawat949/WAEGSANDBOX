@@ -34,7 +34,7 @@ public with sharing class TabVisitsEcpNearby {
             String critSvsNetwork = '';
 
             if(SegmentationBox!=null && SegmentationBox!=''){
-                critSegmentation = ' and Segmentation_Box__c LIKE \'%'+SegmentationBox+'%\' ';
+                critSegmentation = ' and Segmentation_Net__c LIKE \'%'+SegmentationBox+'%\' ';
             }
 
             if(FirstLocalCampetitor!=null && FirstLocalCampetitor!=''){
@@ -46,7 +46,7 @@ public with sharing class TabVisitsEcpNearby {
             }
 
             Account acc = [SELECT Id, Hoya_Account_ID__c, Name, ShippingStreet, ShippingCity, ShippingState,
-                                ShippingPostalCode, ShippingCountry, Segmentation_Box__c, ShippingLatitude, ShippingLongitude, 
+                                ShippingPostalCode, ShippingCountry, Segmentation_Net__c, ShippingLatitude, ShippingLongitude,
                                 First_Competitor_local_name__c, Seiko_Network__c, Brand__c FROM Account
                                 WHERE Id=:recordId];
             result.add(acc);
@@ -58,10 +58,10 @@ public with sharing class TabVisitsEcpNearby {
             if(acc.ShippingLatitude==null){latitude = 0;}
             if(acc.ShippingLongitude==null){longitude = 0;}
 
-            String soql = 'SELECT Id, Hoya_Account_ID__c, Name, Segmentation_Box__c, First_Competitor_local_name__c, '
+            String soql = 'SELECT Id, Hoya_Account_ID__c, Name, Segmentation_Net__c, First_Competitor_local_name__c, '
                             +'ShippingStreet, ShippingCity, ShippingState, ShippingPostalCode, ShippingCountry, '
                             +'ShippingLongitude, ShippingLatitude, Brand__c FROM Account WHERE RecordTypeId IN: getRecId '
-                            +'AND Potential__c>='+PotentialMin.longValue()+' AND Potential__c<='+PotentialMax.longValue()+' AND '
+                            +'AND Strategic_Value_Net_Sales__c>='+PotentialMin.longValue()+' AND Strategic_Value_Net_Sales__c<='+PotentialMax.longValue()+' AND '
                             +'DISTANCE(ShippingAddress, GEOLOCATION('+latitude+', '+longitude+'), \'km\')<'+distance +
                             critSegmentation + critFstCompetitor + critSvsNetwork + ' AND Hoya_Account_ID__c != \''+accId+'\' ORDER BY Name ASC LIMIT 500';
             

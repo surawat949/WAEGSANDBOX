@@ -26,6 +26,8 @@ public with sharing class SendRegistrationInvite_Controller {
                 for(Assign_default_permissions__mdt comm : [SELECT Id, Account_Portal__c,From_Email_Address__c FROM Assign_default_permissions__mdt]){
                     mapCommunicationEmail.put(comm.Account_Portal__c,comm);
                 }
+                System.debug('Account portal'+c.Account_Portal__c);
+                System.debug('Invite portal'+c.Invite_Portal_Email__c);
                 String template;
                 if(c.Account_Portal__c != null && c.Account_Portal__c.contains('seiko')){
                     template = 'SEIKO_Invitation_Email_ECP';
@@ -50,8 +52,12 @@ public with sharing class SendRegistrationInvite_Controller {
                 else if(c.Invite_Portal_Email__c == 'Costco Portal') {  
                         template = 'Costco_New_Employee_Registration'; 	                    
                 }
+                else if(c.Account_Portal__c == 'exportportal' && c.Invite_Portal_Email__c == 'HOYA Learning Center')
+                {
+                        template = 'HLC_Registration_Export_Portal';    
+                }
                 else {
-                    template = 'New_Employee_Registration';
+                        template = 'New_Employee_Registration';
                 }
                 
                 System.debug('template: '+template);

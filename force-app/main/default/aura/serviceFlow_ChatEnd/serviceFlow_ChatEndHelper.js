@@ -4,7 +4,7 @@
         var action = component.get("c.getUserData");
         action.setParams({
             "recTypeName": "serviceFlow_Chat",
-            "accId": '0010Q00001bPzy5'
+            "recordId": component.get("v.recordId")
         })
         action.setCallback(this, function (response) {
             var state = response.getState();
@@ -27,6 +27,8 @@
                         'uiSubSubject' : countryName ? 'UI_Sub_Subject_'+countryName.replace(/\s/g, '_')+'__c' : 'serviceFlow_UI_Sub_Subject__c'
                     };
                 } 	
+                
+                component.set("v.openCaseList",data["openCases"]);
                 component.set("v.fieldMapping",fieldMapping);
                 component.set("v.currentUser", data["UserData"]);
                 component.set("v.recTypeId", data["recordTypeId"]);
@@ -38,7 +40,7 @@
         });
         $A.enqueueAction(action);                
     },
-    createCase: function (component, event, helper) {
+    createCase: function (component, event, helper,existingRecordId) {
         debugger;
         var accData = component.get("v.currentAccount");
         var isTempPicklist = component.get("v.isTempPicklist");
@@ -79,12 +81,13 @@
                 Origin: component.find("Origin").get("v.value"),
                 serviceFlow_Number_of_Jobs__c : numberOfJobs,
                 serviceFlow_Origin__c: component.find("Origin").get("v.value"),
-                AccountId: '0010Q00001bPzy5',    
+                AccountId: accData.Id,    
                 RecordTypeId: component.get("v.recTypeId"),
                 serviceFlow_Account_Shop_email_address__c: accData.Shop_email_address__c,
                 serviceFlow_Account_Shop_number__c: accData.Phone,
                 serviceFlow_ECP_patient_order_number__c: component.find("ecpPatient").get("v.value"),
-                serviceFlow_Hoya_reference_number__c: component.find("hoyaRef").get("v.value")
+                serviceFlow_Hoya_reference_number__c: component.find("hoyaRef").get("v.value"),
+                Status :component.find("Status").get("v.value")
             };
             if(component.find("Country").get("v.value") === "South Africa"){
                 defaultFieldValues.Status = "Arrived";
@@ -99,16 +102,21 @@
                 Origin: component.find("Origin").get("v.value"),
                 serviceFlow_Number_of_Jobs__c : numberOfJobs,
                 serviceFlow_Origin__c: component.find("Origin").get("v.value"),
-                AccountId: '0010Q00001bPzy5',
+                AccountId: accData.Id, 
                 RecordTypeId: component.get("v.recTypeId"),
                 User_country__c: component.find("Country").get("v.value"),
                 serviceFlow_Account_Shop_email_address__c: accData.Shop_email_address__c,
                 serviceFlow_Account_Shop_number__c: accData.Phone,
                 serviceFlow_ECP_patient_order_number__c: component.find("ecpPatient").get("v.value"),
-                serviceFlow_Hoya_reference_number__c: component.find("hoyaRef").get("v.value")
+                serviceFlow_Hoya_reference_number__c: component.find("hoyaRef").get("v.value"),
+                Status :component.find("Status").get("v.value")
             };
             if(component.find("Country").get("v.value") === "South Africa"){
                 defaultFieldValues.Status = "Arrived";
+            }
+            defaultFieldValues.sobjectType = "Case";
+            if(existingRecordId){
+                defaultFieldValues.Id = existingRecordId;
             }
         }
         /*
@@ -118,6 +126,7 @@
         event.preventDefault();
         navService.navigate(pageRef);
         */
+        console.log("selected object******"+JSON.stringify(defaultFieldValues))
         component.set("v.isLoading",true);
         var action = component.get("c.createCaseRecord");
         action.setParams({
@@ -139,9 +148,9 @@
                 toastEvent.setParams({
                     mode: 'sticky',
                     type : 'success',
-                    title: 'Create Alert!',
-                    message: 'Create Alert!',
-                    messageTemplate: '{0} was created! See it {1}!',
+                    title: 'Case Alert!',
+                    message: 'Case Alert!',
+                    messageTemplate: '{0} was created or updated! See it {1}!',
                     messageTemplateData: ['Case', {
                         url: '/lightning/r/Case/'+caseRecId+'/view',
                         label: 'here',
@@ -176,7 +185,7 @@
             component.find("Number_of_Jobs").set("v.value","");
         } 
     },
-    validateInputFields: function (component, event, helper, buttonName) {
+    validateInputFields: function (component, event, helper, buttonName,existingRecordId) {
         var Subject = component.find("Subject").get("v.value");
         var SubSubject = component.find("SubSubject").get("v.value");
         var CaseOrigin = component.find("Origin").get("v.value");
@@ -200,7 +209,7 @@
                 }), 5000
             );
         } else {
-            this.createCase(component, event, helper);
+            this.createCase(component, event, helper,existingRecordId);
         }
     },
     resetErrors:  function (component, event, helper) {

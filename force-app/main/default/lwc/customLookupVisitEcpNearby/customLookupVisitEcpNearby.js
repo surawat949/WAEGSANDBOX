@@ -10,7 +10,7 @@ import searchFirstCompetitor from '@salesforce/apex/TabVisitsEcpNearby.searchFir
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 export default class CustomLookupVisitEcpNearby extends LightningElement {
-    // public properties with initial default values 
+    // public properties with initial default values - custom lookup account
     @api label = 'label';
     @api placeholder = 'search...'; 
     @api iconName = 'standard:account';
@@ -118,7 +118,7 @@ export default class CustomLookupVisitEcpNearby extends LightningElement {
 
     updateRecordView(){
         setTimeout(() => {
-            //eval("$A.get('e.force:refreshView').fire();");
+            
             this.showLoading = false;
             this.isRender = true;            
         },30000);

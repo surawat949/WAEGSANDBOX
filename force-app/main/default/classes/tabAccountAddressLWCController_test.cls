@@ -11,11 +11,7 @@ public with sharing class tabAccountAddressLWCController_test {
 
     @TestSetup
     static void makeData(){
-        Opportunity_Custom__c oppdefault = new Opportunity_Custom__c();
-        oppdefault.Name = 'DEFAULT';
-        oppdefault.Company_Name__c = 'DEFAULT';
-        insert oppdefault;
-        
+
         Profile p = [SELECT Id FROM Profile WHERE Name ='System Administrator'];
 
         String accCopy = Schema.SObjectType.Account_Template__c.getRecordTypeInfosByDeveloperName().get('Copy').getRecordTypeId();
@@ -119,7 +115,7 @@ public with sharing class tabAccountAddressLWCController_test {
         tabAccountAddressLWCController.searchLookupData('TEST', 'Contact', ' AND Account.Hoya_Account_ID__c !=null', acc.Id);
         tabAccountAddressLWCController.searchLookupAccountData('test', 'Account', acc.Id);
         tabAccountAddressLWCController.searchLookupAccountDefaultRecordData(acc.Id, 'Account');
-        tabAccountAddressLWCController.getTaskSFDCStandardTask();
+		
 
         List<String> newList = new List<String>();
         newList.add('Id');
@@ -144,5 +140,6 @@ public with sharing class tabAccountAddressLWCController_test {
         }catch(Exception e){
             System.assertEquals(e.getMessage(), e.getMessage());
         }
+		
     }
 }
