@@ -1,6 +1,8 @@
 <apex:page showHeader="false" sidebar="false"  docType="html-5.0" Controller="UserSalesPerformanceController" lightningStylesheets="true">
     <apex:slds />
     <apex:outputPanel rendered="{!budget!=null}">
+        <b><apex:outputText > Team (or User) Sales Performance </apex:outputText> </b> 
+        <br/>
         <div class="table-responsive">
             <table class="list" width="100%">
                 <thead class="rich-table-thead">
@@ -103,30 +105,6 @@
                         <td class="dataCell"><apex:outputText value="{0,number, ###,###,##0.0}"><apex:param value="{!ROUND(budget.Sales_YTD_vsLY__c,1)}"/></apex:outputText>%</td>
                     </tr>
                 </tbody>
-            </table>
-        </div>
-    </apex:outputPanel>
-    <apex:outputPanel rendered="{!teamBudget!=null}">
-        <div class="table-responsive">
-            <table class="list" width="100%">
-                <thead class="rich-table-thead">
-                    <tr class="headerRow">
-                        <th class="headerRow"><apex:outputLabel value="Monthly Performance" style="font-weight:bold"/></th>
-                        <th class="headerRow"><apex:outputLabel value="APR" style="font-weight:bold"/></th>
-                        <th class="headerRow"><apex:outputLabel value="MAY" style="font-weight:bold"/></th>
-                        <th class="headerRow"><apex:outputLabel value="JUN" style="font-weight:bold"/></th>
-                        <th class="headerRow"><apex:outputLabel value="JUL" style="font-weight:bold"/></th>
-                        <th class="headerRow"><apex:outputLabel value="AUG" style="font-weight:bold"/></th>
-                        <th class="headerRow"><apex:outputLabel value="SEP" style="font-weight:bold"/></th>
-                        <th class="headerRow"><apex:outputLabel value="OCT" style="font-weight:bold"/></th>
-                        <th class="headerRow"><apex:outputLabel value="NOV" style="font-weight:bold"/></th>
-                        <th class="headerRow"><apex:outputLabel value="DEC" style="font-weight:bold"/></th>
-                        <th class="headerRow"><apex:outputLabel value="JAN" style="font-weight:bold"/></th>
-                        <th class="headerRow"><apex:outputLabel value="FEB" style="font-weight:bold"/></th>
-                        <th class="headerRow"><apex:outputLabel value="MAR" style="font-weight:bold"/></th>
-                        <th class="headerRow"><apex:outputLabel value="TOT YTD" style="font-weight:bold"/></th>
-                    </tr>
-                </thead>
             </table>
         </div>
     </apex:outputPanel>

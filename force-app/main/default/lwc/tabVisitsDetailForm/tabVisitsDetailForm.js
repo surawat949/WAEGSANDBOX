@@ -21,6 +21,11 @@ import Monthly_Incremental from '@salesforce/label/c.Monthly_Incremental';
 import Visit_Objective_followUp from '@salesforce/schema/Visits__c.Visit_Objective_follow_up_notes__c';
 import Visit_Planning_Tracker__c from '@salesforce/schema/Visits__c.Visit_Planning_Tracker__c';
 import Visit_Preparation_Tracker__c from '@salesforce/schema/Visits__c.Visit_Preparation_Tracker__c';
+import Visit_Planned_Tracker__c from '@salesforce/schema/Visits__c.Visit_Planned_Tracker__c';
+import Visit_Tacticom_Tracker__c from '@salesforce/schema/Visits__c.Visit_Tacticom_Tracker__c';
+import Visit_CreationDate_Tracker__c from '@salesforce/schema/Visits__c.Visit_Creation_Day_Tracker__c';
+import Visit_Start_Day_Tracker__c from '@salesforce/schema/Visits__c.Visit_Start_Day_Tracker__c';
+import Visit_Home_Office_Tracker from '@salesforce/schema/Visits__c.Visit_Home_Office_Tracker__c';
 
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
@@ -92,7 +97,7 @@ export default class TabVisitsDetailForm extends LightningElement {
     fields3 = [Call_To_Action,Call_To_Action_Notes,Visit_Status];
     fields4 = [Actions_executed];
     fields5 = [Visit_Notes];
-    fields6 = [Visit_Planning_Tracker__c,Visit_Preparation_Tracker__c];
+    fields6 = [Visit_Planning_Tracker__c,Visit_Preparation_Tracker__c,Visit_Planned_Tracker__c,Visit_Tacticom_Tracker__c,Visit_CreationDate_Tracker__c,Visit_Start_Day_Tracker__c,Visit_Home_Office_Tracker];
 
     //Identified business opportunity Creation  - Start
     get categoryOptions(){

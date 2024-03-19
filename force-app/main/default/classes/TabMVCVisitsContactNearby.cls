@@ -18,7 +18,7 @@ public with sharing class TabMVCVisitsContactNearby {
 
             Contact contact = [SELECT Id, Name, FirstName, LastName, MiyoSmart_Attitude__c, Last_contact_visit_date__c, Preferred_contact_method__c,
                                 Account.Name, MailingStreet, MailingPostalCode, MailingCity, MailingState,
-                                MailingCountry, MailingLatitude, MailingLongitude FROM Contact WHERE
+                                MailingCountry, MailingLatitude, MailingLongitude, Account.Clinic_Name__c FROM Contact WHERE
                                 Id=:ContactId];
             
             return TabMVCVisitsContactNearby.getContacts(contact, distance, miyoSmartAttitude, prescriptionPotential, preferredMethod, firstSpeciality, professional, PreferDayTime);
@@ -56,8 +56,8 @@ public with sharing class TabMVCVisitsContactNearby {
             String aconFirstSepcialityClause = '';
             String aconProfessionalClause = '';
 
-            String orderby1 = ' ORDER BY Name ASC';
-            String orderby2 = ' ORDER BY Contact.Name ASC';
+            String orderby1 = ' ORDER BY LastName ASC';
+            String orderby2 = ' ORDER BY Contact.LastName ASC';
 
             Double Latitude = currentCont.MailingLatitude;
             Double Longitude = currentCont.MailingLongitude;
@@ -72,7 +72,7 @@ public with sharing class TabMVCVisitsContactNearby {
 
             String query = 'SELECt Id, FirstName, LastName, Name, MiyoSmart_Attitude__c, Last_contact_visit_date__c, '
                             +'Preferred_contact_method__c, Account.Name, MailingStreet, MailingPostalCode, MailingCity, MailingState, '
-                            +'MailingCountry, MailingLatitude, MailingLongitude FROM Contact '
+                            +'MailingCountry, MailingLatitude, MailingLongitude, Account.Clinic_Name__c FROM Contact '
                             +'WHERE RecordTypeId=:CON_OPT_RT AND '
                             +'DISTANCE(MailingAddress, GEOLOCATION('+Latitude+', '+Longitude+'), \'km\')<'+distance;
             
@@ -80,7 +80,7 @@ public with sharing class TabMVCVisitsContactNearby {
                                 + 'Contact.Name, Contact.MiyoSmart_Attitude__c, Contact.Last_contact_visit_date__c, '
                                 + 'Contact.Preferred_contact_method__c, Account.Name, Contact.MailingStreet, '
                                 + 'Contact.MailingPostalCode, Contact.MailingCity, Contact.MailingState, '
-                                + 'Contact.MailingCountry, Contact.MailingLatitude, Contact.MailingLongitude '
+                                + 'Contact.MailingCountry, Contact.MailingLatitude, Contact.MailingLongitude, Account.Clinic_Name__c '
                                 + 'FROM AccountContactRelation WHERE Contact.RecordTypeId=:CON_OPT_RT AND Preferred_contact_day_time__c=\''+PreferDayTime+'\' AND '
                                 + 'DISTANCE(Contact.MailingAddress, GEOLOCATION('+Latitude+', '+Longitude+'), \'km\')<'+distance;
             

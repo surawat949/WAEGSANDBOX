@@ -198,7 +198,7 @@ private class ClsVisitUtil_Test {
         Test.startTest();
         
         ClsVisitUtil.calculateDateTimeValue(date.today(), '24000');
-        
+        ClsVisitUtil.getCompletedVisits(date.today(), visit3);
         //ClsVisitUtil.calculateTriggerOnVisit('INSERT', visitNew, visitNew);
         ClsVisitUtil.calculateTriggerOnVisit('UPDATE', visitNew, visitNew);
         ClsVisitUtil.calculateTriggerOnVisit('DELETE', visitNew, visitNew);

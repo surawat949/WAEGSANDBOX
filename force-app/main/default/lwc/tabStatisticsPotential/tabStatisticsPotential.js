@@ -321,23 +321,12 @@ export default class TabStatisticsPotential extends LightningElement {
             
             this.showLoading = false;
             this.isRender = true;            
-        },30000);
+        },2000);
         this.dispatchEvent(new RefreshEvent());
     }
 
     connectedCallback() {
-												   
-						   
-										  
-																									
-											 
-				
-											  
-											   
-						   
-								 
-			
-        this.FirstCompetitorLocal = this.FirstCompLocalName;
+		this.FirstCompetitorLocal = this.FirstCompLocalName;
         this.SecondCompetitorLocal = this.SecondCompLocalName;        
     }
 

@@ -5,6 +5,8 @@ public with sharing class ContactTriggerHelper {
     private static final String CONTACT_SHOP_OWNER_RT = Schema.SObjectType.Contact.getRecordTypeInfosByDeveloperName().get('Shop_Owner').getRecordTypeId();
     private static final String CONTACT_SUBSCRIPTION_RT = Schema.SObjectType.Contact.getRecordTypeInfosByDeveloperName().get('Subscription').getRecordTypeId();
     private static final String CONTACT_ENDCONSUMER_RT = Schema.SObjectType.Contact.getRecordTypeInfosByDeveloperName().get('End_Consumer').getRecordTypeId();
+    private static final String CONTACT_Technician_RT = Schema.SObjectType.Contact.getRecordTypeInfosByDeveloperName().get('Technician').getRecordTypeId();
+    private static final String CONTACT_Opthalmologist_RT = Schema.SObjectType.Contact.getRecordTypeInfosByDeveloperName().get('Opthalmologist').getRecordTypeId();
 
     public static void entry(
         System.TriggerOperation triggerEvent,
@@ -20,6 +22,11 @@ public with sharing class ContactTriggerHelper {
                 populateHashes(newList);
                 populateLanguageDefault(newList);
                 populateHoyaContactId(newList);
+                UpdateSyncFlag(newList,'BEFORE_INSERT',oldMap);
+            }
+            when BEFORE_UPDATE {
+                // populate hash field
+                UpdateSyncFlag(newList,'BEFORE_UPDATE',oldMap);
             }
             when AFTER_INSERT {
                 Set<Id> nonPortalContacts = new Set<Id>();
@@ -380,5 +387,35 @@ public with sharing class ContactTriggerHelper {
         } catch (Exception e) {
             LogException.log(e);
         }
+    }
+    
+    public static void UpdateSyncFlag(List<Contact> newContacts, String type,Map < Id, Contact > oldMap){
+        Set<String> allowedCountries = new Set<String>{'US','CA','PL','RO','BE','NO','DE','FR','NL'};
+        List<Contact> contactlist = new List<Contact>();
+        Set<String> allowedRecordTypes = new Set<String>{CONTACT_Opthalmologist_RT, CONTACT_Technician_RT, CONTACT_SUBSCRIPTION_RT, CONTACT_ENDCONSUMER_RT};
+        Map<Id, String> accountCountries = new Map<Id, String>();
+        List<Id> accountIds = new List<Id>();
+        for (Contact con : newContacts) {
+        	if (con.AccountId != null) {
+				accountIds.add(con.AccountId);
+        	}
+    	}
+        List<Account> relatedAccounts = [SELECT Id, BillingCountry,Shop_Country__c FROM Account WHERE Id IN :accountIds];
+        for (Account acc : relatedAccounts) {
+			accountCountries.put(acc.Id, acc.Shop_Country__c);
+		}
+		for(Contact newContact : newContacts) {
+        	if (!allowedRecordTypes.contains(newContact.RecordTypeId) && allowedCountries.contains(accountCountries.get(newContact.AccountId))) {//Email has to be changed
+            	if(type == 'BEFORE_INSERT' && newContact.Email != ''){
+                	newContact.sync_marketing_cloud__c = true;
+        		}else if(type == 'BEFORE_Update' && newContact.Email != '' && newContact.Email != null && newContact.Email != oldMap.get(newContact.Id).Email){
+                	newContact.sync_marketing_cloud__c = true;
+                }else if(newContact.Email == '' || newContact.Email == null){
+                    newContact.sync_marketing_cloud__c = false;
+                }
+                contactlist.add(newContact);
+           	}
+        }
+        //if(contactlist.size()>0){update contactlist;}
     }
 }

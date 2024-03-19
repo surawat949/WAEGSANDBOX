@@ -3,7 +3,7 @@
  * 
  */
 @RestResource(urlMapping = '/GetUserPerformanceYTD')
-global with sharing class WS_GetUserPerformanceYTD {
+global class WS_GetUserPerformanceYTD {
     global WS_GetUserPerformanceYTD() {
 
     }
@@ -31,13 +31,13 @@ global with sharing class WS_GetUserPerformanceYTD {
                 budgetRec.fullName = budget.LookupUser__r.Name;
                 budgetRec.userRole = budget.LookupUser__r.Sales_Role__c;
                 budgetRec.budgetByASMName = budget.Name;
-                budgetRec.quotaAchlastUpdated = budget.Data_last_Updated__c;                
+                budgetRec.quotaAchLastUpdated = budget.Data_last_Updated__c;                
                 budgetRec.quotaYTD = budget.Quota_YTD__c;
                 budgetRec.localSalesYTD = budget.Local_Sales_YTD__c;
                 budgetRec.quotaAchYTDPerc = budget.Quota_Ach_YTD__c;
                 budgetRec.salesYTDVsLY = budget.Sales_YTD_vsLY__c;
                 budgetRec.monthsInTheTerritory = budget.Months_in_the_Area__c;
-                budgetRec.local3MonthsUnderPerformance = budget.last_3_months_under_performance__c;
+                budgetRec.last3MonthsUnderPerformance = budget.last_3_months_under_performance__c;
                 budgetRec.monthsWithQuotaAch1H = budget.Months_with_Quota_ach_1H__c;
                 budgetRec.monthsWithQuotaAch2H = budget.Months_with_Quota_ach_2H__c;
                 budgetRec.quotaAchMarchLY = budget.Q_A_12_LY__c;
@@ -107,7 +107,7 @@ global with sharing class WS_GetUserPerformanceYTD {
         public Decimal quotaAchYTDPerc {get;set;}
         public Decimal salesYTDVsLY {get;set;}
         public Decimal monthsInTheTerritory {get;set;}
-        public Decimal local3MonthsUnderPerformance {get;set;}
+        public Decimal last3MonthsUnderPerformance {get;set;}
         public Decimal monthsWithQuotaAch1H {get;set;}
         public Decimal monthsWithQuotaAch2H {get;set;}
         public Decimal quotaAchMarchLY {get;set;}

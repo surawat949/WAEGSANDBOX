@@ -36,7 +36,7 @@
                 component.set("v.currentUser", data["UserData"]);
                 component.set("v.recTypeId", data["recordTypeId"]);
                 component.set("v.currentAccount", data["accountData"]);
-                component.set("v.taskRTId", data["taskRecTypeId"]);
+                component.set("v.configObject",data);
                 component.set("v.isLoading",false);
             } else {
                 component.set("v.isLoading",false);
@@ -45,6 +45,7 @@
         $A.enqueueAction(action);                
     },
     createCase: function (component, event, helper) {
+        debugger;
         event.preventDefault();
         var accData = component.get("v.currentAccount");
         var isTempPicklist = component.get("v.isTempPicklist");
@@ -103,9 +104,12 @@
             };
         }
         defaultFieldValues.Status = component.find("Status").get("v.value");
+        let countryName = component.find("Country").get("v.value");
+        let configObject = component.get("v.configObject");
+        let recordTypeId = ((countryName === "South Africa") && (subject === "Quality Returns")) ? configObject.recordTypeLenseReturnsId : configObject.recordTypeRegularId;
         if(defaultFieldValues.Status === "Closed" || defaultFieldValues.Status === "Waiting on Customer"){
             defaultFieldValues.sobjectType = "Case";
-            defaultFieldValues.RecordTypeId = component.get("v.recTypeId");
+            defaultFieldValues.RecordTypeId = recordTypeId;
             component.set("v.isLoading",true);
             var action = component.get("c.createCaseUtility");
             action.setParams({
@@ -114,8 +118,7 @@
             action.setCallback(this, function (response) {
                 var state = response.getState();
                 if (state === "SUCCESS") {
-                    var data = response.getReturnValue();
-                    
+                    var data = response.getReturnValue();                    
                     var toastEvent = $A.get("e.force:showToast");
                     toastEvent.setParams({
                         mode: 'sticky',
@@ -169,7 +172,7 @@
                     actionName: "new"
                 },
                 state: {
-                    recordTypeId: component.get("v.recTypeId")
+                    recordTypeId: recordTypeId
                 }
             }
             pageRef.state.defaultFieldValues = component.find("pageRefUtils").encodeDefaultFieldValues(defaultFieldValues);

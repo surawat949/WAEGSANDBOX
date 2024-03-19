@@ -67,6 +67,12 @@ private class TrgVisit_AIUDUDBIUD_eventSync_Test {
         //visit.Start_Time__c = null;
         update visit;
         
+        visits__c visitData = [Select id from visits__c where id = :visit.id];
+        visitData.Visit_Initial_Date_Tracker__c = date.today();
+        visitData.Is_All_Day_Event__c = true;
+        visitData.Start_Time__c = date.today();
+        update visitData;
+        
         system.assert(true);
         Test.stopTest();
     }
@@ -94,5 +100,5 @@ private class TrgVisit_AIUDUDBIUD_eventSync_Test {
         
         system.assert(true);
         Test.stopTest();
-    }
+    }    
 }

@@ -6,6 +6,7 @@ public class UserTriggerHandler {
     public void onBeforeInsert(final List<User> newObjects) {
         System.debug('Executing " UserTriggerHandler.onBeforeInsert"...');
         updateHoyaAccountIdBeforeInsert(newObjects);
+        UserLogic.updateServiceCloud(newObjects,null);        
     }
 
     public void onAfterInsert(final List<User> newObjects, final Map<Id, User> newObjectsMap) {
@@ -14,10 +15,11 @@ public class UserTriggerHandler {
         UserLogic.updateContactWithCommunityNickName(newObjects,newObjectsMap);
     }
 
-    /*public void onBeforeUpdate(final List<User> oldObjects, final Map<Id, User> oldObjectsMap,
+    public void onBeforeUpdate(final List<User> oldObjects, final Map<Id, User> oldObjectsMap,
                                final List<User> newObjects, final Map<Id, User> newObjectsMap) {
         System.debug('Executing " UserTriggerHandler.onBeforeUpdate"...');
-    }*/
+        UserLogic.updateServiceCloud(newObjects,oldObjectsMap);        
+    }
     
     public void onAfterUpdate(final List<User> oldObjects, final Map<Id, User> oldObjectsMap,
                               final List<User> newObjects, final Map<Id, User> newObjectsMap) {
@@ -57,4 +59,5 @@ public class UserTriggerHandler {
         }
 
     }
+ 
 }

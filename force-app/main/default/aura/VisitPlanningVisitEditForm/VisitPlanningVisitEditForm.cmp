@@ -78,6 +78,7 @@
                             <div class="slds-col slds-size_1-of-2">
                                 <a target="_blank" href="{!'/lightning/r/'+v.visit.Account__c+'/related/Campaign_Membership__r/view'}" label="See Active campaign">Marketing campaign</a>
                             </div>
+                            <lightning:inputField aura:id="picklistFieldPlanning" fieldName="Visit_Planning_Tracker__c" class="slds-hide"/>
                         </div>
                         <aura:if isTrue="{!v.isHVNA==false}">
                             <div class="slds-grid">

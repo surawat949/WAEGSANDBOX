@@ -1,6 +1,6 @@
 <template>
     <div class="slds-box slds-p-around_none slds-var-m-top_x-small slds-var-m-bottom_medium slds-m-horizontal_none">
-        <table class="slds-table slds-table_bordered" aria-label="Account Address" style="background-color: #aacbff;">
+        <table class="slds-table slds-table_bordered" aria-label="Visit Detail" style="background-color: #aacbff;">
             <tr class="row" style="background-color: #aacbff;">
                 <td><h3 class="slds-section__title  test-id__section-header-container" data-aura-rendered-by="344:1408;a"><p align="left">{label.Visit_Detail}</p></h3></td>
             </tr>
@@ -19,7 +19,7 @@
         </div>
     </div> 
     <div class="slds-box slds-p-around_none slds-var-m-top_x-small slds-var-m-bottom_medium slds-m-horizontal_none">
-        <table class="slds-table slds-table_bordered" aria-label="Account Address" style="background-color: #aacbff;">
+        <table class="slds-table slds-table_bordered" aria-label="Visit Preparation" style="background-color: #aacbff;">
             <tr class="row" style="background-color: #aacbff;">
                 <td><h3 class="slds-section__title  test-id__section-header-container" data-aura-rendered-by="344:1408;a"><p align="left">{label.Visit_Preparation}</p></h3></td>
             </tr>
@@ -38,7 +38,7 @@
         </div>
     </div> 
     <div class="slds-box slds-p-around_none slds-var-m-top_x-small slds-var-m-bottom_medium slds-m-horizontal_none">
-        <table class="slds-table slds-table_bordered" aria-label="Account Address" style="background-color: #aacbff;">
+        <table class="slds-table slds-table_bordered" aria-label="Visit Report" style="background-color: #aacbff;">
             <tr class="row" style="background-color: #aacbff;">
                 <td><h3 class="slds-section__title  test-id__section-header-container" data-aura-rendered-by="344:1408;a"><p align="left">{label.Visit_Report}</p></h3></td>
             </tr>
@@ -74,7 +74,7 @@
     </div>
     <div>
         <div class="slds-box slds-p-around_none slds-var-m-top_x-small slds-var-m-bottom_medium slds-m-horizontal_none">    
-            <table class="slds-table slds-table_bordered" aria-label="Account Address" style="background-color: #215ca0;">
+            <table class="slds-table slds-table_bordered" aria-label="Identified Busimess Opportunities" style="background-color: #215ca0;">
                 <tr class="row" style="background-color: #aacbff;">
                     <td><h3 class="slds-section__title  test-id__section-header-container" data-aura-rendered-by="344:1408;a"><p align="left">
                         {label.IdentifiedBusinessOpp}</p></h3></td>
@@ -92,7 +92,7 @@
         </div>
     </div> 
     <div class="slds-box slds-p-around_none slds-var-m-top_x-small slds-var-m-bottom_medium slds-m-horizontal_none">
-        <table class="slds-table slds-table_bordered" aria-label="Account Address" style="background-color: #aacbff;">
+        <table class="slds-table slds-table_bordered" aria-label="Visit Outcome" style="background-color: #aacbff;">
             <tr class="row" style="background-color: #aacbff;">
                 <td><h3 class="slds-section__title  test-id__section-header-container" data-aura-rendered-by="344:1408;a"><p align="left">{label.Next_StepsForm}</p></h3></td>
             </tr>
@@ -112,7 +112,7 @@
     </div>
     <template if:true={isLWCDisabled}>
         <div class="slds-box slds-p-around_none slds-var-m-top_x-small slds-var-m-bottom_medium slds-m-horizontal_none">
-            <table class="slds-table slds-table_bordered" aria-label="Account Address" style="background-color: #aacbff;">
+            <table class="slds-table slds-table_bordered" aria-label="Visit Tracker" style="background-color: #aacbff;">
                 <tr class="row" style="background-color: #aacbff;">
                     <td><h3 class="slds-section__title  test-id__section-header-container" data-aura-rendered-by="344:1408;a"><p align="left">{label.Visit_Tracker}</p></h3></td>
                 </tr>
@@ -123,9 +123,8 @@
                         record-id={recordId}
                         object-api-name={objectApiName}
                         fields={fields6}
-                        mode="view"
-                        columns="1"
-                        onsuccess={handleSuccess}
+                        mode="readOnly"
+                        columns="2"                       
                     ></lightning-record-form>
                 </div>
             </div>

@@ -76,7 +76,7 @@ public with sharing class tabMVCOpticianNearby {
 
     @AuraEnabled(cacheable=true)
     public static List<ContactNearby> getContactNearby(String recordId, Double distance, String VisionAll, Boolean IsMyoSmart, Boolean IsHvCenter, Boolean IsSeikoNetwork, String Segmentation){
-        try {
+        try{
             Set<Id> uniqueIds = new Set<Id>();
 
             // getting all active Working Places for this individual
@@ -191,6 +191,7 @@ public with sharing class tabMVCOpticianNearby {
 
                 // There can be max 4 to 6 working places per individual functionally. So considering this, the SOQL in loop here is never supposed to reach governor limits.
                 // Need to find an alternative here.
+                System.debug('SOQL here = > '+soql);
                 List<Account> opticianList = database.query(soql);
                 
                 for(Account eachAcc : opticianList){
@@ -244,10 +245,9 @@ public with sharing class tabMVCOpticianNearby {
                 }
             }
             dataList.addAll(tempList);
+            //System.debug('Data List = > '+dataList);
             return dataList;
-
-
-        } catch (Exception e) {
+        }catch(Exception e){
             throw new AuraHandledException(e.getMessage());
         }
     }

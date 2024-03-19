@@ -3,6 +3,7 @@ public class ContactTriggerHelper_test {
     private static final String ACCOUNT_TEMPLATE_COPY_RT = Schema.SObjectType.Account_Template__c.getRecordTypeInfosByDeveloperName().get('Copy').getRecordTypeId();
 	private static final String ACCOUNT_TEMPLATE_MASTER_RT = Schema.SObjectType.Account_Template__c.getRecordTypeInfosByDeveloperName().get('MasterRT').getRecordTypeId();
     private static final String AUTHORIZATION_ORIGINAL_RT = Schema.SObjectType.Authorization__c.getRecordTypeInfosByDeveloperName().get('Original').getRecordTypeId();
+    private static final String CONTACT_SHOP_OWNER_RT = Schema.SObjectType.Contact.getRecordTypeInfosByDeveloperName().get('Shop_Owner').getRecordTypeId();
     
 	@TestSetup
     static void makeData(){
@@ -10,7 +11,8 @@ public class ContactTriggerHelper_test {
             Name = 'Test Acc',
             Hoya_Account_ID__c = 'SO012354',
             phone='0102030405',
-            Portal__c = 'frportal'
+            Portal__c = 'frportal',
+            Shop_Country__c = 'FR'
         );
         insert acc;
         Account_Template__c temp = new Account_Template__c();
@@ -129,6 +131,7 @@ public class ContactTriggerHelper_test {
         con4.FirstName = 'Con4';
         con4.AccountId = acc.Id;
         con4.OnekeyId__c = 'WD1234';
+        con.RecordTypeId = CONTACT_SHOP_OWNER_RT;
         insert con4;
         List<String> claims = new List<String>();
         claims.add('istradeportaluser');

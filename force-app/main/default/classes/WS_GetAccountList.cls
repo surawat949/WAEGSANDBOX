@@ -34,7 +34,7 @@ global with sharing class WS_GetAccountList {
         List<AccountContactRelation> acrList =  [select AccountId, IsDirect from AccountContactRelation where IsActive=true and ContactId=:j.contactId];
         Account main = null;
         for (AccountContactRelation acr : acrList) {
-            Account item = [select id, hoya_account_id__c, name, shop_name__c, parentId, recordType.name, Brand__c, Shop_City__c, Shop_Country__c, Shop_Postal_Code__c, Shop_State__c, Shop_Street__c from account where id=:acr.AccountId AND recordTypeId != :EC_ACCOUNT_RT];
+            Account item = [select id, hoya_account_id__c, name, shop_name__c, parentId, recordType.name, Brand__c, Shop_City__c, Shop_Country__c, Shop_Postal_Code__c, Shop_State__c, Shop_Street__c,Seiko_local_customer_nr__c from account where id=:acr.AccountId AND recordTypeId != :EC_ACCOUNT_RT];
 
             AccountDetail detail = new AccountDetail();
             detail.accountId = item.Id;
@@ -55,6 +55,7 @@ global with sharing class WS_GetAccountList {
             detail.ZIP = item.Shop_Postal_Code__c;
             detail.State = item.Shop_State__c;
             detail.Street = item.Shop_Street__c;
+            detail.localCustomerNumber = item.Seiko_local_customer_nr__c;
             resultList.add(detail);
 
             accountList.add(item);
@@ -75,7 +76,7 @@ global with sharing class WS_GetAccountList {
     }
     
     private static List<AccountDetail> getRecursiveAccountList(Set<Id> accIdSet, boolean isShopOwner){
-        List<Account> temp = [select id, hoya_account_id__c, name, shop_name__c, parentId, recordType.name, Brand__c, Shop_City__c, Shop_Country__c, Shop_Postal_Code__c, Shop_State__c, Shop_Street__c from account where parentId IN :accIdSet AND recordTypeId != :EC_ACCOUNT_RT];
+        List<Account> temp = [select id, hoya_account_id__c, name, shop_name__c, parentId, recordType.name, Brand__c, Shop_City__c, Shop_Country__c, Shop_Postal_Code__c, Shop_State__c, Shop_Street__c,Seiko_local_customer_nr__c from account where parentId IN :accIdSet AND recordTypeId != :EC_ACCOUNT_RT];
         List<AccountDetail> result = new List<AccountDetail>();
         if (temp != null && temp.size() > 0) {
             Set<Id> accIds = new Set<Id>();
@@ -98,6 +99,7 @@ global with sharing class WS_GetAccountList {
                 detail.ZIP = a.Shop_Postal_Code__c;
                 detail.State = a.Shop_State__c;
                 detail.Street = a.Shop_Street__c;
+                detail.localCustomerNumber = a.Seiko_local_customer_nr__c;
                 
                 result.add(detail);
                 accIds.add(a.Id);
@@ -130,5 +132,6 @@ global with sharing class WS_GetAccountList {
         public String ZIP{get;set;}
         public String State{get;set;}
         public String Street{get;set;}
+        public String localCustomerNumber{get;set;}
     }
 }

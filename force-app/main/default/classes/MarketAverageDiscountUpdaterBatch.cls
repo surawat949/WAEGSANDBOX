@@ -8,45 +8,76 @@
 * Created By      :  Encora                                                     
 *****************************************************************************************************/
 
-public class MarketAverageDiscountUpdaterBatch implements Database.Batchable<SObject>, Schedulable { 
-   
+public class MarketAverageDiscountUpdaterBatch implements Database.Batchable<SObject>, Schedulable , Database.Stateful{ 
+    public Decimal segmentADiscount = 0;
+    public Decimal segmentBDiscount = 0;
+    public Decimal segmentCDiscount = 0;
     public MarketAverageDiscountUpdaterBatch() {}   
-    // Start method will return a row per country maximum 22 Countries data as of now in production
-    public Iterable<AggregateResult> start(Database.BatchableContext context){ 
-       return [SELECT Sum(Lenses_Net_Sales_Last_12Mo__c) netSalesSum,Sum(Lenses_Gross_Sales_Last_12Mo__c) grossSalesSum,Account__r.Owner.CompanyName FROM Last_Sales_Statistics__c 
-               WHERE Account__r.Channel__c ='Independent' AND Account__r.Lenses_Net_Sales_Last_12Mo__c > 0
-               GROUP BY Account__r.Owner.CompanyName];
-    }
-    public void execute(Database.BatchableContext context, List<sObject> scope) {
-        try {
-            List<Account> accUpdateLst = new List<Account>();
-            Map<String,Sales> netAndGrossSalesMap = new Map<String,Sales>();  
-            if(scope.size() > 0){
-                for(sObject sObj : scope) {
-                    AggregateResult ag = (AggregateResult)sObj;
-                    Sales sale =new Sales();
-                    sale.netSales = (Double) ag.get('netSalesSum');
-                    sale.grossSales = (Double) ag.get('grossSalesSum');
-                    netAndGrossSalesMap.put((String)ag.get('CompanyName'),sale);
+    //get all the German Accounts 
+    public Database.QueryLocator start(Database.BatchableContext context){     
+        List<Last_Sales_Statistics__c> Sales = [SELECT Lenses_Net_Sales_Last_12Mo__c,Lenses_Gross_Sales_Last_12Mo__c,Account__r.Segmentation_Box__c FROM Last_Sales_Statistics__c
+                                                WHERE  Account__r.Channel__c ='Independent' AND Account__r.Lenses_Net_Sales_Last_12Mo__c > 0 AND Account__r.Shop_Country__c = 'DE'];
+        List<Id> accountIds = new List<Id>();
+                    
+        Sales saleA =new Sales();
+        Sales saleB =new Sales();
+        Sales saleC =new Sales();
+        if(Sales.size() > 0){
+            for(Last_Sales_Statistics__c sale : Sales) {
+                String segment = sale.Account__r.Segmentation_Box__c;                    
+                accountIds.add(sale.Account__c);
+                if(segment.StartsWith('A')){
+                    saleA.netSales += sale.Lenses_Net_Sales_Last_12Mo__c;
+                    saleA.grossSales += sale.Lenses_Gross_Sales_Last_12Mo__c;
+                }
+                else if(segment.StartsWith('B')){
+                    saleB.netSales += sale.Lenses_Net_Sales_Last_12Mo__c;
+                    saleB.grossSales += sale.Lenses_Gross_Sales_Last_12Mo__c;
+                }
+                else if(segment.StartsWith('C')){
+                    saleC.netSales += sale.Lenses_Net_Sales_Last_12Mo__c;
+                    saleC.grossSales += sale.Lenses_Gross_Sales_Last_12Mo__c;
                 }
             }
-            if(netAndGrossSalesMap.size() > 0){
-                for(String company :netAndGrossSalesMap.keySet()){
-                    List<Account> accounts = [SELECT Id,Market_Avg_Disc_Ind_L12M__c,Owner.CompanyName from Account where Owner.CompanyName =: company
-                                              AND Channel__c ='Independent'  
-                                              AND Lenses_Net_Sales_Last_12Mo__c > 0];
+        }
+        if(saleA.grossSales != 0)
+        	segmentADiscount = ((saleA.netSales - saleA.grossSales)/saleA.grossSales)*100;
+        if(saleB.grossSales != 0)
+        	segmentBDiscount = ((saleB.netSales - saleB.grossSales)/saleB.grossSales)*100;
+        if(saleC.grossSales != 0)
+        	segmentCDiscount = ((saleC.netSales - saleC.grossSales)/saleC.grossSales)*100;
+        String query = 'SELECT Id from Account where Id in :accountIds';
+        return Database.getQueryLocator(query);
+    }
+    public void execute(Database.BatchableContext context, List<Account> scope) {
+        try {
+            List<Account> accUpdateLst = new List<Account>();
+            List<Id> accountIds =new List<Id>();
+            if(scope.size() > 0){
+                for(Account acc:scope)
+               		 accountIds.add(acc.Id);
+            }
+            if(accountIds.size() > 0){
+                List<Account> accounts = [SELECT Id,Market_Avg_Disc_Ind_L12M__c,Segmentation_Box__c from Account where Id in:accountIds];
                     for(Account acc:accounts){
-                         if(netAndGrossSalesMap.containskey(acc.Owner.CompanyName)){
-                            Sales sale =  netAndGrossSalesMap.get(acc.Owner.CompanyName);
-                            Decimal discount = ((sale.netSales - sale.grossSales)/sale.grossSales)*100;
-                            acc.Market_Avg_Disc_Ind_L12M__c = discount.setScale(2);
+                        String segment = acc.Segmentation_Box__c;
+                         if(segment.StartsWith('A')){
+                            acc.Market_Avg_Disc_Ind_L12M__c = segmentADiscount.setScale(2);
                             accUpdateLst.add(acc);
-                            //Account update will be done for each country
-                            if(accUpdateLst.size() > 0)
-                				update accUpdateLst;
                     	 }
+                         else if(segment.StartsWith('B')){
+                            acc.Market_Avg_Disc_Ind_L12M__c = segmentBDiscount.setScale(2);
+                            accUpdateLst.add(acc);                           
+                    	 }
+                         else if(segment.StartsWith('C')){
+                            acc.Market_Avg_Disc_Ind_L12M__c = segmentCDiscount.setScale(2);
+                            accUpdateLst.add(acc);
+                    	 }
+                         
                     }
-                } 
+                	 //Account update 
+                    if(accUpdateLst.size() > 0)
+                        update accUpdateLst;
             }
         } catch (Exception ex) {
             LogException.log(ex);
@@ -61,5 +92,9 @@ public class MarketAverageDiscountUpdaterBatch implements Database.Batchable<SOb
     public class Sales{
         public Decimal netSales{get;set;}
         public Decimal grossSales{get;set;}
+        public Sales(){
+            netSales = 0;
+            grossSales = 0;
+        }
     }
 }

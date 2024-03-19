@@ -10,10 +10,10 @@ trigger UserTrigger on User (before insert, before update, before delete, after 
     else if(Trigger.isInsert && Trigger.isAfter) {
         UserHandler.OnAfterInsert(Trigger.new, Trigger.newMap);
     }
-    /* Before Update 
+    /* Before Update */
     else if(Trigger.isUpdate && Trigger.isBefore) {
         UserHandler.OnBeforeUpdate(Trigger.old, Trigger.oldMap,Trigger.new, Trigger.newMap);
-    }*/
+    }
      
     /* After Update */
     else if(Trigger.isUpdate && Trigger.isAfter) {

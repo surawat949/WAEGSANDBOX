@@ -81,6 +81,9 @@ export default class TabMVCVisitsContactNearby extends LightningElement {
 						let mailingCity = '';
 						let mailingStreet = '';
 						let mailingPostalcode = '';
+                        let ClinicName = '';
+                        let lastname = '';
+                        let firstname = '';
 
 						if(result[i].MiyoSmart_Attitude__c!=undefined){
 							MiyoSmartAttitude = result[i].MiyoSmart_Attitude__c;
@@ -107,9 +110,21 @@ export default class TabMVCVisitsContactNearby extends LightningElement {
 							AccountName = result[i].Account.Name;
 						}
 
-						if(result[i].Name != undefined){
-							ContactName = result[i].Name;
-						}
+                        if(result[i].LastName != undefined){
+                            lastname = result[i].LastName;
+                        }
+
+                        if(result[i].FirstName != undefined){
+                            firstname = result[i].FirstName;
+                        }
+
+						ContactName = lastname+', '+firstname;
+
+                        if(result[i].Account.Clinic_Name__c != undefined){
+                            ClinicName = result[i].Account.Clinic_Name__c;
+                        }
+
+
 						this.mapMarkers = [...this.mapMarkers,
                         {
                             location : {
@@ -133,7 +148,7 @@ export default class TabMVCVisitsContactNearby extends LightningElement {
                             value : result[i].Id,
                             description : 'MiyoSmart Attitude : '+MiyoSmartAttitude+'<br>'+'Last Contact Visit Day : '
                                             +lastvisiteddate+'<br>'+'Preferred Contact Method : '
-                                            +preferContactMethod+'<br>'+'Related Account Name : '+AccountName
+                                            +preferContactMethod+'<br>'+'Related Account Name : '+ClinicName
                                             +'<br>'+'Contact Address : '+mailingStreet+ ' '+mailingCity+ ' '+mailingPostalcode,
 
 							}
@@ -147,6 +162,9 @@ export default class TabMVCVisitsContactNearby extends LightningElement {
 						let mailingCity = '';
 						let mailingStreet = '';
 						let mailingPostalcode = '';
+                        let ClinicName = '';
+                        let lastname = '';
+                        let firstname = '';
 
 						if(result[i].MiyoSmart_Attitude__c!=undefined){
 							MiyoSmartAttitude = result[i].MiyoSmart_Attitude__c;
@@ -169,12 +187,25 @@ export default class TabMVCVisitsContactNearby extends LightningElement {
 							mailingPostalcode = result[i].MailingPostalCode;
 						}
 
+                        if(result[i].LastName != undefined){
+                            lastname = result[i].LastName;
+                        }
+
+                        if(result[i].FirstName != undefined){
+                            firstname = result[i].FirstName;
+                        }
+
 						if(result[i].Account.Name != undefined){
 							AccountName = result[i].Account.Name;
 						}
-						if(result[i].Name != undefined){
-							ContactName = result[i].Name;
-						}
+
+                        ContactName = lastname+', '+firstname;
+						
+
+                        if(result[i].Account.Clinic_Name__c != undefined){
+                            ClinicName = result[i].Account.Clinic_Name__c;
+                        }
+
 
 						this.mapMarkers = [...this.mapMarkers,
                         {
@@ -199,7 +230,7 @@ export default class TabMVCVisitsContactNearby extends LightningElement {
 								value : result[i].Id,
 								description : 'MiyoSmart Attitude : '+MiyoSmartAttitude+'<br>'+'Last Contact Visit Day : '
                                             +lastvisiteddate+'<br>'+'Preferred Contact Method : '
-                                            +preferContactMethod+'<br>'+'Related Account Name : '+AccountName
+                                            +preferContactMethod+'<br>'+'Related Account Name : '+ClinicName
                                             +'<br>'+'Contact Address : '+mailingStreet+ ' '+mailingCity+ ' '+mailingPostalcode,
 
 						}

@@ -1223,6 +1223,7 @@ public with sharing class AccountTriggerHelper {
     }   
     
     Public static void SetGlobalCompetitorNames(List<Account> accList){
+        system.debug('>>>>tetse');
         Map<String, String> mapLocalToGlobalString = new Map<String, String>();
         for(Global_Competitor_Entity__mdt eachEntity : Global_Competitor_Entity__mdt.getAll().values()){
             mapLocalToGlobalString.put(eachEntity.Competitor_Entity_Name__c,eachEntity.First_Competitor_Global_Name__c);

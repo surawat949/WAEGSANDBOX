@@ -7,14 +7,14 @@ public with sharing class TabStatisticCompetitorController {
      * @Email : surawat.sakulmontreechai@hoya.com
      * @CreatedDate : 2023-09-04
      * @CreatedBy : Surawat Sakulmontreechai
-     * @LastmodifiedDate : 2024-01-18
+     * @LastmodifiedDate : -
      * @LastmodifiedBy : Surawat Sakulmontreechai
      * @version : 1.0
-     * @apiVersion : via api 55.0
+     * @apiVersion : via api 49.0 or higher (force.com)
      * @description : This class support for LWC - in global competitor #Task-731 - SFDC V.2.0 Project
      */
 
-    private static final String Task_Status_SFDC_V2 = Schema.SObjectType.Task.getRecordTypeInfosByDeveloperName().get('SFDC_V2_Standard_Task').getRecordTypeId();
+private static final String Task_Status_SFDC_V2 = Schema.SObjectType.Task.getRecordTypeInfosByDeveloperName().get('SFDC_V2_Standard_Task').getRecordTypeId();
 
     @AuraEnabled(cacheable=true)
     public static sObject searchDefaultRecord(string recordId, string sObjectApiName){
@@ -66,17 +66,17 @@ public with sharing class TabStatisticCompetitorController {
             List<Account> updateList = new List<Account>();
             Id recordIdValue = recordId;
             SObject recordToUpdate = Schema.getGlobalDescribe().get('Account').newSObject(recordIdValue); 
-            if((String.isNotBlank(firstCompetitorName)) || (String.isNotBlank(secondCompetitorName))){
-                recordToUpdate.put('First_Competitor_local_name__c', String.valueOf(firstCompetitorName)); 
-                recordToUpdate.put('Second_Competitor_Local_Name__c', String.valueOf(secondCompetitorName)); 
-            }else{
-                recordToUpdate.put('First_Competitor_local_name__c', ''); 
+                if((String.isNotBlank(firstCompetitorName)) || (String.isNotBlank(secondCompetitorName))){
+                    recordToUpdate.put('First_Competitor_local_name__c', String.valueOf(firstCompetitorName));
+                    recordToUpdate.put('Second_Competitor_Local_Name__c', String.valueOf(secondCompetitorName));
+                                    }else{
+                    recordToUpdate.put('First_Competitor_local_name__c', ''); 
                 recordToUpdate.put('Second_Competitor_Local_Name__c', ''); 
             }
             if(recordToUpdate != null){
                 update recordToUpdate;
             }
-
+                
         } catch (Exception e) {
             //LogException.log(e);
             throw new AuraHandledException(e.getMessage());

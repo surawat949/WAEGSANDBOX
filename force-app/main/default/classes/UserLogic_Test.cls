@@ -220,7 +220,37 @@ public class UserLogic_Test {
         u.EmailEncodingKey = 'UTF-8';
         u.ContactId = c1.Id;
         u.Reset_Password_Token__c='TJWHE7346876';
+        insert u; 
+        
+       
+            
+       Test.stopTest();
+ }   
+
+
+@isTest
+    public static void updateIsServiceUserTest(){
+       Test.startTest();                                   
+        Profile p1 = [select Id from Profile where Name = 'Standard User' limit 1];
+
+        User u = new User();
+        u.FirstName = 'Testuser';
+        u.LastName = 'Testlastuser';
+        u.Email = 'test1@gmail.com.invalid';
+        u.UserName = 'test1@tradeportal.hoya.com.waeg';
+        u.profileid = p1.Id;
+        u.LocaleSidkey = 'en_US';
+        u.LanguageLocaleKey = 'en_US';
+        u.TimeZoneSidKey = 'America/Los_Angeles';
+        u.CompanyName = 'HVC';
+        u.Alias = 'testxcv';
+        u.EmailEncodingKey = 'UTF-8';
+        u.UserPermissionsSupportUser = true;
         insert u;       
+        
+        
+        u.UserPermissionsSupportUser =false;
+        update u;    
        Test.stopTest();
  }   
 

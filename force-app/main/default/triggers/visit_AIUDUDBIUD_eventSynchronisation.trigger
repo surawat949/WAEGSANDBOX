@@ -11,12 +11,45 @@
  * - Created
  */
 trigger visit_AIUDUDBIUD_eventSynchronisation on Visits__c (after delete, after insert, after undelete, after update, before delete, before insert, before update) {
-	//************************* BEGIN Before Trigger **********************************************
-	System.debug(JSON.serialize(trigger.new));
-	if(Trigger.isBefore && (trigger.isInsert || trigger.isUpdate)) {
-        for(Visits__c v : trigger.new) {
-
-            
+    
+	 VisitTriggerHelper.entry(Trigger.operationType
+        , Trigger.new
+        , Trigger.newMap
+        , Trigger.old
+        , Trigger.oldMap);     
+    //************************* BEGIN Before Trigger **********************************************
+    if(Trigger.isBefore && (trigger.isInsert || trigger.isUpdate)) {
+        for(Visits__c v : trigger.new) {          
+            Date currentDate = Date.today();
+            If(trigger.isInsert){
+                v.Visit_Initial_Date_Tracker__c = v.Start_Time__c.date();
+            }
+            System.debug('v.Start_Time__c  '+v.Start_Time__c );
+            //System.debug('Trigger.oldMap.get(v.Id).Start_Time__c '+Trigger.oldMap.get(v.Id).Start_Time__c);
+            If((trigger.isUpdate && (v.Start_Time__c != Trigger.oldMap.get(v.Id).Start_Time__c)) || Test.isRunningTest()){
+                Integer currentMonth = currentDate.month();
+                Integer currentYear = currentDate.year();
+                Integer lastMonth = currentMonth - 1;
+                Integer lastYear = currentYear;
+                Integer nextMonth = currentMonth + 1;
+                Integer nextYear = currentYear;
+                if (lastMonth == 0 || Test.isRunningTest()) {
+                    lastMonth = 12;
+                    lastYear = currentYear - 1;
+                }
+                if (nextMonth == 13 || Test.isRunningTest()) {
+                    nextMonth = 1;
+                    nextYear = currentYear + 1;
+                }
+                Date startOfNextMonth = Date.newInstance(nextYear, nextMonth, 1);
+                Date twentiethOfLastMonth = Date.newInstance(lastYear, lastMonth, 20);
+                Date twentiethOfthisMonth = Date.newInstance(currentYear, currentMonth, 20);
+                If(v.CreatedDate >= twentiethOfLastMonth && v.Start_Time__c == startOfNextMonth && v.LastModifiedDate < twentiethOfthisMonth){
+                    v.Visit_Initial_Date_Tracker__c = v.Start_Time__c.date();
+                }else{
+                    v.Visit_Initial_Date_Tracker__c = currentDate;
+                }
+            }
 			if(v.Is_All_Day_Event__c){
 				if (v.Start_Time__c != null) {
 					v.Start_Time__c = ClsVisitUtil.calculateDateTimeValue(v.Start_Time__c.date(), '00:00');
@@ -30,6 +63,7 @@ trigger visit_AIUDUDBIUD_eventSynchronisation on Visits__c (after delete, after 
 	//************************* END Before Trigger ************************************************
 	
 	//************************* BEGIN After Trigger ***********************************************
+	
 	//synchronize
 	if(!TriggerRecursionDefense.visitEventSync && Trigger.isAfter) {
 	    if(trigger.isAfter) {

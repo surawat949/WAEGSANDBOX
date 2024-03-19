@@ -55,6 +55,8 @@
     handleSave : function(component, event, helper)
     {
         component.set('v.spinner',true);
+        var picklistField = component.find("picklistFieldPlanning");
+        picklistField.set("v.value", "Visit Planning");
         component.find('visitEditForm').submit();
         window.setTimeout(
        $A.getCallback(function() {

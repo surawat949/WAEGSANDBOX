@@ -20,9 +20,11 @@ public class serviceFlow_AgentNavigatorCtrl {
             returnWrapper.UserData = userObj;
             returnWrapper.accountData = accObj;
             
-            if(String.isNotBlank(userObj.Country_for_Customer_Support__c))
-            returnWrapper.recordTypeId = Schema.getGlobalDescribe().get('Case').getDescribe().getRecordTypeInfosByName().get(recTypeName).getRecordTypeId();
-            returnWrapper.taskRecTypeId = Schema.getGlobalDescribe().get('Task').getDescribe().getRecordTypeInfosByName().get('serviceFlow_AgentCreateTask').getRecordTypeId();
+            if(String.isNotBlank(userObj.Country_for_Customer_Support__c)){
+                returnWrapper.recordTypeId = Schema.getGlobalDescribe().get('Case').getDescribe().getRecordTypeInfosByDeveloperName().get(recTypeName).getRecordTypeId();                
+                returnWrapper.recordTypeLenseReturnsId = Schema.getGlobalDescribe().get('Case').getDescribe().getRecordTypeInfosByDeveloperName().get('serviceFlow_Case_Edit_SouthAfrica').getRecordTypeId();
+                returnWrapper.recordTypeRegularId = Schema.getGlobalDescribe().get('Case').getDescribe().getRecordTypeInfosByDeveloperName().get('serviceFlow_Chat').getRecordTypeId();
+            }
             system.debug('returnWrapper -- '+returnWrapper);
             return returnWrapper;
         } catch (Exception ex) {
@@ -89,7 +91,11 @@ public class serviceFlow_AgentNavigatorCtrl {
         public string recordTypeId{set;get;}
         @AuraEnabled
         public Account accountData{set;get;}
+        
+        //@South Aftrica RecordTypes
         @AuraEnabled
-        public string taskRecTypeId{set;get;}
+        public string recordTypeLenseReturnsId{set;get;}
+        @AuraEnabled
+        public string recordTypeRegularId{set;get;}        
     }
 }

@@ -1,5 +1,8 @@
 import { LightningElement, api, track, wire } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+import { updateRecord } from 'lightning/uiRecordApi';
+import { RefreshEvent } from 'lightning/refresh'; 
+
 import STORE_LOCATION from '@salesforce/schema/Store_Characteristics__c.Store_Location__c';
 import STORE_CHAR_OBJ from '@salesforce/schema/Store_Characteristics__c';
 import STORE_SIZE from '@salesforce/schema/Store_Characteristics__c.Store_Size_m__c';
@@ -29,7 +32,6 @@ import label_mirgrateSucessfully from '@salesforce/label/c.MirgateSucessfully';
 import { NavigationMixin } from 'lightning/navigation';
 import { subscribe, unsubscribe, onError } from 'lightning/empApi';
 import { encodeDefaultFieldValues } from "lightning/pageReferenceUtils";
-import { updateRecord } from 'lightning/uiRecordApi';
 
 
 export default class TabActivationBusinessProgramStoreInfo extends  NavigationMixin(LightningElement) {
@@ -92,13 +94,13 @@ export default class TabActivationBusinessProgramStoreInfo extends  NavigationMi
         this.isLoadAfterUpdate=false;
         this.handleIsLoading(true);
         mirgrateLastYearToPrev({recordID: this.receivedId})
-        .then(result =>{
-           updateRecord({ fields: { Id: this.recordId }})
-           this.handleRerender();
+        .then(response =>{
+            //updateRecord({ fields: { Id: this.recordId }})
+            this.handleRerender();
         })
         .catch(error =>{
-        this.handleIsLoading(false);    
-        this.showToast('Success', 'Success', error.body.message);
+            this.handleIsLoading(false);   
+            this.showToast('Success', 'Success', error.body.message);
 
         })
     }   
@@ -108,9 +110,11 @@ export default class TabActivationBusinessProgramStoreInfo extends  NavigationMi
     }
     handleRerender(){
         setTimeout(() => {
+            //eval("$A.get('e.force:refreshView').fire();");
+            //this.dispatchEvent(new RefreshEvent());
             this.isLoadAfterUpdate = true; 
             this.showLoading = false;  
-            this.showToast('Success', 'Success', 'Store Performance Migrated Sucessfully');
+            this.showToast('Success', 'Success', 'Mirgate Sucessfully');
          
         },5000);
 

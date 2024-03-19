@@ -176,4 +176,37 @@ public with sharing class UserLogic {
         }
     }
     
+    public static void updateServiceCloud(List<User> newObjects,Map<Id, User> oldObjectsMap)
+    {    
+     for(User usr : newObjects) 
+     {
+      if(oldObjectsMap!=null)
+      {
+        System.debug('new objects value'+newObjects);
+        System.debug('new objects value1'+usr.UserPermissionsSupportUser );
+        System.debug('new objects value2'+oldObjectsMap.get(usr.Id).UserPermissionsSupportUser );
+
+
+        if(usr.UserPermissionsSupportUser != oldObjectsMap.get(usr.Id).UserPermissionsSupportUser && usr.UserPermissionsSupportUser == true)
+        {
+          usr.Is_Service_Cloud_User__c =true;
+         
+        }
+        else if(usr.UserPermissionsSupportUser != oldObjectsMap.get(usr.Id).UserPermissionsSupportUser && usr.UserPermissionsSupportUser == false)
+        {
+          usr.Is_Service_Cloud_User__c =false;
+       
+        }
+      }
+      else
+      {
+       if(usr.UserPermissionsSupportUser == true)
+       {
+          usr.Is_Service_Cloud_User__c = true;
+            
+       }
+      }
+     }
+   }
+    
 }

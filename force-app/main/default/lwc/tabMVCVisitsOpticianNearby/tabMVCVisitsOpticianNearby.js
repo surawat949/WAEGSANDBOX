@@ -62,7 +62,8 @@ export default class TabMVCVisitsOpticianNearby extends LightningElement {
         getContactNearby({recordId : this.receivedId, distance : Math.floor(this.distanceValue), VisionAll : this.VSValues, IsMyoSmart : this.isMyoSmart, IsHvCenter : this.isHoyaVisionCenter, IsSeikoNetwork : this.isSeikoSpecialist, Segmentation : this.segmentation})
         .then(result=>{
             this.mapMarker = [];
-            if(result.lenght > 0){
+            //console.log('Record seult == > '+result.length);
+            if(result.length > 0){
                 for(var i=0; i<result.length; i++){
                     if(result[i].accountRecType=='Clinic'){
                         //show star on map

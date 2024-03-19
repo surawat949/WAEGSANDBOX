@@ -53,7 +53,7 @@
     <aura:handler name="closeModal" event="c:SFlow_CloseModalEvt" action="{!c.handleComponentEvent}" />
     
     <aura:attribute name="fieldMapping" type="Object" />
-    
+    <aura:attribute name="configObject" type="Object" />
     <aura:attribute name="selectedData" type="Map" default="{
                                                             Description : '',
                                                             UserCountry : '',

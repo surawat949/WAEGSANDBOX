@@ -1,7 +1,7 @@
 @IsTest
 public class tabActivationPortalRegistIndicaTest {
-     @TestSetup
-      static void makeData(){
+    @TestSetup
+    static void makeData(){
         list<Account> listOfAccount = new list<Account>();
         Account a1 = new Account();
         a1.Hoya_Account_ID__c = 'SO4900TEST001';
@@ -19,14 +19,26 @@ public class tabActivationPortalRegistIndicaTest {
             Name = 'Test AccTESR',
             Hoya_Account_ID__c = 'TE-012355',
             phone='0103030408',
-           Lenses_Net_Sales_Last_12Mo__c =1,
+            Lenses_Net_Sales_Last_12Mo__c =1,
             Account_Status__c='Closed'
             
         );
         listOfAccount.add(acc2);
+
+        Account acc3 = new Account();
+        acc3.Hoya_Account_ID__c = 'SO3300987456321';
+        acc3.Name = 'Test-Seiko';
+        acc3.Seiko_Network__c = 'Seiko Vision Specialist';
+        listOfAccount.add(acc3);
+
+        Account acc4 = new Account();
+        acc4.Hoya_Account_ID__c = 'HY-001003';
+        acc4.Name = 'Test Hoya Account Brand';
+        listOfAccount.add(acc4);
+
         insert listOfAccount;  
-       ID subscriptionRecId = Schema.SObjectType.Contact.getRecordTypeInfosByDeveloperName().get('Subscription').getRecordTypeId();
-       ID shopownerRecId = Schema.SObjectType.Contact.getRecordTypeInfosByDeveloperName().get('Shop_Owner').getRecordTypeId();
+        ID subscriptionRecId = Schema.SObjectType.Contact.getRecordTypeInfosByDeveloperName().get('Subscription').getRecordTypeId();
+        ID shopownerRecId = Schema.SObjectType.Contact.getRecordTypeInfosByDeveloperName().get('Shop_Owner').getRecordTypeId();
 
         list<Contact> listOfContact = new list<Contact>();
         Contact c1 = new Contact();
@@ -59,7 +71,21 @@ public class tabActivationPortalRegistIndicaTest {
         n.External_key__c = '66';
         n.Tool__c = 'SXN orders';
         n.Transaction_Date__c= '202403';  
-        insert n; 
+        insert n;
+        
+        New_Media_Usage__c n2 = new New_Media_Usage__c();
+        n2.Hoya_Account_ID__c = acc3.Id;
+        n2.External_key__c = 'TEST-SO3300';
+        n2.Tool__c = 'Purchase Registrations';
+        n2.Transaction_Date__c = '202310';
+        insert n2;
+
+        Seiko_Data__c seiko = new Seiko_Data__c();
+        seiko.Account__c = acc3.Id;
+        seiko.Hoya_Account_ID__c = 'SO3300987456321';
+        seiko.Purchase_Registration_Email_Activation__c = true;
+        insert seiko;
+
       }
     @IsTest
     static void testmultipleClass2(){
@@ -94,7 +120,7 @@ public class tabActivationPortalRegistIndicaTest {
             acc2.Catalog_name__c = ' ';
             update acc2;
             tabActivationPortalRegistrationIndicator.getAIIndicators(acc2.Id);
-           acc2.Brand_Visibility__c='';
+            acc2.Brand_Visibility__c='';
             update acc2;
             tabActivationPortalRegistrationIndicator.getAIIndicators(acc2.Id);
             acc2.Language__c=''; 
@@ -120,6 +146,27 @@ public class tabActivationPortalRegistIndicaTest {
             update acc2;
             tabActivationPortalRegistrationIndicator.getAIIndicators(acc2.Id);
        Test.StopTest();
+    }
+
+    @IsTest
+    static void TestPurchaseRegistration(){
+        Test.StartTest();
+            Account a1 = [SELECT Id, Hoya_Account_ID__c, Brand__c, Seiko_Network__c FROM Account WHERE Hoya_Account_ID__c='SO3300987456321'];
+            List<Seiko_Data__c> seiko = [SELECT Id, Account__c, Purchase_Registration_Email_Activation__c FROM Seiko_Data__c WHERE Account__c=:a1.Id];
+            List<New_Media_Usage__c> newMedia = [SELECT Id, Hoya_Account_ID__c, Tool__c, Transaction_date_field__c, Transaction_Date__c FROM New_Media_Usage__c WHERE Hoya_Account_ID__c=:a1.Id];
+            tabActivationPortalRegistrationIndicator.getAIIndicators(a1.Id);
+            
+            newMedia[0].Transaction_Date__c = '202401';
+            update newMedia;
+            tabActivationPortalRegistrationIndicator.getAIIndicators(a1.Id);
+
+            seiko[0].Purchase_Registration_Email_Activation__c = false;
+            update seiko;
+            tabActivationPortalRegistrationIndicator.getAIIndicators(a1.Id);
+
+            Account a2 = [SELECT Id, Hoya_Account_ID__c FROM Account WHERE Hoya_Account_ID__c = 'HY-001003'];
+            tabActivationPortalRegistrationIndicator.getAIIndicators(a2.Id);
+        Test.StopTest();
     }
 
 }
